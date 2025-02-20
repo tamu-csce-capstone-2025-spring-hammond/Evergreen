@@ -27,6 +27,12 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'User registered successfully',
+    schema: {
+      example: {
+        access_token: 'mock_jwt_token_[random numbers]',
+        expires_in: 900,
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'Invalid request',
@@ -57,6 +63,12 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User logged in successfully',
+    schema: {
+      example: {
+        access_token: 'mock_jwt_token_[random numbers]',
+        expires_in: 900,
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     description: 'Invalid credentials',
