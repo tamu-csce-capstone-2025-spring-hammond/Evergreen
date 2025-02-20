@@ -1,39 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { JWTResponseType, UserInfoType } from 'src/auth/auth.type';
+import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class AuthService {
-  async login(user: UserInfoType): Promise<JWTResponseType> {
-    const payload = { email: user.email, sub: user.id };
+  // Mock user storage (replace with database later)
+  private users: any[] = [];
+
+  async signup(signupDto: SignUpDto) {
+    // In a real implementation, we would:
+    // 1. Check if user already exists
+    // 2. Hash the password
+    // 3. Save to database
+    // 4. Generate real JWT
+
+    this.users.push(signupDto);
+
     return {
-      access_token: 'AccessTokenLmao', //this.jwtService.sign(payload),
+      access_token: 'mock_jwt_token_' + randomInt(22222222),
       expires_in: 900,
     };
   }
 
-  async signup(signUpDto: SignUpDto): Promise<UserInfoType> {
-    //set user up in database
-    return {
-      id: 123,
-      email: signUpDto.email,
-      firstName: signUpDto.firstName,
-      lastName: signUpDto.lastName,
-    };
-  }
+  async login(loginDto: LoginDto) {
+    // Mock authentication logic
+    const user = this.users.find((u) => u.email === loginDto.email);
 
-  async validateUser(
-    email: string,
-    pass: string,
-  ): Promise<UserInfoType | boolean> {
-    if (pass == 'Password123' && email.length > 0) {
-      return {
-        id: 1234,
-        email: email,
-        firstName: 'Bob',
-        lastName: 'Jones',
-      };
+    if (!user || user.password !== loginDto.password) {
+      throw new Error('Invalid credentials');
     }
-    return false;
+
+    return {
+      access_token: 'mock_jwt_token_' + Date.now(),
+      expires_in: 900,
+    };
   }
 }
