@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,16 @@ async function bootstrap() {
       transform: true, // Transform payloads to be objects of the DTO class
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Evergreen API')
+    // .setDescription('Your API Description')
+    .setVersion('1.0')
+    // .addTag('auth') // Optional: Add tags for grouping endpoints
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document); // 'api' is the path where Swagger UI will be available
 
   await app.listen(3000);
 }
