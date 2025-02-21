@@ -23,8 +23,7 @@ describe('AuthService', () => {
       const signupDto: SignUpDto = {
         email: 'test@example.com',
         password: 'password123',
-        first_name: 'bob',
-        last_name: 'jones',
+        user_name: 'Bob Jones',
       };
 
       const result = await service.signup(signupDto);
@@ -38,8 +37,7 @@ describe('AuthService', () => {
       const signupDto: SignUpDto = {
         email: 'test@example.com',
         password: 'password123',
-        first_name: 'bob',
-        last_name: 'jones',
+        user_name: 'Bob Jones',
       };
 
       await service.signup(signupDto);
@@ -57,8 +55,7 @@ describe('AuthService', () => {
       const signupDto: SignUpDto = {
         email: 'test@example.com',
         password: 'password123',
-        first_name: 'bob',
-        last_name: 'jones',
+        user_name: 'Bob Jones',
       };
       await service.signup(signupDto);
     });
@@ -105,15 +102,13 @@ describe('AuthService', () => {
       const signupDto1: SignUpDto = {
         email: 'user1@example.com',
         password: 'password123',
-        first_name: 'bob',
-        last_name: 'jones',
+        user_name: 'Bob Jones',
       };
 
       const signupDto2: SignUpDto = {
         email: 'user2@example.com',
         password: 'password1234',
-        first_name: 'bobby',
-        last_name: 'james',
+        user_name: 'Bob Jones',
       };
 
       const result1 = await service.signup(signupDto1);

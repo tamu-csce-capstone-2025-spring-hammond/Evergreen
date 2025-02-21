@@ -47,8 +47,7 @@ describe('AuthController', () => {
     const signupDto: SignUpDto = {
       email: 'test@example.com',
       password: 'password123',
-      first_name: 'bob',
-      last_name: 'joe',
+      user_name: 'bob_jones',
     };
 
     it('should successfully create a new user', async () => {
