@@ -33,27 +33,37 @@ docker ps
 ---
 
 ### **5. Install PostgreSQL**
-(Write how to connect to postgreSQL database) 
+[PostgreSQL Installation Instructions](https://www.postgresql.org/download/)
 
 ---
 
 ### **6. Connect to the PostgreSQL Database**
 
 ```sh
-psql -h localhost -U myuser -d evergreen_db
+psql -h localhost -p 5432-U myuser -d evergreen_db
 ```
 
 It will prompt you for the password (`password`).
 
 ---
 
-### ***7. Run Database script***
-To run database script run:
+### ***7. Run database script***
+To run a database script run:
 ```sh
 \i ..../database/databaseSetup.sql
 ```
 
-### **8. Stop and Remove the Container (If Needed)**
+---
+
+### ***8. Run database script***
+To run a database script run:
+```sh
+\i ..../database/databaseSetup.sql
+```
+
+---
+
+### **9. Stop and Remove the Container (If Needed)**
 To stop the running PostgreSQL container (note this will delete all data):
 
 ```sh

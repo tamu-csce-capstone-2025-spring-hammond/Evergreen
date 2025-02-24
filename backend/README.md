@@ -1,5 +1,3 @@
-I'll help you create an improved README that includes both the project setup instructions and explains the directory structure. Here's a revised version:
-
 # Evergreen Backend
 
 ## Description
@@ -14,6 +12,7 @@ The APIs are documented in swagger when the backend is running at [backendUrl]/s
 
 ```
 backend/
+├── prisma/                  # Prisma ORM     
 ├── src/                    # Source code
 │   ├── auth/              # Authentication module
 │   │   ├── dto/          # Auth Data Transfer Objects

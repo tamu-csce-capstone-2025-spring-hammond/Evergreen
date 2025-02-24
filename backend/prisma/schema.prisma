@@ -9,10 +9,10 @@ datasource db {
 
 model users {
   user_id       Int         @id @default(autoincrement())
-  email         String      @unique @db.VarChar(255) @default("email")
+  email         String      @unique @db.VarChar(255)
   password_hash String?
   salt          String?
-  auth_provider String      @db.VarChar(10)
+  auth_provider String      @db.VarChar(10)  @default("email")
   user_name     String?     @db.VarChar(100)
   created_at    DateTime?   @default(now()) @db.Timestamp(6)
   portfolio     portfolio[]
