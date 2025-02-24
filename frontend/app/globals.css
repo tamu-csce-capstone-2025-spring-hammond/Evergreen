@@ -42,11 +42,3 @@
     --color-evergray-700:#272726;
     --color-evergray-800:#0B0B0A;
 }
-
-.material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-  }
