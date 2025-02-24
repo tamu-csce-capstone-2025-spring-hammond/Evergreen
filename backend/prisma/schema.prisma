@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  user_id       Int         @id @default(autoincrement())
+  email         String      @unique @db.VarChar(255) @default("email")
+  password_hash String?
+  salt          String?
+  auth_provider String      @db.VarChar(10)
+  user_name     String?     @db.VarChar(100)
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  portfolio     portfolio[]
+  watchlist     watchlist[]
+}
+
+model portfolio {
+  portfolio_id       Int                  @id @default(autoincrement())
+  user_id            Int?
+  portfolio_name     String               @db.VarChar(255)
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  target_date        DateTime?            @db.Date
+  risk_aptitude      Int?                 @db.SmallInt
+  cash               Decimal?             @db.Decimal(12, 2)
+  holdings           holdings[]
+  users              users?               @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  portfolio_snapshot portfolio_snapshot[]
+  trades             trades[]
+}
+
+model trades {
+  trade_id      Int        @id @default(autoincrement())
+  portfolio_id  Int?
+  ticker        String     @db.VarChar(10)
+  trade_time    DateTime?  @default(now()) @db.Timestamp(6)
+  trade_is_buy  Boolean
+  amount_traded Decimal    @db.Decimal(10, 4)
+  av_price_paid Decimal    @db.Decimal(10, 2)
+  portfolio     portfolio? @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model holdings {
+  portfolio_id       Int
+  ticker             String    @db.VarChar(10)
+  quantity           Decimal   @db.Decimal(10, 4)
+  average_cost_basis Decimal   @db.Decimal(10, 2)
+  last_updated       DateTime  @db.Timestamp(6)
+  portfolio          portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([portfolio_id, ticker])
+}
+
+model portfolio_snapshot {
+  portfolio_id   Int
+  snapshot_time  DateTime  @db.Timestamp(6)
+  snapshot_value Decimal   @db.Decimal(10, 2)
+  portfolio      portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([portfolio_id, snapshot_time])
+}
+
+model sample_portfolio {
+  sample_portfolio_id               Int                                 @id @default(autoincrement())
+  last_generated                    DateTime?                           @default(now()) @db.Timestamp(6)
+  timeline                          Unsupported("interval")?
+  risk_aptitude                     Int?                                @db.SmallInt
+  sample_portfolio_name             String?                             @db.VarChar(255)
+  sample_portfolio_asset_allocation sample_portfolio_asset_allocation[]
+}
+
+model sample_portfolio_asset_allocation {
+  sample_portfolio_id Int
+  ticker              String           @db.VarChar(10)
+  percentage          Decimal          @db.Decimal(5, 4)
+  sample_portfolio    sample_portfolio @relation(fields: [sample_portfolio_id], references: [sample_portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([ticker, sample_portfolio_id])
+}
+
+model watchlist {
+  user_id Int
+  ticker  String @db.VarChar(10)
+  users   users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([ticker, user_id])
+}
