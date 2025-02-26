@@ -17,7 +17,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
     // .setDescription('Your API Description')
-    .setVersion('1.01')
+    .setVersion('1.02')
     // .addTag('auth') // Optional: Add tags for grouping endpoints
     .build();
 

@@ -15,7 +15,10 @@ import {
   ApiBody,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
+  ApiConflictResponse,
+  ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
+import { error } from 'console';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +37,15 @@ export class AuthController {
       },
     },
   })
+  @ApiConflictResponse({
+    description: 'Duplicate email',
+    schema: {
+      example: {
+        error: 'Invalid email',
+        message: 'Duplicate email',
+      },
+    },
+  })
   @ApiBadRequestResponse({
     description: 'Invalid request',
     schema: {
@@ -43,10 +55,37 @@ export class AuthController {
       },
     },
   })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal Failure (something went very wrong)',
+    schema: {
+      example: {
+        error: 'Internal Failure',
+        message: 'User creation failed',
+      },
+    },
+  })
   async signup(@Body() signupDto: SignUpDto) {
     try {
       return await this.authService.signup(signupDto);
     } catch (error) {
+      if (error.message == 'Duplicate email') {
+        throw new HttpException(
+          {
+            error: 'Invalid email',
+            message: error.message,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      if (error.message == 'User creation failed') {
+        throw new HttpException(
+          {
+            error: 'Internal Failure',
+            message: error.message,
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
       throw new HttpException(
         {
           error: 'Invalid request',
