@@ -35,7 +35,7 @@ export default function Hero() {
                 <p className='text-evergreen-200 text-xl'>
                     Money really does grow on trees.
                 </p>
-                <button id="hero-cta" type="button" className='cursor-pointer gap-1 flex items-center bg-evergreen-200 py-2 px-4 rounded-lg mt-4 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100'>
+                <button id="hero-cta" type="button" className='text-evergray-700 cursor-pointer gap-1 flex items-center bg-evergreen-200 py-2 px-4 rounded-lg mt-4 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100'>
                     <span className='font-medium text-xl whitespace-nowrap'>
                         Try Now
                     </span>

@@ -32,9 +32,9 @@ export default function Body() {
                 className='w-11/20'
             />
             <div className='p-8 rotate-4'>
-                <h2 className='text-everblue-400 font-ntwagner text-5xl max-xl:text-4xl whitespace-nowrap leading-[110%]'>Manage all of your <br /> Assets in One Place</h2>
+                <h2 className='text-everblue-400 font-ntwagner text-5xl max-xl:text-4xl whitespace-nowrap leading-[110%]'>Manage All of Your <br /> Assets in One Place</h2>
                 <p className="text-evergray-700 text-2xl max-xl:text-xl mt-6 leading-[175%]">Track, invest, and grow your assets anytime, anywhere. Take control of your financial future with an all-in-one platform. </p>
-                <button id="footer-cta" type="button" className='text-xl cursor-pointer gap-1 flex items-center bg-everblue-100 py-3 px-5 rounded-lg mt-6 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100 shadow-sm'>
+                <button id="footer-cta" type="button" className='text-evergray-700 text-xl cursor-pointer gap-1 flex items-center bg-everblue-100 py-3 px-5 rounded-lg mt-6 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100 shadow-sm'>
                     Get Started
                 </button>
             </div>
