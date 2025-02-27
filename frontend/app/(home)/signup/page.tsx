@@ -23,7 +23,7 @@ export default function Home() {
       </div>
 
       {/* Login Box */}
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen text-white">
 
         {/* Actual Box */}
         <div className="relative opacity-30">
@@ -35,12 +35,15 @@ export default function Home() {
 
           {/* Decor Image */}
           <div className="flex justify-center mb-4">
-            <Image src="/decorWhite.svg" alt="Decorative" width={120} height={20} />
+            <Image src="/decorWhite.svg" alt="Decorative" width={239} height={36.5} />
           </div>
+
+          {/* Header */}
+          <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Create Your Account</h2>
 
           {/* Dont have account */}
           <div>
-            Already have an account? <Link href={'/signup'}>Log in</Link>
+            Already have an account? <Link href={'/login'}>Log in</Link>
           </div>
 
 
