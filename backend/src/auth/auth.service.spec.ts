@@ -1,17 +1,49 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
+
+jest.mock('argon2');
 
 describe('AuthService', () => {
   let service: AuthService;
+  let prismaService: PrismaService;
+  let jwtService: JwtService;
+
+  const mockPrismaService = {
+    users: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+  };
+
+  const mockJwtService = {
+    sign: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    prismaService = module.get<PrismaService>(PrismaService);
+    jwtService = module.get<JwtService>(JwtService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -19,102 +51,176 @@ describe('AuthService', () => {
   });
 
   describe('signup', () => {
-    it('should create a new user and return access token', async () => {
-      const signupDto: SignUpDto = {
-        email: 'test@example.com',
-        password: 'password123',
-        user_name: 'Bob Jones',
-      };
+    const signupDto = {
+      email: 'test@example.com',
+      password: 'Password123!',
+      user_name: 'testuser',
+    };
+
+    const mockUser = {
+      user_id: 1,
+      email: 'test@example.com',
+      user_name: 'testuser',
+      password_hash: 'hashed_password',
+    };
+
+    it('should create a new user and return a token', async () => {
+      // Mock user not existing
+      mockPrismaService.users.findUnique.mockResolvedValue(null);
+
+      // Mock password hashing
+      (argon2.hash as jest.Mock).mockResolvedValue('hashed_password');
+
+      // Mock user creation
+      mockPrismaService.users.create.mockResolvedValue(mockUser);
+
+      // Mock token generation
+      mockJwtService.sign.mockReturnValue('mock_token');
 
       const result = await service.signup(signupDto);
 
-      expect(result).toHaveProperty('access_token');
-      expect(result.access_token).toContain('mock_jwt_token_');
-      expect(result).toHaveProperty('expires_in', 900);
+      expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
+        where: { email: signupDto.email },
+      });
+
+      expect(argon2.hash).toHaveBeenCalledWith(signupDto.password);
+
+      expect(mockPrismaService.users.create).toHaveBeenCalledWith({
+        data: {
+          email: signupDto.email,
+          password_hash: 'hashed_password',
+          user_name: signupDto.user_name,
+        },
+      });
+
+      expect(mockJwtService.sign).toHaveBeenCalledWith({
+        sub: mockUser.user_id,
+        email: mockUser.email,
+        name: mockUser.user_name,
+      });
+
+      expect(result).toEqual({
+        access_token: 'mock_token',
+        expires_in: 900,
+      });
     });
 
-    it('should store the user in the users array', async () => {
-      const signupDto: SignUpDto = {
-        email: 'test@example.com',
-        password: 'password123',
-        user_name: 'Bob Jones',
-      };
+    it('should throw an error if email already exists', async () => {
+      // Mock user already exists
+      mockPrismaService.users.findUnique.mockResolvedValue(mockUser);
 
-      await service.signup(signupDto);
+      await expect(service.signup(signupDto)).rejects.toThrow(
+        'Duplicate email',
+      );
 
-      // Access private users array using type assertion
-      const users = (service as any).users;
-      expect(users).toHaveLength(1);
-      expect(users[0]).toEqual(signupDto);
+      expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
+        where: { email: signupDto.email },
+      });
+
+      expect(mockPrismaService.users.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error if user creation fails', async () => {
+      // Mock user not existing
+      mockPrismaService.users.findUnique.mockResolvedValue(null);
+
+      // Mock password hashing
+      (argon2.hash as jest.Mock).mockResolvedValue('hashed_password');
+
+      // Mock user creation failing
+      mockPrismaService.users.create.mockResolvedValue(null);
+
+      await expect(service.signup(signupDto)).rejects.toThrow(
+        'User creation failed',
+      );
+
+      expect(mockPrismaService.users.create).toHaveBeenCalled();
+      expect(mockJwtService.sign).not.toHaveBeenCalled();
     });
   });
 
   describe('login', () => {
-    beforeEach(async () => {
-      // Setup test user
-      const signupDto: SignUpDto = {
-        email: 'test@example.com',
-        password: 'password123',
-        user_name: 'Bob Jones',
-      };
-      await service.signup(signupDto);
-    });
+    const loginDto = {
+      email: 'test@example.com',
+      password: 'Password123!',
+    };
 
-    it('should return access token for valid credentials', async () => {
-      const loginDto: LoginDto = {
-        email: 'test@example.com',
-        password: 'password123',
-      };
+    const mockUser = {
+      user_id: 1,
+      email: 'test@example.com',
+      user_name: 'testuser',
+      password_hash: 'hashed_password',
+    };
+
+    it('should login a user and return a token', async () => {
+      // Mock user exists
+      mockPrismaService.users.findUnique.mockResolvedValue(mockUser);
+
+      // Mock password verification
+      (argon2.verify as jest.Mock).mockResolvedValue(true);
+
+      // Mock token generation
+      mockJwtService.sign.mockReturnValue('mock_token');
 
       const result = await service.login(loginDto);
 
-      expect(result).toHaveProperty('access_token');
-      expect(result.access_token).toContain('mock_jwt_token_');
-      expect(result).toHaveProperty('expires_in', 900);
+      expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
+        where: { email: loginDto.email },
+      });
+
+      expect(argon2.verify).toHaveBeenCalledWith(
+        mockUser.password_hash,
+        loginDto.password,
+      );
+
+      expect(mockJwtService.sign).toHaveBeenCalledWith({
+        sub: mockUser.user_id,
+        email: mockUser.email,
+        name: mockUser.user_name,
+      });
+
+      expect(result).toEqual({
+        access_token: 'mock_token',
+        expires_in: 900,
+      });
     });
 
-    it('should throw error for invalid email', async () => {
-      const loginDto: LoginDto = {
-        email: 'wrong@example.com',
-        password: 'password123',
-      };
+    it('should throw an error if user is not found', async () => {
+      // Mock user not found
+      mockPrismaService.users.findUnique.mockResolvedValue(null);
 
       await expect(service.login(loginDto)).rejects.toThrow(
         'Invalid credentials',
       );
+
+      expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
+        where: { email: loginDto.email },
+      });
+
+      expect(argon2.verify).not.toHaveBeenCalled();
     });
 
-    it('should throw error for invalid password', async () => {
-      const loginDto: LoginDto = {
-        email: 'test@example.com',
-        password: 'wrongpassword',
-      };
+    it('should throw an error if password is invalid', async () => {
+      // Mock user exists
+      mockPrismaService.users.findUnique.mockResolvedValue(mockUser);
+
+      // Mock password verification failure
+      (argon2.verify as jest.Mock).mockResolvedValue(false);
 
       await expect(service.login(loginDto)).rejects.toThrow(
         'Invalid credentials',
       );
-    });
-  });
 
-  // Time-sensitive test to verify token uniqueness
-  describe('token generation', () => {
-    it('should generate unique tokens for different signups', async () => {
-      const signupDto1: SignUpDto = {
-        email: 'user1@example.com',
-        password: 'password123',
-        user_name: 'Bob Jones',
-      };
+      expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
+        where: { email: loginDto.email },
+      });
 
-      const signupDto2: SignUpDto = {
-        email: 'user2@example.com',
-        password: 'password1234',
-        user_name: 'Bob Jones',
-      };
+      expect(argon2.verify).toHaveBeenCalledWith(
+        mockUser.password_hash,
+        loginDto.password,
+      );
 
-      const result1 = await service.signup(signupDto1);
-      const result2 = await service.signup(signupDto2);
-
-      expect(result1.access_token).not.toEqual(result2.access_token);
+      expect(mockJwtService.sign).not.toHaveBeenCalled();
     });
   });
 });
