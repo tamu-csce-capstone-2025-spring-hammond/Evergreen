@@ -83,13 +83,13 @@
                <animate attributeName="opacity" values="0;1;1;0;0" begin="-1.25s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
     </path>
     <path d="M620.074 646.64C624.494 647.165 628.502 644.007 629.027 639.586C629.552 635.166 626.394 631.157 621.975 630.632C617.555 630.108 613.547 633.266 613.022 637.686C612.497 642.107 615.655 646.115 620.074 646.64Z" fill="white" stroke="#6137CC" opacity="0">
-               <animate attributeName="opacity" values="0;1;1;0;0" begin="0s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
+               <animate attributeName="opacity" values="0;1;1;0;0" begin="-0.1s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
     </path>
     <path d="M767.829 640.76C772.248 641.285 776.257 638.127 776.781 633.707C777.306 629.286 774.149 625.278 769.729 624.753C765.309 624.228 761.301 627.386 760.777 631.807C760.252 636.227 763.409 640.236 767.829 640.76Z" fill="white" stroke="#6137CC" opacity="0">
-               <animate attributeName="opacity" values="0;1;1;0;0" begin="0.25s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
+               <animate attributeName="opacity" values="0;1;1;0;0" begin="0.35s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
     </path>
     <path d="M928.114 529.323C932.534 529.848 936.542 526.69 937.067 522.269C937.591 517.849 934.434 513.84 930.014 513.316C925.595 512.791 921.587 515.949 921.062 520.369C920.537 524.79 923.695 528.799 928.114 529.323Z" fill="white" stroke="#6137CC" opacity="0">
-               <animate attributeName="opacity" values="0;1;1;0;0" begin="0.75s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
+               <animate attributeName="opacity" values="0;1;1;0;0" begin="0.85s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>
     </path>
     <path d="M1077.35 510.995C1081.77 511.52 1085.77 508.362 1086.3 503.941C1086.82 499.521 1083.67 495.512 1079.25 494.988C1074.83 494.463 1070.82 497.621 1070.29 502.042C1069.77 506.462 1072.93 510.471 1077.35 510.995Z" fill="white" stroke="#6137CC" opacity="0">
                <animate attributeName="opacity" values="0;1;1;0;0" begin="1.35s" dur="14s" keyTimes="0;0.015;0.5;0.515;1" repeatCount="indefinite"/>

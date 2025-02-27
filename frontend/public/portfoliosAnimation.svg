@@ -1,6 +1,6 @@
 <svg width="881" height="589" viewBox="0 -25 861 619" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g>
-    <animateTransform attributeName="transform" type="translate" values="0 0;2 -21; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0.5s" dur="7s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 0;2 -15; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0.5s" dur="7s" repeatCount="indefinite"/>
     <g filter="url(#filter0_d_2295_1199)">
     <rect x="2.45654" y="69.718" width="245" height="245" rx="40" transform="rotate(-2.34 2.45654 69.718)" fill="#FAFAFA"/>
     </g>
@@ -20,7 +20,7 @@
     </g>
 </g>
 <g>
-    <animateTransform attributeName="transform" type="translate" values="0 0;2 -19; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="-0.5s"  dur="7.5s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 0;2 -14; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="-0.5s"  dur="7.5s" repeatCount="indefinite"/>
     <g filter="url(#filter1_d_2295_1199)">
     <rect x="303.715" y="45.3975" width="245" height="245" rx="40" transform="rotate(-2.34 303.715 45.3975)" fill="#FAFAFA"/>
     </g>
@@ -40,7 +40,7 @@
     <path d="M305.348 85.3642C304.446 63.2912 321.608 44.6663 343.681 43.7643V43.7643L353.685 288.56V288.56C331.612 289.462 312.987 272.3 312.085 250.227L305.348 85.3642Z" fill="#6137CC"/>
     
 </g><g>
-    <animateTransform attributeName="transform" type="translate" values="0 0;2 -20; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0.25s"  dur="7.25s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 0;2 -15; 0 0" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0.25s"  dur="7.25s" repeatCount="indefinite"/>
     <g filter="url(#filter2_d_2295_1199)">
     <rect x="603.566" y="11.1262" width="245" height="245" rx="40" transform="rotate(-2.34 603.566 11.1262)" fill="#FAFAFA"/>
     </g>
@@ -60,7 +60,7 @@
     <path d="M605.199 51.0929C604.297 29.0199 621.459 10.395 643.532 9.49305V9.49305L653.535 254.289V254.289C631.462 255.191 612.838 238.028 611.936 215.955L605.199 51.0929Z" fill="#E18B12"/>
     
 </g><g>
-    <animateTransform attributeName="transform" type="translate" values="0 5;2 -15; 0 5" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0s"  dur="8s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 5;2 -10; 0 5" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="0s"  dur="8s" repeatCount="indefinite"/>
     <g filter="url(#filter3_d_2295_1199)">
     <rect x="187.499" y="336.385" width="245" height="245" rx="40" transform="rotate(-2.34 187.499 336.385)" fill="#FAFAFA"/>
     </g>
@@ -81,7 +81,7 @@
 
 </g>
 <g>
-    <animateTransform attributeName="transform" type="translate" values="0 15;2 -7; 0 15" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="-0.25s"  dur="7.75s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 15;2 -3; 0 15" keySplines="0.5 0.25 0.5 1;0.5 0 0.5 1" calcMode="spline" begin="-0.25s"  dur="7.75s" repeatCount="indefinite"/>
     <g filter="url(#filter4_d_2295_1199)">
     <rect x="472.484" y="305.724" width="245" height="245" rx="40" transform="rotate(-2.34 472.484 305.724)" fill="#FAFAFA"/>
     </g>
