@@ -41,6 +41,66 @@ export default function Home() {
           {/* Header */}
           <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Create Your Account</h2>
 
+         {/* Sign Up Form */}
+         <form className="space-y-4 width-100">
+
+
+            {/* Name Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Email Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Confirm Passowrd Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="password"
+                  placeholder="Confirm Passowrd"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Sign Up Button */}
+            <button className="w-full bg-white py-2 rounded-[75px] transition text-black">
+              Sign Up
+            </button>
+
+          </form>
+
+
           {/* Dont have account */}
           <div>
             Already have an account? <Link href={'/login'}>Log in</Link>

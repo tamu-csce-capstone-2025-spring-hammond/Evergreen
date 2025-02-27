@@ -41,6 +41,40 @@ export default function Home() {
           {/* Header */}
           <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Welcome Back!</h2>
 
+           {/* Login Form */}
+           <form className="space-y-4 width-100">
+
+            {/* Email Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="w-full max-w-[700px]">
+              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+                <span className="pr-2"></span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                />
+              </div>
+            </div>
+
+            {/* Login Button */}
+            <button className="w-full bg-white py-2 rounded-[75px] transition text-black">
+              Login
+            </button>
+          </form>
+
+
           {/* Dont have account */}
           <div>
             Don't have an account? <Link href={'/signup'}>Sign up</Link>
