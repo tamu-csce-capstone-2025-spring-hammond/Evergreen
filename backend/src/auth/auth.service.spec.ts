@@ -90,6 +90,20 @@ describe('AuthService', () => {
           email: signupDto.email,
           password_hash: 'hashed_password',
           user_name: signupDto.user_name,
+          watchlist: {
+            create: [
+              { ticker: 'SPY' },
+              { ticker: 'QQQ' },
+              { ticker: 'VTI' },
+              { ticker: 'AAPL' },
+              { ticker: 'TSLA' },
+              { ticker: 'MSFT' },
+              { ticker: 'XLF' },
+              { ticker: 'GLD' },
+              { ticker: 'USO' },
+              { ticker: 'AMZN' },
+            ],
+          },
         },
       });
 
