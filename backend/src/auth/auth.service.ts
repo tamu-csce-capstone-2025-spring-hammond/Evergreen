@@ -32,7 +32,7 @@ export class AuthService {
     }
 
     return {
-      access_token: 'mock_jwt_token_' + Date.now(),
+      access_token: 'mock_jwt_token_' + randomInt(22222222),
       expires_in: 900,
     };
   }

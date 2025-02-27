@@ -17,13 +17,13 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
     // .setDescription('Your API Description')
-    .setVersion('1.0')
+    .setVersion('1.01')
     // .addTag('auth') // Optional: Add tags for grouping endpoints
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document); // 'api' is the path where Swagger UI will be available
+  SwaggerModule.setup('swagger', app, document); // 'swagger' is the path where Swagger UI will be available
 
-  await app.listen(3000);
+  await app.listen(process.env.BACKEND_PORT);
 }
 bootstrap();
