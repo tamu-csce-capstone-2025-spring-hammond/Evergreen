@@ -42,12 +42,12 @@ export default function Home() {
           <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Create Your Account</h2>
 
          {/* Sign Up Form */}
-         <form className="space-y-4 width-100">
+         <form className="space-y-6 w-full flex flex-col items-center">
 
 
             {/* Name Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
                 <span className="pr-2"></span>
                 <input
                   type="text"
@@ -58,8 +58,8 @@ export default function Home() {
             </div>
 
             {/* Email Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
                 <span className="pr-2"></span>
                 <input
                   type="email"
@@ -70,8 +70,8 @@ export default function Home() {
             </div>
 
             {/* Password Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
                 <span className="pr-2"></span>
                 <input
                   type="password"
@@ -82,8 +82,8 @@ export default function Home() {
             </div>
 
             {/* Confirm Passowrd Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
                 <span className="pr-2"></span>
                 <input
                   type="password"
@@ -94,7 +94,7 @@ export default function Home() {
             </div>
 
             {/* Sign Up Button */}
-            <button className="w-full bg-white py-2 rounded-[75px] transition text-black">
+            <button className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black">
               Sign Up
             </button>
 

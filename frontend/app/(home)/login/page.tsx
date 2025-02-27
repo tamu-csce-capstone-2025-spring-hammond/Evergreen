@@ -41,38 +41,39 @@ export default function Home() {
           {/* Header */}
           <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Welcome Back!</h2>
 
-           {/* Login Form */}
-           <form className="space-y-4 width-100">
+          {/* Login Form */}
+          <form className="space-y-6 w-full flex flex-col items-center">
 
             {/* Email Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3 ">
                 <span className="pr-2"></span>
                 <input
                   type="email"
                   placeholder="Email"
-                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                  className="bg-transparent w-full focus:outline-none placeholder-white text-white"
                 />
               </div>
             </div>
 
             {/* Password Input */}
-            <div className="w-full max-w-[700px]">
-              <div className="flex items-center border border-white rounded-[75px] px-3 py-2 ">
+            <div className="w-[70%] max-w-[550px]">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3 ">
                 <span className="pr-2"></span>
                 <input
                   type="password"
                   placeholder="Password"
-                  className="bg-transparent w-full focus:outline-none placeholder-white"
+                  className="bg-transparent w-full focus:outline-none placeholder-white text-white"
                 />
               </div>
             </div>
 
             {/* Login Button */}
-            <button className="w-full bg-white py-2 rounded-[75px] transition text-black">
+            <button className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black">
               Login
             </button>
           </form>
+
 
 
           {/* Dont have account */}
