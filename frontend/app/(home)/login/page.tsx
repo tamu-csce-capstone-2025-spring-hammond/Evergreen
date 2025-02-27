@@ -46,12 +46,12 @@ export default function Home() {
 
             {/* Email Input */}
             <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3 ">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2"></span>
                 <input
                   type="email"
                   placeholder="Email"
-                  className="bg-transparent w-full focus:outline-none placeholder-white text-white"
+                  className="bg-transparent w-full focus:outline-none placeholder-white text-white "
                 />
               </div>
             </div>
@@ -68,6 +68,24 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Remember Me & Forgot Password */}
+            <div className="flex justify-between text-sm w-[70%]">
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox"     
+                  className="accent-transparent border-2 border-white rounded-4 w-3 h-3 " 
+                />
+                <span>Remember me</span>
+              </label>
+
+              {/* Links to nowhere */}
+              <Link href="/login" className="text-white">
+                Forgot Password?
+              </Link>
+            </div>
+
+
+
             {/* Login Button */}
             <button className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black">
               Login
@@ -77,8 +95,8 @@ export default function Home() {
 
 
           {/* Dont have account */}
-          <div>
-            Don't have an account? <Link href={'/signup'}>Sign up</Link>
+          <div className="pt-5">
+            Don't have an account? <Link href={'/signup'} className="font-bold">Sign up</Link>
           </div>
 
 

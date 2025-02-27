@@ -27,11 +27,11 @@ export default function Home() {
 
         {/* Actual Box */}
         <div className="relative opacity-30">
-          <div className="w-[633px] h-[622px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
+          <div className="w-[693px] h-[724px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
         </div>
 
         {/* Content inside the box */}
-        <div className="absolute w-[633px] h-[622px] rounded-[70px] flex flex-col justify-center items-center z-10">
+        <div className="absolute w-[693px] h-[724px] rounded-[70px] flex flex-col justify-center items-center z-10">
 
           {/* Decor Image */}
           <div className="flex justify-center mb-4">
@@ -102,8 +102,8 @@ export default function Home() {
 
 
           {/* Dont have account */}
-          <div>
-            Already have an account? <Link href={'/login'}>Log in</Link>
+          <div className="pt-5">
+            Already have an account? <Link href={'/login'} className="font-bold">Log in</Link>
           </div>
 
 
