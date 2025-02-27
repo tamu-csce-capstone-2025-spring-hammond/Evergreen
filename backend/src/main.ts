@@ -16,10 +16,6 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
-    // .addBearerAuth(
-    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-    //   'JWT',
-    // )
     .setVersion('1.02')
     .build();
 

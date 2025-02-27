@@ -76,6 +76,20 @@ export class AuthService {
           email: email,
           password_hash: password_hash,
           user_name: user_name,
+          watchlist: {
+            create: [
+              { ticker: 'SPY' },
+              { ticker: 'QQQ' },
+              { ticker: 'VTI' },
+              { ticker: 'AAPL' },
+              { ticker: 'TSLA' },
+              { ticker: 'MSFT' },
+              { ticker: 'XLF' },
+              { ticker: 'GLD' },
+              { ticker: 'USO' },
+              { ticker: 'AMZN' },
+            ],
+          },
         },
       });
       return user;
