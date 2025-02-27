@@ -48,7 +48,14 @@ export default function Home() {
             {/* Name Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                  <Image 
+                    src={'/loginSignup/nameIcon.svg'}
+                    alt="Name Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="text"
                   placeholder="Name"
@@ -60,7 +67,14 @@ export default function Home() {
             {/* Email Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                <Image 
+                    src={'/loginSignup/emailIcon.svg'}
+                    alt="Email Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="email"
                   placeholder="Email"
@@ -72,7 +86,14 @@ export default function Home() {
             {/* Password Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                <Image 
+                    src={'/loginSignup/passwordIcon.svg'}
+                    alt="Password Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="password"
                   placeholder="Password"
@@ -84,7 +105,14 @@ export default function Home() {
             {/* Confirm Passowrd Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2 ">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                <Image 
+                    src={'/loginSignup/confirmPasswordIcon.svg'}
+                    alt="Confirm Password Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="password"
                   placeholder="Confirm Passowrd"
@@ -103,7 +131,7 @@ export default function Home() {
 
           {/* Dont have account */}
           <div className="pt-5">
-            Already have an account? <Link href={'/login'} className="font-bold">Log in</Link>
+            Already have an account? <Link href={'/login'} className="underline">Log in</Link>
           </div>
 
 

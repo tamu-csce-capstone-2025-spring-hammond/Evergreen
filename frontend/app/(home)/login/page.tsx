@@ -47,7 +47,14 @@ export default function Home() {
             {/* Email Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                  <Image 
+                    src={'/loginSignup/emailIcon.svg'}
+                    alt="Email Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="email"
                   placeholder="Email"
@@ -59,7 +66,14 @@ export default function Home() {
             {/* Password Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3 ">
-                <span className="pr-2"></span>
+                <span className="pr-2">
+                  <Image 
+                    src={'/loginSignup/passwordIcon.svg'}
+                    alt="Password Icon"
+                    width={30}
+                    height={30}
+                  />
+                </span>
                 <input
                   type="password"
                   placeholder="Password"
@@ -96,7 +110,7 @@ export default function Home() {
 
           {/* Dont have account */}
           <div className="pt-5">
-            Don't have an account? <Link href={'/signup'} className="font-bold">Sign up</Link>
+            Don't have an account? <Link href={'/signup'} className="underline">Sign up</Link>
           </div>
 
 
