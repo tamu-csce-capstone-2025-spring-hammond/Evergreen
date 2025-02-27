@@ -5,26 +5,48 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="relative">
+    <div>
+      {/* Navbar */}
       <Navbar />
 
-      <div className="fixed inset-0 -z-1">
-        <div className='absolute inset-0 bg-everblue-800/75 [clip-path:url("#bg-clip")] after:content-[""] after:absolute after:inset-0 after:bg-[#0C0E0F] after:opacity-60 pointer-events-none'>
-          <Image
-            src="/treesMist.jpg"
-            alt="Image of a forest with mist"
-            width={1920}
-            height={1239}
-            className="w-full absolute bottom-0 -z-3 opacity-95"
-            priority
-          />
+      {/* Background Image */}
+      <div className="absolute top-0 w-full h-[115vh] -z-1">
+      <div className="absolute w-full h-[115vh] z-[-1] bg-[rgba(12,14,15,0.6)] [clip-path:url('#bg-clip')]"></div>
+        <Image
+          src="/treesMist.jpg"
+          alt="Forest with mist"
+          layout="fill"
+          objectFit="cover"
+          className='absolute w-full h-[115vh] object-cover object-[50%_15%] -z-2 [clip-path:url("#bg-clip")]'
+          priority
+        />
+      </div>
+
+      {/* Login Box */}
+      <div className="flex items-center justify-center min-h-screen">
+
+        {/* Actual Box */}
+        <div className="relative opacity-30">
+          <div className="w-[633px] h-[622px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
+        </div>
+
+        {/* Content inside the box */}
+        <div className="absolute w-[633px] h-[622px] rounded-[70px] flex flex-col justify-center items-center z-10">
+
+          {/* Decor Image */}
+          <div className="flex justify-center mb-4">
+            <Image src="/decorWhite.svg" alt="Decorative" width={120} height={20} />
+          </div>
+
+          {/* Dont have account */}
+          <div>
+            Already have an account? <Link href={'/signup'}>Log in</Link>
+          </div>
+
+
         </div>
       </div>
 
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-[633px] h-[622px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373] opacity-30 flex items-center justify-center">
-        </div>
-      </div>
     </div>
   );
 }
