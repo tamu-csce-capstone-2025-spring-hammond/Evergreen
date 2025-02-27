@@ -12,7 +12,6 @@ describe('AuthController', () => {
   // Mock successful response
   const mockAuthResponse = {
     access_token: 'mock_jwt_token_123',
-    expires_in: 900,
   };
 
   // Mock AuthService
@@ -73,6 +72,24 @@ describe('AuthController', () => {
         expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
         expect(error.getResponse()).toEqual({
           error: 'Invalid request',
+          message: errorMessage,
+        });
+      }
+    });
+
+    it('should throw HttpException with INTERNAL_SERVER_ERROR status on database error', async () => {
+      const errorMessage = 'User creation failed';
+      mockAuthService.signup.mockRejectedValue(new Error(errorMessage));
+
+      await expect(controller.signup(signupDto)).rejects.toThrow(HttpException);
+
+      try {
+        await controller.signup(signupDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(error.getResponse()).toEqual({
+          error: 'Internal Failure',
           message: errorMessage,
         });
       }

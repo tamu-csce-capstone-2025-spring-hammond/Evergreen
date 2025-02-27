@@ -18,7 +18,7 @@ import {
   ApiConflictResponse,
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { JWTResponseType } from './auth.type';
+import { AuthResponseType } from './auth.type';
 
 @Controller('auth')
 export class AuthController {
@@ -29,11 +29,12 @@ export class AuthController {
   @ApiBody({ type: SignUpDto, description: 'User registration details' })
   @ApiResponse({
     status: 201,
-    description: 'User registered successfully',
+    description:
+      'User registered successfully. The response contains a JWT token to be used for authentication in subsequent requests.',
     schema: {
       example: {
-        access_token: 'mock_jwt_token_[random numbers]',
-        expires_in: 900,
+        access_token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5NjY2NjY2NiwiZXhwIjoxNjk2NjcwMjY2fQ._signature',
       },
     },
   })
@@ -64,7 +65,7 @@ export class AuthController {
       },
     },
   })
-  async signup(@Body() signupDto: SignUpDto): Promise<JWTResponseType> {
+  async signup(@Body() signupDto: SignUpDto): Promise<AuthResponseType> {
     try {
       return await this.authService.signup(signupDto);
     } catch (error) {
@@ -102,11 +103,12 @@ export class AuthController {
   @ApiBody({ type: LoginDto, description: 'User login credentials' })
   @ApiResponse({
     status: 200,
-    description: 'User logged in successfully',
+    description:
+      'User logged in successfully. The response contains a JWT token to be used for authentication in subsequent requests.',
     schema: {
       example: {
-        access_token: 'mock_jwt_token_[random numbers]',
-        expires_in: 900,
+        access_token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5NjY2NjY2NiwiZXhwIjoxNjk2NjcwMjY2fQ._signature',
       },
     },
   })
@@ -128,7 +130,7 @@ export class AuthController {
       },
     },
   })
-  async login(@Body() loginDto: LoginDto): Promise<JWTResponseType> {
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseType> {
     try {
       return await this.authService.login(loginDto);
     } catch (error) {

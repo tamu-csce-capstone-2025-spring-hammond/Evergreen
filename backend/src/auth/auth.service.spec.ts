@@ -101,7 +101,6 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         access_token: 'mock_token',
-        expires_in: 900,
       });
     });
 
@@ -181,7 +180,6 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         access_token: 'mock_token',
-        expires_in: 900,
       });
     });
 
