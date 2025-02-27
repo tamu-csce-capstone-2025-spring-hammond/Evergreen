@@ -14,8 +14,7 @@ VALUES
   ('john.doe@example.com', 'hash1', 'salt1', 'email', 'JohnDoe', NOW() - INTERVAL '60 days'),
   ('jane.smith@example.com', 'hash2', 'salt2', 'email', 'JaneSmith', NOW() - INTERVAL '45 days'),
   ('alice.johnson@example.com', NULL, NULL, 'google', 'AliceJ', NOW() - INTERVAL '30 days'),
-  ('bob.wilson@example.com', 'hash4', 'salt4', 'email', 'BobWilson', NOW() - INTERVAL '15 days');
-
+  ('bob.wilson@example.com', 'hash4', 'salt4', 'email', 'BobWilson', NOW() - INTERVAL '15 days'),
 -- Insert Portfolios
 INSERT INTO Portfolio (user_id, portfolio_name, created_at, target_date, risk_aptitude, cash)
 VALUES

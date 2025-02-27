@@ -82,7 +82,7 @@ docker ps
 
 ```sh
 
-psql -h localhost -p 5432-U myuser -d evergreen_db
+psql -h localhost -p 5432 -U myuser -d evergreen_db
 
 ```
 

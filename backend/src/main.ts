@@ -16,9 +16,11 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
-    // .setDescription('Your API Description')
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+    //   'JWT',
+    // )
     .setVersion('1.02')
-    // .addTag('auth') // Optional: Add tags for grouping endpoints
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

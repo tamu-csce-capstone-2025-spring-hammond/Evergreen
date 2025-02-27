@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
-import { randomInt } from 'crypto';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -13,24 +12,6 @@ export class AuthService {
     private prismaService: PrismaService,
     private jwtService: JwtService,
   ) {}
-
-  generateToken(userId: number, email: string, name: string): string {
-    const payload = {
-      sub: userId,
-      email: email,
-      name: name,
-    };
-    return this.jwtService.sign(payload);
-  }
-
-  verifyToken(token: string) {
-    try {
-      const payload = this.jwtService.verify(token);
-      return payload;
-    } catch (error) {
-      return null;
-    }
-  }
 
   async signup(signupDto: SignUpDto) {
     const userTest = await this.findUserByEmail(signupDto.email);
@@ -56,7 +37,6 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    // Mock authentication logic
     const user = await this.findUserByEmail(loginDto.email);
     if (!user) {
       throw new Error('Invalid credentials');
@@ -104,5 +84,14 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  private generateToken(userId: number, email: string, name: string): string {
+    const payload = {
+      sub: userId,
+      email: email,
+      name: name,
+    };
+    return this.jwtService.sign(payload);
   }
 }

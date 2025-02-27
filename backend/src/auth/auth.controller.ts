@@ -9,7 +9,6 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 import {
-  ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBody,
@@ -18,7 +17,7 @@ import {
   ApiConflictResponse,
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { error } from 'console';
+import { JWTResponseType } from './auth.type';
 
 @Controller('auth')
 export class AuthController {
@@ -64,7 +63,7 @@ export class AuthController {
       },
     },
   })
-  async signup(@Body() signupDto: SignUpDto) {
+  async signup(@Body() signupDto: SignUpDto): Promise<JWTResponseType> {
     try {
       return await this.authService.signup(signupDto);
     } catch (error) {
@@ -127,7 +126,7 @@ export class AuthController {
       },
     },
   })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<JWTResponseType> {
     try {
       return await this.authService.login(loginDto);
     } catch (error) {
