@@ -43,3 +43,10 @@
     --color-evergray-700:#272726;
     --color-evergray-800:#0B0B0A;
 }
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    padding: 0 2px;
+    vertical-align: middle;
+    transform: translate(-2%, -5%) scale(90%);
+  }
