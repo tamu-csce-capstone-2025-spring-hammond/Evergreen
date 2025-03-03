@@ -1,0 +1,37 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on every push to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Checkout your code
+
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "$EC2_PRIVATE_KEY" > ~/.ssh/id_rsa  # Use the private key from GitHub Secrets
+        chmod 600 ~/.ssh/id_rsa  # Secure the SSH key
+      env:
+        EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+
+    - name: Add EC2 host to known hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /path/to/your/project  # Navigate to the directory where your code is cloned
+          git pull origin main  # Pull the latest changes from the 'main' branch
+          docker build -t my-app .  # Build the Docker image
+          docker stop my-app || true  # Stop any existing container (if running)
+          docker rm my-app || true  # Remove the stopped container
+          docker run -d -p 80:80 --name my-app my-app  # Run the new container
+        EOF
