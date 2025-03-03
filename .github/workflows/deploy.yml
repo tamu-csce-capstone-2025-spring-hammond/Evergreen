@@ -28,7 +28,7 @@ jobs:
     - name: Deploy to EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd /path/to/your/project  # Navigate to the directory where your code is cloned
+          cd /home/ec2-user/Evergreen   # Navigate to the directory where your code is cloned
           git pull origin Scpanakin-dockerfile  # Pull the latest changes from the 'Scpanakin-dockerfile' branch
           docker build -t my-app .  # Build the Docker image
           docker stop my-app || true  # Stop any existing container (if running)
