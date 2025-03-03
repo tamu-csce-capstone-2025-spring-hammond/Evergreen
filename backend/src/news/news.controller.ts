@@ -1,12 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { NewsService } from './news.service';
 import {
-    ApiTags,
     ApiOperation,
     ApiResponse,
-    ApiBody,
-    ApiBadRequestResponse,
-    ApiUnauthorizedResponse,
     ApiQuery
   } from '@nestjs/swagger';
 
