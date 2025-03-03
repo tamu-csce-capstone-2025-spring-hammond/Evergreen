@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class NewsService {}
+export class NewsService {
+    async fetchNews() {
+        
+    }
+}
