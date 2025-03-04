@@ -3,7 +3,8 @@ FROM amazonlinux:2023
 
 # Step 2: Install necessary dependencies and update the system
 RUN yum update -y && \
-    yum install -y git curl nodejs npm
+    yum install -y --allowerasing git curl nodejs npm
+
 
 # Step 3: Set the working directory for the application
 WORKDIR /app
