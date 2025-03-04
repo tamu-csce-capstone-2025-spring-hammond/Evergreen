@@ -13,7 +13,7 @@ RUN yum update -y && \
 COPY backend/package.json /app/package.json
 
 
-RUN npm install
+RUN npm install --verbose
 
 EXPOSE 3000
 
