@@ -10,8 +10,11 @@ RUN yum update -y && \
 WORKDIR /app
 
 # Step 4: Copy the application files into the container
-COPY backend/package.json /app/package.json
-COPY backend/package-lock.json /app/package-lock.json
+COPY backend /app/backend
+COPY frontend /app/frontend
+
+WORKDIR /app/backend
+
 
 # Step 5: Install the necessary Node.js dependencies
 RUN npm install
