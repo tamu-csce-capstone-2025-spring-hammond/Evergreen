@@ -17,7 +17,7 @@ WORKDIR /app/backend
 
 
 # Step 5: Install the necessary Node.js dependencies
-RUN npm install
+RUN npm install --verbose
 
 # Step 6: Expose the port that the app will run on
 EXPOSE 3000
