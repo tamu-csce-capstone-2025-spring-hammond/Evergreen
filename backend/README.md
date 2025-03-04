@@ -79,3 +79,6 @@ The project uses several development tools:
 - Modular architecture following NestJS best practices
 - Comprehensive test coverage
 - TypeScript support
+
+## Bearer Token
+- A bearer token featuring an unexpired JWT token must be passed for any non-auth APIs

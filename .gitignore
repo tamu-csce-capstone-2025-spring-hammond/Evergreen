@@ -2,7 +2,6 @@
 node_modules/
 /.pnp
 .pnp.js
-package-lock.json
 yarn.lock
 
 # Testing
@@ -79,3 +78,6 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Clint specific ignores
+script-files
