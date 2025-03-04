@@ -1,12 +1,15 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { PrismaService } from '../prisma.service';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller('watchlist')
 export class WatchlistController {
   constructor(private prismaService: PrismaService) {}
 
   @Get('')
+  @ApiOperation({ summary: "Get current User's watchlist" })
+  @ApiBearerAuth()
   @UseGuards(JwtGuard)
   async watchlist(@Request() request: { userid: number }) {
     const { userid: userID } = request;
