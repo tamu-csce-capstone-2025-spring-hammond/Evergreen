@@ -7,7 +7,6 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
-  // Mock user storage (replace with database later)
   constructor(
     private prismaService: PrismaService,
     private jwtService: JwtService,

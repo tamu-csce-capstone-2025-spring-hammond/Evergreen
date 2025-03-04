@@ -28,6 +28,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
     .setVersion('1.02')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
