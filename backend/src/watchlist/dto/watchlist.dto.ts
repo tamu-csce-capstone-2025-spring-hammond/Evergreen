@@ -27,7 +27,7 @@ export class StockWatchlistItemDto {
 
   @ApiProperty({
     description: 'Full name of the company',
-    example: 'Apple',
+    example: 'Apple Inc',
     type: 'string',
   })
   name: string;
@@ -36,7 +36,7 @@ export class StockWatchlistItemDto {
 export class TickerDTO {
   @ApiProperty({
     description: 'Stock ticker symbol',
-    example: 'APPL',
+    example: 'SPY',
     type: 'string',
     required: true,
   })

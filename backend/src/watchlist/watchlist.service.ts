@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { watchlistElementType } from './watchlist.type';
 
 @Injectable()
@@ -15,14 +15,14 @@ export class WatchlistService {
         ticker: element.ticker,
         last_price: 30.33,
         day_percent_change: 3,
-        name: 'Company Name',
+        name: element.name,
       };
     });
     // console.log(watchlist);
     return watchlist;
   }
 
-  async addToWatchList(userid: number, ticker: string) {
-    
-  }
+  async addToWatchList(userid: number, ticker: string) {}
+
+  async deleteWatchListItem(userid: number, ticker: string) {}
 }
