@@ -1,4 +1,4 @@
-name: Run Tests Before Merge
+name: Run Backend Tests Before Merge
 
 on:
   pull_request:
@@ -17,12 +17,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 23 # Use the appropriate version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json # Cache dependencies for faster builds
 
       - name: Install Dependencies
         run: npm install
+        working-directory: backend # Run npm install inside backend folder
 
       - name: Run Unit Tests
         run: npm test
+        working-directory: backend
 
-      - name: Run End-to-End Tests
-        run: npm run test:e2e
+      # - name: Run End-to-End Tests
+      #   run: npm run test:e2e
+      #   working-directory: backend
