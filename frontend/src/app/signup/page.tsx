@@ -4,7 +4,7 @@ import Navbar from "../../components/navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const router = useRouter();
@@ -28,7 +28,6 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (signupData.password !== signupData.confirmPassword) {
       setError("Passwords do not match");
       return;
