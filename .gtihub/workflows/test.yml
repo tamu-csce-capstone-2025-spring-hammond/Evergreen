@@ -1,0 +1,28 @@
+name: Run Tests Before Merge
+
+on:
+  pull_request:
+    branches:
+      - main # Change this to match your main branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23 # Use the appropriate version
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Run End-to-End Tests
+        run: npm run test:e2e
