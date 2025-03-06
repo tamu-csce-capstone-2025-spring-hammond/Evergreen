@@ -4,8 +4,12 @@ import Navbar from "../../components/navbar";
 import Image from "next/image";
 import Link from 'next/link';
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 
 export default function Login() {
+  const router = useRouter();
+
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -24,6 +28,7 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login Data:", loginData);
+    router.push("/dashboard");
   };
 
   return (
