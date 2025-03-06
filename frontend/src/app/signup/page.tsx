@@ -23,14 +23,42 @@ export default function Signup() {
     setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     if (signupData.password !== signupData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    console.log("Signup Data:", signupData);
+  
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: signupData.email,
+          password: signupData.password,
+          user_name: signupData.name,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+      
+      // here is the token
+      console.log("Signup successful:", data);
+      
+  
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
+  
 
   return (
     <div>
