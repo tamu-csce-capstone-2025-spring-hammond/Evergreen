@@ -4,8 +4,11 @@ import Navbar from "../../components/navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Signup() {
+  const router = useRouter();
+  
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
@@ -52,6 +55,8 @@ export default function Signup() {
 
       // here is the token
       console.log("Signup successful:", data);
+
+      router.push("/dashboard");
     } catch (error: any) {
       setError(error.message);
     }
