@@ -15,14 +15,17 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiResponse,
+  ApiServiceUnavailableResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { StockWatchlistItemDto, TickerDTO } from './dto/watchlist.dto';
 import { ErrorCodes, ErrorMessages } from '../error-codes.enum';
+import { error } from 'console';
 
 @Controller('watchlist')
 export class WatchlistController {
@@ -53,6 +56,15 @@ export class WatchlistController {
       ],
     },
   })
+  @ApiServiceUnavailableResponse({
+    description: 'Alpaca or Polygon is down, not working, or over used',
+    schema: {
+      example: {
+        error: ErrorCodes.EXTERNAL_API_FAILURE,
+        message: ErrorMessages.EXTERNAL_API_FAILURE,
+      },
+    },
+  })
   @ApiUnauthorizedResponse({
     description:
       'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
@@ -65,7 +77,22 @@ export class WatchlistController {
   })
   async watchlist(@Request() request: { userid: number }) {
     const { userid: userID } = request;
-    return await this.watchlistService.getWatchlist(userID);
+    try {
+      const watchlist = await this.watchlistService.getWatchlist(userID);
+      return watchlist;
+    } catch (error) {
+      if (error.message == ErrorCodes.EXTERNAL_API_FAILURE) {
+        throw new HttpException(
+          {
+            error: error.message,
+            message: ErrorMessages.EXTERNAL_API_FAILURE,
+          },
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
+      } else {
+        throw error;
+      }
+    }
   }
 
   @Post('')
@@ -96,12 +123,30 @@ export class WatchlistController {
       },
     },
   })
+  @ApiConflictResponse({
+    description: 'Ticker already exists in watchlist',
+    schema: {
+      example: {
+        error: ErrorCodes.DUPLICATE_WATCHLIST_TICKER,
+        message: ErrorMessages.DUPLICATE_WATCHLIST_TICKER,
+      },
+    },
+  })
   @ApiNotFoundResponse({
     description: 'Ticker not found',
     schema: {
       example: {
         error: ErrorCodes.TICKER_NOT_FOUND,
         message: ErrorMessages.TICKER_NOT_FOUND,
+      },
+    },
+  })
+  @ApiServiceUnavailableResponse({
+    description: 'Alpaca or Polygon is down, not working, or over used',
+    schema: {
+      example: {
+        error: ErrorCodes.EXTERNAL_API_FAILURE,
+        message: ErrorMessages.EXTERNAL_API_FAILURE,
       },
     },
   })
@@ -141,6 +186,22 @@ export class WatchlistController {
             { error: error.message, message: ErrorMessages.TICKER_NOT_FOUND },
             HttpStatus.NOT_FOUND,
           );
+        case ErrorCodes.DUPLICATE_WATCHLIST_TICKER:
+          throw new HttpException(
+            {
+              error: error.message,
+              message: ErrorMessages.DUPLICATE_WATCHLIST_TICKER,
+            },
+            HttpStatus.CONFLICT,
+          );
+        case ErrorCodes.EXTERNAL_API_FAILURE:
+          throw new HttpException(
+            {
+              error: error.message,
+              message: ErrorMessages.EXTERNAL_API_FAILURE,
+            },
+            HttpStatus.SERVICE_UNAVAILABLE,
+          );
         default:
           return new HttpException(
             { error: 'Failure', message: error.message },
@@ -176,6 +237,15 @@ export class WatchlistController {
       },
     },
   })
+  @ApiServiceUnavailableResponse({
+    description: 'Alpaca or Polygon is down, not working, or over used',
+    schema: {
+      example: {
+        error: ErrorCodes.EXTERNAL_API_FAILURE,
+        message: ErrorMessages.EXTERNAL_API_FAILURE,
+      },
+    },
+  })
   async removeTicker(
     @Request() request: { userid: number },
     @Body() tickerDTO: TickerDTO,
@@ -199,6 +269,14 @@ export class WatchlistController {
           return new HttpException(
             { error: error.message, message: ErrorMessages.TICKER_NOT_FOUND },
             HttpStatus.NOT_FOUND,
+          );
+        case ErrorCodes.EXTERNAL_API_FAILURE:
+          throw new HttpException(
+            {
+              error: error.message,
+              message: ErrorMessages.EXTERNAL_API_FAILURE,
+            },
+            HttpStatus.SERVICE_UNAVAILABLE,
           );
         default:
           return new HttpException(

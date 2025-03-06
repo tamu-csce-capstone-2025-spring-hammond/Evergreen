@@ -61,6 +61,21 @@ describe('WatchlistController', () => {
       expect(result).toEqual(mockWatchlist);
       expect(mockWatchlistService.getWatchlist).toHaveBeenCalledWith(1);
     });
+
+    it('should handle external API failure', async () => {
+      const error = new Error(ErrorCodes.EXTERNAL_API_FAILURE);
+      mockWatchlistService.addToWatchList.mockRejectedValue(error);
+
+      const result = await controller.addToWatchlist(
+        { userid: 1 },
+        { ticker: 'APPL' },
+      );
+
+      expect(result).toBeInstanceOf(HttpException);
+      expect(
+        (result as HttpException).getStatus() == HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    });
   });
 
   describe('addToWatchlist (POST)', () => {
@@ -113,48 +128,78 @@ describe('WatchlistController', () => {
       expect(result).toBeInstanceOf(HttpException);
       expect((result as HttpException).getStatus() == HttpStatus.BAD_REQUEST);
     });
+
+    it('should handle duplicate ticker error', async () => {
+      const error = new Error(ErrorCodes.DUPLICATE_WATCHLIST_TICKER);
+      mockWatchlistService.addToWatchList.mockRejectedValue(error);
+
+      const result = await controller.addToWatchlist(
+        { userid: 1 },
+        { ticker: 'APPL' },
+      );
+
+      expect(result).toBeInstanceOf(HttpException);
+      expect((result as HttpException).getStatus() == HttpStatus.CONFLICT);
+    });
+
+    it('should handle external API failure', async () => {
+      const error = new Error(ErrorCodes.EXTERNAL_API_FAILURE);
+      mockWatchlistService.addToWatchList.mockRejectedValue(error);
+
+      const result = await controller.addToWatchlist(
+        { userid: 1 },
+        { ticker: 'APPL' },
+      );
+
+      expect(result).toBeInstanceOf(HttpException);
+      expect(
+        (result as HttpException).getStatus() == HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    });
   });
 
-    describe('removeTicker (DELETE)', () => {
-      it('should successfully remove ticker from watchlist', async () => {
-        mockWatchlistService.deleteWatchListItem.mockResolvedValue(null);
+  describe('removeTicker (DELETE)', () => {
+    it('should successfully remove ticker from watchlist', async () => {
+      mockWatchlistService.deleteWatchListItem.mockResolvedValue(null);
 
-        const result = await controller.removeTicker(
-          { userid: 1 },
-          { ticker: 'SPY' },
-        );
+      const result = await controller.removeTicker(
+        { userid: 1 },
+        { ticker: 'SPY' },
+      );
 
-        expect(result).toBeNull();
-        expect(mockWatchlistService.deleteWatchListItem).toHaveBeenCalledWith(
-          1,
-          'SPY',
-        );
-      });
-
-      it('should handle ticker not found error', async () => {
-        const error = new Error(ErrorCodes.TICKER_NOT_FOUND);
-        mockWatchlistService.deleteWatchListItem.mockRejectedValue(error);
-
-        const result = await controller.removeTicker(
-          { userid: 1 },
-          { ticker: 'INVALID' },
-        );
-
-        expect(result).toBeInstanceOf(HttpException);
-        expect(result.getStatus()).toBe(HttpStatus.NOT_FOUND);
-      });
-
-      it('should handle internal server error', async () => {
-        const error = new Error('Unexpected error');
-        mockWatchlistService.deleteWatchListItem.mockRejectedValue(error);
-
-        const result = await controller.removeTicker(
-          { userid: 1 },
-          { ticker: 'SPY' },
-        );
-
-        expect(result).toBeInstanceOf(HttpException);
-        expect(result.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      });
+      expect(result).toBeNull();
+      expect(mockWatchlistService.deleteWatchListItem).toHaveBeenCalledWith(
+        1,
+        'SPY',
+      );
     });
+
+    it('should handle ticker not found error', async () => {
+      const error = new Error(ErrorCodes.TICKER_NOT_FOUND);
+      mockWatchlistService.deleteWatchListItem.mockRejectedValue(error);
+
+      const result = await controller.removeTicker(
+        { userid: 1 },
+        { ticker: 'INVALID' },
+      );
+
+      expect(result).toBeInstanceOf(HttpException);
+      expect(result.getStatus()).toBe(HttpStatus.NOT_FOUND);
+    });
+
+    it('should handle external API failure', async () => {
+      const error = new Error(ErrorCodes.EXTERNAL_API_FAILURE);
+      mockWatchlistService.addToWatchList.mockRejectedValue(error);
+
+      const result = await controller.addToWatchlist(
+        { userid: 1 },
+        { ticker: 'APPL' },
+      );
+
+      expect(result).toBeInstanceOf(HttpException);
+      expect(
+        (result as HttpException).getStatus() == HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    });
+  });
 });

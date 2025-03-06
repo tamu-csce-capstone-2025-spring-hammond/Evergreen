@@ -22,7 +22,22 @@ export class WatchlistService {
     return watchlist;
   }
 
-  async addToWatchList(userid: number, ticker: string) {}
+  async addToWatchList(userid: number, ticker: string) {
+    const watchlistCount = await this.prismaService.watchlist.count();
+    console.log(watchlistCount);
+    try {
+      const watchlistEntry = await this.prismaService.watchlist.create({
+        data: {
+          user_id: userid,
+          ticker: ticker,
+          name: 'Company Name',
+        },
+      });
+      return watchlistEntry;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async deleteWatchListItem(userid: number, ticker: string) {}
 }
