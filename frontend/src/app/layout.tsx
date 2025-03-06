@@ -19,7 +19,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
       </head>
-      <body className="font-raleway bg-evergray-100 text-evergray-800 dark:text-evergray-100 dark:bg-evergray-700">
+      <body className="font-raleway bg-evergray-100 text-evergray-800">
         {children}
       </body>
     </html>

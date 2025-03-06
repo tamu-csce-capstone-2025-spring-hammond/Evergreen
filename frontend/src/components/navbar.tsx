@@ -14,7 +14,7 @@ export default function Navbar() {
             />
             <span className='text-evergreen-500 font-ntwagner text-2xl pl-1 mt-0.5'>Evergreen</span>
         </Link>
-        <Link href="/login" className='cursor-pointer font-medium text-lg pr-2'>Login</Link>
+        <Link href="/login" className='cursor-pointer font-medium text-lg pr-2 dark:text-evergray-800'>Login</Link>
     </nav>
   );
 }
