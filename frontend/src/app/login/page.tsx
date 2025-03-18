@@ -25,10 +25,34 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Press Logging In");
     e.preventDefault();
-    console.log("Login Data:", loginData);
-    router.push("/dashboard");
+    try {
+      const response = await fetch("http://localhost:4000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginData.email,
+          password: loginData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // here is the token
+      console.log("Login successful:", data);
+
+      router.push("/dashboard");
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -158,3 +182,7 @@ export default function Login() {
     </div>
   );
 }
+function setError(message: any) {
+  throw new Error("Function not implemented.");
+}
+
