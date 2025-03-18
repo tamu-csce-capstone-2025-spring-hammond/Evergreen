@@ -1,5 +1,5 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 import { PrismaService } from '../prisma.service';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 

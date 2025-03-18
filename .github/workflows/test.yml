@@ -1,0 +1,33 @@
+name: Run Backend Tests Before Merge
+
+on:
+  pull_request:
+    branches:
+      - main # Change this to match your main branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23 # Use the appropriate version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json # Cache dependencies for faster builds
+
+      - name: Install Dependencies
+        run: npm install
+        working-directory: backend # Run npm install inside backend folder
+
+      - name: Run Unit Tests
+        run: npm test
+        working-directory: backend
+
+      # - name: Run End-to-End Tests
+      #   run: npm run test:e2e
+      #   working-directory: backend
