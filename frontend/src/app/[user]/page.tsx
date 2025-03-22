@@ -8,7 +8,7 @@ import Header from "../../components/user/header";
 
 export default function Dashboard() {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />

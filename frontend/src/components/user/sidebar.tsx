@@ -12,7 +12,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`bg-evergray-100 p-6 flex flex-col justify-between h-screen border-r-2 border-evergray-200 transition-all duration-300 [interpolate-size:allow-keywords] ${
+      className={`p-6 flex flex-col justify-between h-screen border-r-2 border-evergray-200 dark:border-evergray-500 transition-all duration-300 [interpolate-size:allow-keywords] ${
         isCollapsed ? "w-23" : "w-fit"}`}
     >
       <div>
@@ -23,10 +23,10 @@ const Sidebar = () => {
             alt="Evergreen Logo"
             width={314}
             height={318}
-            className="size-8 inline"
+            className="size-8 inline dark:brightness-175"
           />
           <h1
-            className={`text-2xl font-bold text-evergreen-600 font-ntwagner translate-y-1 transition-all duration-300 ${
+            className={`dark:brightness-175 text-2xl font-bold text-evergreen-600 font-ntwagner translate-y-1 transition-all duration-300 ${
               isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
             }`}
           >
@@ -57,8 +57,8 @@ const Sidebar = () => {
                   href={href}
                   className={`flex items-center gap-2 p-2 rounded-xl ${
                     isActive(href)
-                      ? "bg-evergreen-500 text-white" // Active link styles
-                      : "text-evergray-700"
+                      ? "bg-evergreen-500 text-evergray-100" // Active link styles
+                      : "text-evergray-700 dark:text-evergray-100"
                   }`}
                 >
                   <span className="material-symbols-outlined">{icon}</span>
