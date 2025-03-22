@@ -126,7 +126,7 @@ export default function News() {
                                                     href={article.url} 
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
-                                                    className="hover:text-blue-600 transition-colors duration-200"
+                                                    className="hover:text-blue-600 transition-colors duration-200 text-gray-600"
                                                 >
                                                     {article.headline}
                                                 </a>
