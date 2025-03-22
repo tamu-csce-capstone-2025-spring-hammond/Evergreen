@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function News() {
     const [newsArticles, setNewsArticles] = useState([]);
 
+    useEffect(() => {
+        fetchNews();
+    }, []);
+
     const fetchNews = async () => {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
+        if (!backendUrl) {
+            console.error("REACT_APP_BACKEND_URL is not defined");
+            return;
+        }
+
         try {
-            const response = await fetch("http://localhost:4000/news", {
+            const response = await fetch(`${backendUrl}news`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -25,12 +36,10 @@ export default function News() {
 
     return (
         <div>
-            {
-                newsArticles.map((article) => (
-                    <div>
-                    </div>
-                ))
-            }
+            {newsArticles.map((article, index) => (
+                <div key={index}>
+                </div>
+            ))}
         </div>
     );
 }
