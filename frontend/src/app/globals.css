@@ -10,6 +10,8 @@
 }
 
 @import "tailwindcss";
+
+/* @custom-variant dark (&:where(.dark, .dark *)); implement in future - toggle dark mode */
   
 @theme {
     --font-ntwagner: NTWagner, sans-serif;
