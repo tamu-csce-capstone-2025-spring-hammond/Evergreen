@@ -7,28 +7,23 @@ import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 export class PortfolioController {
   constructor(private readonly portfolioService: PortfolioService) {}
 
-  @Post()
-  create(@Body() portfolioDto: PortfolioDto) {
+  @Post() 
+  async create(@Body() portfolioDto: PortfolioDto) {
     return this.portfolioService.create(portfolioDto);
   }
 
-  @Get()
-  findAll() {
-    return this.portfolioService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.portfolioService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePortfolioDto: UpdatePortfolioDto) {
+  async update(@Param('id') id: string, @Body() updatePortfolioDto: UpdatePortfolioDto) {
     return this.portfolioService.update(+id, updatePortfolioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.portfolioService.remove(+id);
   }
 }

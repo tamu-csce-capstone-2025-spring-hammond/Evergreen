@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
 import { PortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 
 @Injectable()
 export class PortfolioService {
-  create(portfolioDto: PortfolioDto) {
-    return 'This action adds a new portfolio';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(portfolioDto: PortfolioDto) {
+    return this.prisma.portfolio.create({
+      data: {
+        user_id: portfolioDto.userId,
+        portfolio_name: portfolioDto.portfolioName,
+        target_date: portfolioDto.targetDate,
+        cash: portfolioDto.cash,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all portfolio`;
+  async findOne(id: number) {
+    const portfolio = await this.prisma.portfolio.findUnique({
+      where: { portfolio_id: id },
+    });
+
+    if (!portfolio) {
+      throw new NotFoundException(`Portfolio with ID ${id} not found`);
+    }
+    
+    return portfolio;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} portfolio`;
+  async update(id: number, updatePortfolioDto: UpdatePortfolioDto) {
+    return this.prisma.portfolio.update({
+      where: { portfolio_id: id },
+      data: {
+        portfolio_name: updatePortfolioDto.portfolioName,
+        target_date: updatePortfolioDto.targetDate,
+        cash: updatePortfolioDto.cash,
+      },
+    });
   }
 
-  update(id: number, updatePortfolioDto: UpdatePortfolioDto) {
-    return `This action updates a #${id} portfolio`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} portfolio`;
+  async remove(id: number) {
+    return this.prisma.portfolio.delete({
+      where: { portfolio_id: id },
+    });
   }
 }
