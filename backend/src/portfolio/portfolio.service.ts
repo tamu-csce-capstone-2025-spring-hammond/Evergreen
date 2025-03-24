@@ -30,6 +30,20 @@ export class PortfolioService {
     return portfolio;
   }
 
+  async findByUserId(userId: number) {
+    const portfolios = await this.prisma.portfolio.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+
+    if (!portfolios || portfolios.length === 0) {
+      throw new NotFoundException(`No portfolios found for user with ID ${userId}`);
+    }
+
+    return portfolios;
+  }
+
   async update(id: number, updatePortfolioDto: UpdatePortfolioDto) {
     return this.prisma.portfolio.update({
       where: { portfolio_id: id },
