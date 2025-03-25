@@ -8,17 +8,19 @@ import Header from "../../components/user/header";
 
 export default function Dashboard() {
   return (
-    <div className="flex dark:bg-evergray-700 dark:text-evergray-100">
+    <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Header/>
-        <div className="flex-1 grid grid-rows-[5fr_4fr] grid-cols-[3fr_2fr] gap-4">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <Header />
+        <div className="flex-1 grid grid-rows-[5fr_4fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden">
             <Chart />
             <Watchlist />
-            <div className="p-4 bg-evergray-400">
-              <PortfolioCard name="Retirement" />
-              <PortfolioCard name="House" />
-              <PortfolioCard name="School"/>
+            <div className="bg-evergray-400 overflow-y-auto">
+              <div className="p-4 space-y-4">
+                <PortfolioCard name="Retirement" />
+                <PortfolioCard name="House" />
+                <PortfolioCard name="School"/>
+              </div>
             </div>
             <News />
         </div>
