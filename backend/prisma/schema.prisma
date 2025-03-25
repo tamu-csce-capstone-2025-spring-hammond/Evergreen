@@ -67,7 +67,6 @@ model sample_portfolio {
   sample_portfolio_id               Int                                 @id @default(autoincrement())
   last_generated                    DateTime?                           @default(now()) @db.Timestamp(6)
   timeline                          Unsupported("interval")?
-  risk_aptitude                     Int?                                @db.SmallInt
   sample_portfolio_name             String?                             @db.VarChar(255)
   sample_portfolio_asset_allocation sample_portfolio_asset_allocation[]
 }
