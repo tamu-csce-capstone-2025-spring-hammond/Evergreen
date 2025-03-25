@@ -80,7 +80,7 @@ export class AuthService {
               { ticker: 'VTI', name: 'Total US Stock Market' },
               { ticker: 'VXUS', name: 'Total International Stock Market' },
               { ticker: 'USO', name: 'US Oil' },
-              { ticker: 'USO', name: 'Tech' },
+              { ticker: 'VGT', name: 'Tech' },
               { ticker: 'GLD', name: 'Gold' },
               { ticker: 'AAPL', name: 'Apple Inc' },
               { ticker: 'TSLA', name: 'Tesla Inc' },
