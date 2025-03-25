@@ -7,7 +7,6 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
-  // Mock user storage (replace with database later)
   constructor(
     private prismaService: PrismaService,
     private jwtService: JwtService,
@@ -78,16 +77,16 @@ export class AuthService {
           user_name: user_name,
           watchlist: {
             create: [
-              { ticker: 'SPY' },
-              { ticker: 'QQQ' },
-              { ticker: 'VTI' },
-              { ticker: 'AAPL' },
-              { ticker: 'TSLA' },
-              { ticker: 'MSFT' },
-              { ticker: 'XLF' },
-              { ticker: 'GLD' },
-              { ticker: 'USO' },
-              { ticker: 'AMZN' },
+              { ticker: 'VTI', name: 'Total US Stock Market' },
+              { ticker: 'VXUS', name: 'Total International Stock Market' },
+              { ticker: 'USO', name: 'US Oil' },
+              { ticker: 'VGT', name: 'Tech' },
+              { ticker: 'GLD', name: 'Gold' },
+              { ticker: 'AAPL', name: 'Apple Inc' },
+              { ticker: 'TSLA', name: 'Tesla Inc' },
+              { ticker: 'MSFT', name: 'Microsoft Corp' },
+              { ticker: 'BND', name: 'Total Bond Market' },
+              { ticker: 'TLT', name: 'US Treasury' },
             ],
           },
         },
