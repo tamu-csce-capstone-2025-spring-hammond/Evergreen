@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { AlpacaService } from 'src/stock-apis/alpaca.service';
-import { AlpacaSnapshotResponse } from 'src/stock-apis/alpaca-types';
+import { AlpacaService } from '../stock-apis/alpaca.service';
+import { AlpacaSnapshotResponse } from '../stock-apis/alpaca-types';
+import { ErrorCodes } from '../error-codes.enum';
+import { error } from 'console';
 
 @Injectable()
 export class WatchlistService {
@@ -23,8 +25,14 @@ export class WatchlistService {
     const tickers = watchlistItems.map((item) => item.ticker);
 
     // Fetch stock data for all tickers
-    const stockData = await this.alpacaService.getTickerValues(tickers);
-
+    let stockData: AlpacaSnapshotResponse;
+    try {
+      stockData = await this.alpacaService.getTickerValues(tickers);
+      console.log(stockData);
+    } catch (error) {
+      console.log(error);
+      throw new Error(ErrorCodes.EXTERNAL_API_FAILURE);
+    }
     // Transform watchlist with stock data
     const enrichedWatchlist = watchlistItems.map((item) => {
       const tickerData = stockData[item.ticker];
@@ -41,7 +49,7 @@ export class WatchlistService {
 
       return {
         ticker: item.ticker,
-        last_price: tickerData.latestTrade.p,
+        last_price: this.alpacaService.calculateLatestQuote(tickerData),
         day_percent_change:
           this.alpacaService.calculatePercentChange(tickerData),
         name: item.name,
@@ -49,33 +57,5 @@ export class WatchlistService {
     });
 
     return enrichedWatchlist;
-  }
-
-  async addToWatchList(userid: number, ticker: string) {
-    const watchlistCount = await this.prismaService.watchlist.count();
-    console.log(watchlistCount);
-    try {
-      const watchlistEntry = await this.prismaService.watchlist.create({
-        data: {
-          user_id: userid,
-          ticker: ticker,
-          name: 'Company Name',
-        },
-      });
-      return watchlistEntry;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async deleteWatchListItem(userid: number, ticker: string) {}
-
-  processTickerData(data: AlpacaSnapshotResponse) {
-    // Now you can safely access ticker data
-    Object.entries(data).forEach(([ticker, tickerData]) => {
-      console.log(`Ticker: ${ticker}`);
-      console.log(`Current Price: ${tickerData.latestTrade.p}`);
-      console.log(`Daily High: ${tickerData.dailyBar.h}`);
-    });
   }
 }

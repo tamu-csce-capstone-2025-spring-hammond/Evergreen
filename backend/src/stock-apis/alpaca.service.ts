@@ -57,4 +57,13 @@ export class AlpacaService {
       ((currentClose - previousClose) / previousClose) * 100;
     return Number(percentChange.toFixed(2));
   };
+
+  calculateLatestQuote = (tickerData: TickerSnapshot) => {
+    const { latestQuote, latestTrade } = tickerData;
+    if (!latestQuote || !latestQuote.ap || !latestQuote.bp) {
+      if (!latestTrade) return null;
+      return latestTrade.p; // Or fallback to last traded price if available
+    }
+    return (latestQuote.ap + latestQuote.bp) / 2;
+  };
 }
