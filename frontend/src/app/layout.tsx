@@ -13,8 +13,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_forward" /></head>
-      <body className="font-raleway bg-evergray-100 text-evergray-800 dark:text-evergray-100">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+        />
+      </head>
+      <body className="font-raleway bg-evergray-100 text-evergray-800">
         {children}
       </body>
     </html>
