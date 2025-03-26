@@ -64,8 +64,8 @@ export default function News() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data: NewsResponse = await response.json();
-      setNewsArticles(data.news);
+      const data: NewsArticle[] = await response.json();
+      setNewsArticles(data);
     } catch (error: any) {
       console.error("Error fetching news:", error.message);
     } finally {

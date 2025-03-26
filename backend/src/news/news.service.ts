@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NewsArticle, NewsResponse } from './news.type';
 
 @Injectable()
 export class NewsService {
@@ -33,7 +34,8 @@ export class NewsService {
       }
 
       const data = await response.json();
-      return data;
+      console.log(data);
+      return filterNewsWithoutImages(data);
     } catch (error) {
       console.error('Error fetching news:', error);
       throw new HttpException(
@@ -45,4 +47,8 @@ export class NewsService {
       );
     }
   }
+}
+
+function filterNewsWithoutImages(data: NewsResponse): NewsArticle[] {
+  return data.news.filter((article) => article.images.length != 0);
 }
