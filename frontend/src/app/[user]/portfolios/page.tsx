@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import PortfolioList from "@/components/user/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
@@ -34,6 +37,8 @@ const exampleCards = [
 ];  
 
 export default function Portfolios() {
+  const [selectedCard, setSelectedCard] = useState(exampleCards[0]);
+
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
         <Sidebar />
@@ -45,12 +50,12 @@ export default function Portfolios() {
                         <h2 className="text-xl text-evergray-500">Your Portfolios</h2>
                         <button type="button" className="cursor-pointer">Create New <span className="material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">add</span></button>
                     </div>
-                    <PortfolioList home={false} cards={exampleCards}/>
+                    <PortfolioList home={false} cards={exampleCards} onCardClick={setSelectedCard} />
                 </div>
                 {/* TODO */}
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">
-                        <PortfolioSelcetion card={exampleCards[1]} />
+                        <PortfolioSelcetion card={selectedCard} />
                     </div>
                 </div>
             </div>

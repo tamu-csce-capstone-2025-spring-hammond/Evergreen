@@ -11,11 +11,10 @@ interface PortfolioCard {
     startDate: string;
     endDate: string;
     deposited: number;
+    onClick?: () => void;
 }
 
-const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, home, startDate, endDate, deposited }) => {
-    
-
+const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, home, startDate, endDate, deposited, onClick }) => {    
     const parsePercent = String(percent)[0] === "-" ? String(percent).slice(1) : percent;
     const difference = (total * Number(parsePercent) / 100).toFixed(2);
 
@@ -40,7 +39,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, h
 
     if(home) {
         return (
-        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer">
+        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer" onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className="flex whitespace-nowrap justify-between w-40/100">
                 <div className="ml-6 ">
@@ -64,13 +63,13 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, h
     }
 
     return (
-        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer">
+        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer" onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className={`flex whitespace-nowrap justify-between w-1/2`}>
                 <div className="ml-6 ">
                     <h3 className="text-[1.65rem] text-evergray-700">{name}</h3>
                     <p className="text-[1.45rem] font-roboto text-evergray-500 mb-3">${total}</p>
-                    <p className="text-md text-evergray-500">Desposited:<span className="pl-2 font-roboto">${deposited}</span></p>
+                    <p className="text-md text-evergray-500">Deposited:<span className="pl-2 font-roboto">${deposited}</span></p>
                     <p className="text-md text-evergray-500">Gained:<span className="pl-2 font-roboto">${gained}</span></p>
                 </div>
                 <div className={`font-roboto text-end ${feedbackColor}`}>

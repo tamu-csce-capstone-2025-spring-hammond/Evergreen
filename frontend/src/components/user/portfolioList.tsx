@@ -13,22 +13,18 @@ interface PortfolioCardProps {
 interface Portfolio {
     home: boolean;
     cards: PortfolioCardProps[];
+    onCardClick: (card: PortfolioCardProps) => void;
 }
 
-const PortfolioList: React.FC<Portfolio> = ({ home, cards }) => {
+  const PortfolioList: React.FC<Portfolio> = ({ home, cards, onCardClick }) => {
     return (
       <div className="px-4 flex-1 overflow-y-auto space-y-4">
         {cards.map((card, index) => (
           <PortfolioCard
             key={index}
-            name={card.name}
-            color={card.color}
-            total={card.total}
-            percent={card.percent}
+            {...card}
             home={home}
-            startDate={card.startDate}
-            endDate={card.endDate}
-            deposited={card.deposited}
+            onClick={() => onCardClick(card)}
           />
         ))}
       </div>
