@@ -1,6 +1,7 @@
 import PortfolioList from "@/components/user/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
+import PortfolioSelcetion from "@/components/user/portfolioSelection";
 
 const exampleCards = [
     {
@@ -49,7 +50,7 @@ export default function Portfolios() {
                 {/* TODO */}
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">
-                        <h1>asd</h1>
+                        <PortfolioSelcetion card={exampleCards[1]} />
                     </div>
                 </div>
             </div>
