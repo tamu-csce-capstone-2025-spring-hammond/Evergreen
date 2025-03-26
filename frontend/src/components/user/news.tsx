@@ -46,15 +46,19 @@ export default function News() {
 
     try {
       setLoading(true);
-      console.log("About to fetch");
-      console.log("News lmao");
-      console.log(getToken());
-      const response = await fetch(`${backendUrl}news`, {
+      const myHeaders = new Headers();
+      const token = getToken();
+      if (!token) {
+        throw new Error("No JWT token");
+      }
+      const response = await fetch(`${backendUrl}/news`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
+
       console.log("Completed Fetch");
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

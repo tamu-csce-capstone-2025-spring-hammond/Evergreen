@@ -29,6 +29,7 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     e.preventDefault();
     if (signupData.password !== signupData.confirmPassword) {
       setError("Passwords do not match");
@@ -36,7 +37,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/auth/signup", {
+      const response = await fetch(`${backendUrl}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
