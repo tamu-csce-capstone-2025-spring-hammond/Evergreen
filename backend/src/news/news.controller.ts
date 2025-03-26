@@ -6,7 +6,7 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { JwtGuard } from 'src/auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('news')
 export class NewsController {
@@ -16,61 +16,6 @@ export class NewsController {
   @UseGuards(JwtGuard)
   @ApiOperation({ summary: 'Fetch latest news from Alpaca API' })
   @ApiBearerAuth()
-  @ApiQuery({
-    name: 'start',
-    type: String,
-    required: false,
-    description:
-      'The inclusive start of the interval. Format: RFC-3339 or YYYY-MM-DD. Default: beginning of the current day.',
-  })
-  @ApiQuery({
-    name: 'end',
-    type: String,
-    required: false,
-    description:
-      'The inclusive end of the interval. Format: RFC-3339 or YYYY-MM-DD. Default: current time.',
-  })
-  @ApiQuery({
-    name: 'sort',
-    type: String,
-    required: false,
-    enum: ['asc', 'desc'],
-    description: 'Sort articles by updated date. Default: desc.',
-  })
-  @ApiQuery({
-    name: 'symbols',
-    type: String,
-    required: false,
-    description:
-      'A comma-separated list of symbols for which to query news (e.g., "AAPL,TSLA").',
-  })
-  @ApiQuery({
-    name: 'limit',
-    type: Number,
-    required: false,
-    description:
-      'Limit of news items to be returned for a result page (1 to 50). Default: 10.',
-  })
-  @ApiQuery({
-    name: 'include_content',
-    type: Boolean,
-    required: false,
-    description:
-      'Include content for news articles (if available). Default: false.',
-  })
-  @ApiQuery({
-    name: 'exclude_contentless',
-    type: Boolean,
-    required: false,
-    description:
-      'Exclude news articles that do not contain content. Default: false.',
-  })
-  @ApiQuery({
-    name: 'page_token',
-    type: String,
-    required: false,
-    description: 'The pagination token to continue fetching results.',
-  })
   @ApiResponse({
     status: 200,
     description: 'OK',
@@ -97,11 +42,6 @@ export class NewsController {
         next_page_token: 'MTY0MDk0ODkyMzAwMDAwMDAwMHwyNDg0MzE3MQ==',
       },
     },
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'One of the requested parameters is invalid. See the returned message for details',
   })
   @ApiResponse({
     status: 403,
