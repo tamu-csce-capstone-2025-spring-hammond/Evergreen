@@ -79,8 +79,8 @@ export default function News() {
     };
 
     return (
-        <div className="h-full flex flex-col bg-evergray-400 overflow-hidden">
-            <div className="p-3 font-semibold">
+        <div className="h-full flex flex-col overflow-hidden">
+            <div className="p-4 text-evergray-500">
                 <h2>Latest News</h2>
             </div>
             <div className="flex-1 overflow-y-auto">

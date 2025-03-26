@@ -47,20 +47,21 @@ const Sidebar = () => {
           </h3>
           <ul className="space-y-2">
             {[
-              { href: "/user", icon: "search", text: "Dashboard" },
-              { href: "/user/portfolios", icon: "savings", text: "Portfolios" },
-              { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting" },
-              { href: "/user/explore", icon: "explore", text: "Explore" },
-            ].map(({ href, icon, text }) => (
-              <li key={text}>
+              { href: "/user", icon: "search", text: "Dashboard", cursor: "pointer" },
+              { href: "/user/portfolios", icon: "savings", text: "Portfolios", cursor: "pointer" },
+              { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting", cursor: "not-allowed" },
+              { href: "/user/explore", icon: "explore", text: "Explore", cursor: "not-allowed" },
+            ].map(({ href, icon, text, cursor }) => (
+                <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "hover:bg-evergreen-200 transition"}`}>
                 <Link
                   href={href}
                   className={`flex items-center gap-2 p-2 rounded-xl ${
                     isActive(href)
-                      ? "bg-evergreen-500 text-evergray-100" // Active link styles
+                      ? "bg-evergreen-500 text-evergray-100"
                       : "text-evergray-700 dark:text-evergray-100"
-                  }`}
-                >
+                  } ${
+                    cursor==="not-allowed" ? "pointer-events-none" : "cursor-pointer"
+                  }`}>
                   <span className="material-symbols-outlined">{icon}</span>
                   <span
                     className={`transition-all whitespace-nowrap text-lg duration-300 ${
@@ -88,12 +89,12 @@ const Sidebar = () => {
           </h3>
           <ul className="space-y-2">
             {[
-              { href: "/user", icon: "account_circle", text: "Profile" },
-              { href: "/user", icon: "settings", text: "Settings" },
-              { href: "/", icon: "logout", text: "Logout" },
-            ].map(({ href, icon, text }) => (
-              <li key={text}>
-                <Link href={href} className="flex items-center gap-2 p-2 rounded-xl">
+              { href: "/user", icon: "account_circle", text: "Profile", cursor: "not-allowed" },
+              { href: "/user", icon: "settings", text: "Settings", cursor: "not-allowed" },
+              { href: "/", icon: "logout", text: "Logout", cursor: "pointer" },
+            ].map(({ href, icon, text, cursor }) => (
+              <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "hover:bg-evergreen-200 transition"}`}>
+                <Link href={href} className={`flex items-center gap-2 p-2 rounded-xl ${cursor==="not-allowed" ? "pointer-events-none" : "cursor-pointer"}`}>
                   <span className="material-symbols-outlined">{icon}</span>
                   <span
                     className={`transition-all whitespace-nowrap text-lg duration-300 ${
@@ -112,8 +113,8 @@ const Sidebar = () => {
       {/* Footer Buttons */}
       <div>
         <ul className="space-y-2">
-          <li>
-            <button type="button" className="flex text-lg items-center gap-3 p-2 w-full cursor-pointer">
+          <li className='hover:bg-evergreen-200 transition rounded-xl'>
+            <button type="button" className="flex text-lg items-center gap-3 p-2 w-full cursor-pointer" onClick={() => document.documentElement.classList.toggle("dark")}>
               <span className="material-symbols-outlined">dark_mode</span>
               <span
                 className={`transition-all whitespace-nowrap duration-300 ${
@@ -124,7 +125,7 @@ const Sidebar = () => {
               </span>
             </button>
           </li>
-          <li>
+          <li className='hover:bg-evergreen-200 transition rounded-xl'>
             <button
               type="button"
               className="flex items-center gap-3 p-2 w-full cursor-pointer"
