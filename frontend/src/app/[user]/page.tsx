@@ -1,3 +1,6 @@
+"use client";
+
+
 import Sidebar from "../../components/user/sidebar";
 import PortfolioList from "../../components/user/portfolioList";
 import Watchlist from "../../components/user/watchlist";
@@ -46,7 +49,7 @@ export default function Dashboard() {
             <Watchlist />
             <div className="overflow-hidden flex flex-col">
                 <h2 className="p-4 text-evergray-500">Portfolios</h2>
-                <PortfolioList home={true} cards={exampleCards}/>
+                <PortfolioList home={true} cards={exampleCards} onClick={undefined} />
             </div>
             <News />
         </div>

@@ -18,7 +18,7 @@ const exampleCards = [
     },
     {
       name: "Emergency",
-      color: "#4CAF50",
+      color: "#6137CC",
       total: 15000.12,
       percent: 2.34,
       startDate: "2021-05-15",
@@ -27,7 +27,7 @@ const exampleCards = [
     },
     {
       name: "Vacation",
-      color: "#4CAF50",
+      color: "#EAB813",
       total: 5000.12,
       percent: 3.54,
       startDate: "2022-03-01",
