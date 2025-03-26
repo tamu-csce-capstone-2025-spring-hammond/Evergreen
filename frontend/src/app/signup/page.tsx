@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import useJwtStore from "@/store/jwtStore";
 
 export default function Signup() {
   const router = useRouter();
-  
+  const { setToken } = useJwtStore();
+
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
@@ -54,6 +56,7 @@ export default function Signup() {
 
       // here is the token
       console.log("Signup successful:", data);
+      setToken(data["access_token"]);
 
       router.push("/dashboard");
     } catch (error: any) {

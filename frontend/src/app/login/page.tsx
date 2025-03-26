@@ -2,19 +2,19 @@
 
 import Navbar from "../../components/navbar";
 import Image from "next/image";
-import Link from 'next/link';
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import useJwtStore from "@/store/jwtStore";
 
 export default function Login() {
   const router = useRouter();
-
+  const { setToken } = useJwtStore();
 
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +45,11 @@ export default function Login() {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+
+      // here is the token
+      console.log("Login successful:", data);
+      setToken(data["access_token"]);
+
       router.push("/dashboard");
     } catch (error: any) {
       setError(error.message);
@@ -71,7 +76,6 @@ export default function Login() {
 
       {/* Login Box */}
       <div className="flex items-center justify-center min-h-screen text-white">
-
         {/* Actual Box */}
         <div className="relative opacity-30">
           <div className="w-[633px] h-[622px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
@@ -79,23 +83,32 @@ export default function Login() {
 
         {/* Content inside the box */}
         <div className="absolute w-[633px] h-[622px] rounded-[70px] flex flex-col justify-center items-center z-10">
-
           {/* Decor Image */}
           <div className="flex justify-center mb-4">
-            <Image src="/decorWhite.svg" alt="Decorative" width={239} height={36.5} />
+            <Image
+              src="/decorWhite.svg"
+              alt="Decorative"
+              width={239}
+              height={36.5}
+            />
           </div>
 
           {/* Header */}
-          <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">Welcome Back!</h2>
+          <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">
+            Welcome Back!
+          </h2>
 
           {/* Login Form */}
-          <form className="space-y-6 w-full flex flex-col items-center" onSubmit={handleSubmit}>
+          <form
+            className="space-y-6 w-full flex flex-col items-center"
+            onSubmit={handleSubmit}
+          >
             {/* Email Input */}
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
-                  <Image 
-                    src={'/loginSignup/emailIcon.svg'}
+                  <Image
+                    src={"/loginSignup/emailIcon.svg"}
                     alt="Email Icon"
                     width={30}
                     height={30}
@@ -117,8 +130,8 @@ export default function Login() {
             <div className="w-[70%] max-w-[550px]">
               <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
-                  <Image 
-                    src={'/loginSignup/passwordIcon.svg'}
+                  <Image
+                    src={"/loginSignup/passwordIcon.svg"}
                     alt="Password Icon"
                     width={30}
                     height={30}
@@ -139,7 +152,7 @@ export default function Login() {
             {/* Remember Me & Forgot Password */}
             <div className="flex justify-between text-sm w-[70%]">
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input 
+                <input
                   type="checkbox"
                   name="rememberMe"
                   className="accent-transparent border-2 border-white rounded-4 w-3 h-3 cursor-pointer"
@@ -150,35 +163,32 @@ export default function Login() {
               </label>
 
               {/* Links to nowhere */}
-              <Link href="/login" className="text-white">Forgot Password?</Link>
+              <Link href="/login" className="text-white">
+                Forgot Password?
+              </Link>
             </div>
 
-
-
             {/* Login Button */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black hover:bg-gray-300"
             >
               Login
             </button>
           </form>
 
-
-
           {/* Dont have account */}
           <div className="pt-5">
-            Don't have an account? <Link href={'/signup'} className="underline">Sign up</Link>
+            Don't have an account?{" "}
+            <Link href={"/signup"} className="underline">
+              Sign up
+            </Link>
           </div>
-
-
         </div>
       </div>
-
     </div>
   );
 }
 function setError(message: any) {
   throw new Error("Function not implemented.");
 }
-
