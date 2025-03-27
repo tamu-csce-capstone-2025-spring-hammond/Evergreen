@@ -24,66 +24,78 @@ export class PortfolioService {
     });
   }
 
-  async getFullPortfolioInfo(id: number, userId: number) {
+  async getFullPortfolioInfo(
+    id: number,
+    userId: number,
+  ): Promise<PortfolioType> {
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: id },
     });
 
-    if (!portfolioData) {
-      throw new NotFoundException(`Portfolio with ID ${id} not found`);
+    if (!portfolioData || portfolioData.user_id !== userId) {
+      throw portfolioData
+        ? new UnauthorizedException(
+            "User trying to access portfolio they don't own",
+          )
+        : new NotFoundException(`Portfolio with ID ${id} not found`);
     }
 
-    if (portfolioData.user_id != userId) {
-      throw new UnauthorizedException(
-        "User trying to access portfolio they don't own",
-      );
-    }
-    const holdings = await this.prisma.holdings.findMany({
-      where: { portfolio_id: id },
-    });
+    // Run queries concurrently for efficiency
+    const [holdings, graphData] = await Promise.all([
+      this.prisma.holdings.findMany({ where: { portfolio_id: id } }),
+      this.prisma.portfolio_snapshot.findMany({
+        where: { portfolio_id: id },
+        orderBy: { snapshot_time: 'asc' },
+      }),
+    ]);
 
-    const graphData = await this.prisma.portfolio_snapshot.findMany({
-      where: { portfolio_id: id },
-      orderBy: {
-        snapshot_time: 'asc',
-      },
-    });
+    // Map graph data
+    const performance_graph: GraphPoint[] = graphData.map(
+      ({ snapshot_time, snapshot_value }) => ({
+        snapshot_time,
+        snapshot_value,
+      }),
+    );
 
-    const graph: GraphPoint[] = graphData.map((pt) => {
-      const point: GraphPoint = {
-        snapshot_time: pt.snapshot_time,
-        snapshot_value: pt.snapshot_value,
-      };
-      return point;
-    });
+    // Calculate current portfolio value
+    const current_value =
+      graphData.length > 0
+        ? new Decimal(graphData[graphData.length - 1].snapshot_value)
+        : new Decimal(0);
+    const initial_value =
+      graphData.length > 0
+        ? new Decimal(graphData[0].snapshot_value)
+        : new Decimal(0);
+    const amount_change = current_value.minus(initial_value);
+    const percent_change = initial_value.gt(0)
+      ? amount_change.div(initial_value).times(100)
+      : new Decimal(0);
 
-    const investments: Investment[] = holdings.map((holding) => {
-      const investment: Investment = {
-        ticker: holding.ticker,
-        name: 'Stock name', //placeholder
-        quantity_owned: holding.quantity,
-        average_cost_basis: holding.average_cost_basis,
-        current_price: holding.average_cost_basis,
-        percent_change: Decimal(0),
-      };
-      return investment;
-    });
-    // const value = 0.0
-    // investments.forEach
+    // Map investments
+    const investments: Investment[] = holdings.map(
+      ({ ticker, quantity, average_cost_basis }) => ({
+        ticker,
+        name: 'Stock name', // Placeholder
+        quantity_owned: quantity,
+        average_cost_basis,
+        current_price: average_cost_basis, // Placeholder
+        percent_change: new Decimal(0), // Placeholder
+      }),
+    );
 
-    const portfolio: PortfolioType = {
+    // Construct the PortfolioType object
+    return {
       portfolio_id: portfolioData.portfolio_id,
       portfolio_name: portfolioData.portfolio_name,
       created_at: portfolioData.created_at,
       target_date: portfolioData.target_date,
       uninvested_cash: portfolioData.uninvested_cash,
-      current_value: graph[graph.length - 1].snapshot_value,
-      percent_change: Decimal(0.015),
-      amount_change: Decimal(500),
-      investments: investments,
-      performance_graph: graph,
+      current_value,
+      percent_change,
+      amount_change,
+      investments,
+      performance_graph,
     };
-    return portfolio;
   }
 
   async findByUserId(userId: number) {
