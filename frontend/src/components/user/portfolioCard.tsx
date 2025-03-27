@@ -11,10 +11,11 @@ interface PortfolioCard {
     startDate: string;
     endDate: string;
     deposited: number;
+    selectedCardName: string | undefined;
     onClick?: () => void;
 }
 
-const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, home, startDate, endDate, deposited, onClick }) => {    
+const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, home, startDate, endDate, deposited, selectedCardName, onClick }) => {    
     const parsePercent = String(percent)[0] === "-" ? String(percent).slice(1) : percent;
     const difference = (total * Number(parsePercent) / 100).toFixed(2);
 
@@ -63,7 +64,8 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, h
     }
 
     return (
-        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer" onClick={onClick}>
+        <div className={`p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer transition
+        ${selectedCardName === name ? `shadow-md` : '' }`} style={selectedCardName === name ? { borderColor: `${color}`} : {}} onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className={`flex whitespace-nowrap justify-between w-1/2`}>
                 <div className="ml-6 ">
@@ -77,11 +79,11 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ name, color, total, percent, h
                     <p className="text-2xl relative top-1 mb-[18px]">{difference}</p>
                     <div className="whitespace-nowrap text-md text-evergray-500 [&_span]:tracking-wider text-start">
                         <p className="font-raleway">Start: <span className="font-roboto">{startDate}</span></p>
-                        <p className="font-raleway">End: <span className="pl-[0.35rem] font-roboto">{endDate}</span></p>
+                        <p className="font-raleway">End: <span className="pl-[0.35rem] font-roboto">{endDate}</span></p> 
                     </div>    
                 </div>
             </div>
-            <div className="mr-4 whitespace-nowrap text-md text-evergray-600 w-1/2 relative">
+            <div className="mr-4 whitespace-nowrap text-md text-evergray-500 w-1/2 relative">
                 <Trendline home={home} />
                 <div className="relative w-full h-[0.35rem] bg-evergray-300 my-1">
                     <div 
