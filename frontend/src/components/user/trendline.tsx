@@ -15,7 +15,7 @@ const Trendline: React.FC<Trendline> = ({home}) => {
                     </filter>
                 </defs>
                 <rect width="100%" height="100%" fill="gainsboro"/>
-                <circle id="circle" cx="150" cy="50" r="25" fill="blue" filter="url(#Diffuse)"/>
+                <circle id="circle" cx="50%" cy="50%" r="25" fill="blue" filter="url(#Diffuse)"/>
             </svg>
         </div>
     );
