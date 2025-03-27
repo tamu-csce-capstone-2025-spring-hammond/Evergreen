@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import useJwtStore from "@/store/jwtStore";
 
 export default function Signup() {
   const router = useRouter();
-  
+  const { setToken } = useJwtStore();
+
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
@@ -27,6 +29,7 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     e.preventDefault();
     if (signupData.password !== signupData.confirmPassword) {
       setError("Passwords do not match");
@@ -34,7 +37,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/auth/signup", {
+      const response = await fetch(`${backendUrl}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,6 +57,7 @@ export default function Signup() {
 
       // here is the token
       console.log("Signup successful:", data);
+      setToken(data["access_token"]);
 
       router.push("/dashboard");
     } catch (error: any) {
