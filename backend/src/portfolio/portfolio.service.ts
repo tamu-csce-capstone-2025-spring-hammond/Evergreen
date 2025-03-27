@@ -7,13 +7,13 @@ import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 export class PortfolioService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(portfolioDto: PortfolioDto) {
+  async create(portfolioDto: PortfolioDto, userId: number) {
     return this.prisma.portfolio.create({
       data: {
-        user_id: portfolioDto.userId,
+        user_id: userId,
         portfolio_name: portfolioDto.portfolioName,
         target_date: portfolioDto.targetDate,
-        cash: portfolioDto.cash,
+        uninvested_cash: portfolioDto.cash,
       },
     });
   }
@@ -26,7 +26,7 @@ export class PortfolioService {
     if (!portfolio) {
       throw new NotFoundException(`Portfolio with ID ${id} not found`);
     }
-    
+
     return portfolio;
   }
 
@@ -38,7 +38,9 @@ export class PortfolioService {
     });
 
     if (!portfolios || portfolios.length === 0) {
-      throw new NotFoundException(`No portfolios found for user with ID ${userId}`);
+      throw new NotFoundException(
+        `No portfolios found for user with ID ${userId}`,
+      );
     }
 
     return portfolios;
@@ -50,7 +52,7 @@ export class PortfolioService {
       data: {
         portfolio_name: updatePortfolioDto.portfolioName,
         target_date: updatePortfolioDto.targetDate,
-        cash: updatePortfolioDto.cash,
+        uninvested_cash: updatePortfolioDto.cash,
       },
     });
   }
