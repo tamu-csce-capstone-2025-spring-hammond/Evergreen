@@ -24,7 +24,6 @@ export default function Dashboard() {
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const userId = 1;
   const router = useRouter();
-  const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   
   const fetchPortfolios = async (userId: number) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -69,8 +68,6 @@ export default function Dashboard() {
   }, [userId]);
 
   const onClick = (card: PortfolioCardProps) => {
-    console.log("This is the dashboard page, this is the card: " + card);
-    setSelectedCard(card);
     router.push(`/user/portfolios?portfolioId=${card.portfolioId}`);
   };
 

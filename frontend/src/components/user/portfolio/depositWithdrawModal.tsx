@@ -12,6 +12,11 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
 
   if (!isOpen) return null;
 
+  const handleClose = () => {
+    setAmount("");
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50">
       <div className="bg-white dark:bg-evergray-800 p-6 rounded-lg shadow-lg w-96">
@@ -27,7 +32,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
         />
         <div className="flex justify-between mt-4">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 bg-gray-300 dark:bg-evergray-600 rounded-md cursor-pointer"
           >
             Cancel
