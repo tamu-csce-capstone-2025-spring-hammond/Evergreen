@@ -49,7 +49,7 @@ export default function Dashboard() {
             <Watchlist />
             <div className="overflow-hidden flex flex-col">
                 <h2 className="p-4 text-evergray-500">Portfolios</h2>
-                <PortfolioList home={true} cards={exampleCards} onClick={undefined} />
+                <PortfolioList home={true} cards={exampleCards} />
             </div>
             <News />
         </div>
