@@ -29,7 +29,7 @@ export default function Login() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     e.preventDefault();
     try {
-      const response = await fetch(`${backendUrl}auth/login`, {
+      const response = await fetch(`${backendUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -189,5 +189,5 @@ export default function Login() {
   );
 }
 function setError(message: any) {
-  throw new Error("Function not implemented.");
+  throw new Error(message);
 }
