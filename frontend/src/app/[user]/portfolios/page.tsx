@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import PortfolioList from "@/components/user/portfolioList";
+import PortfolioList from "@/components/user/portfolio/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
-import PortfolioSelcetion from "@/components/user/portfolioSelection";
+import PortfolioSelcetion from "@/components/user/portfolio/portfolioSelection";
 
 const exampleCards = [
     {

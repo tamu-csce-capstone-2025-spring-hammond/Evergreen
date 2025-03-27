@@ -11,9 +11,9 @@ interface PortfolioCardProps {
 }
 
 interface Portfolio {
-    home: boolean;
-    cards: PortfolioCardProps[];
-    onCardClick: (card: PortfolioCardProps) => void;
+  home: boolean;
+  cards: PortfolioCardProps[];
+  onCardClick?: (card: PortfolioCardProps) => void;
 }
 
   const PortfolioList: React.FC<Portfolio> = ({ home, cards, onCardClick = () => {} }) => {
@@ -24,7 +24,7 @@ interface Portfolio {
             key={index}
             {...card}
             home={home}
-            onClick={() => onCardClick(card)}
+            onClick={onCardClick ? () => onCardClick(card) : undefined}
           />
         ))}
       </div>

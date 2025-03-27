@@ -2,7 +2,7 @@
 
 
 import Sidebar from "../../components/user/sidebar";
-import PortfolioList from "../../components/user/portfolioList";
+import PortfolioList from "../../components/user/portfolio/portfolioList";
 import Watchlist from "../../components/user/watchlist";
 import Chart from "../../components/user/chart";
 import News from "../../components/user/news";

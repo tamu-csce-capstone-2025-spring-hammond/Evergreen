@@ -1,4 +1,4 @@
-import Trendline from "./trendline";
+import Trendline from "../trendline";
 import { time_left } from "@/utils";
 
 interface PortfolioCard {
