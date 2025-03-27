@@ -51,7 +51,7 @@ export default function News() {
       if (!token) {
         throw new Error("No JWT token");
       }
-      const response = await fetch(`${backendUrl}news`, {
+      const response = await fetch(`${backendUrl}/news`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
