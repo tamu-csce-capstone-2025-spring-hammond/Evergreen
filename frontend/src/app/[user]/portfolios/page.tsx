@@ -7,39 +7,6 @@ import Header from "@/components/user/header";
 import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
 
-// const exampleCards = [
-//     {
-//       portfolioId: 1,
-//       name: "Retirement",
-//       color: "#4CAF50",
-//       total: 100000.01,
-//       percent: 5.12,
-//       startDate: "2020-01-01",
-//       endDate: "2030-01-01",
-//       deposited: 123.00
-//     },
-//     {
-//       portfolioId: 2,
-//       name: "Emergency",
-//       color: "#6137CC",
-//       total: 15000.12,
-//       percent: 2.34,
-//       startDate: "2021-05-15",
-//       endDate: "2026-05-15",
-//       deposited: 1233.00
-//     },
-//     {
-//       portfolioId: 2,
-//       name: "Vacation",
-//       color: "#EAB813",
-//       total: 5000.12,
-//       percent: 3.54,
-//       startDate: "2022-03-01",
-//       endDate: "2027-03-01",
-//       deposited: 123.56
-//     },
-// ];  
-
 interface PortfolioCardProps {
     portfolioId: number,
     name: string;
@@ -76,17 +43,22 @@ export default function Portfolios() {
     async function getPortfolios() {
       const data = await fetchPortfolios(userId);
       
-      // Map fetched data to match PortfolioCardProps format
-      const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => ({
-        portfolioId: portfolio.portfolio_id,
-        name: portfolio.portfolio_name,
-        color: portfolio.color,
-        total: parseFloat(portfolio.cash),
-        percent: 0,
-        startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
-        endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
-        deposited: parseFloat(portfolio.deposited_cash) || 0,
-      }));
+      const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
+        const deposited = parseFloat(portfolio.deposited_cash) || 0;
+        const total = parseFloat(portfolio.cash) || 0;
+        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
+
+        return {
+          portfolioId: portfolio.portfolio_id,
+          name: portfolio.portfolio_name,
+          color: portfolio.color,
+          total,
+          percent: Number(percent.toFixed(2)),
+          startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
+          endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
+          deposited,
+        };
+      });
 
       setPortfolios(formattedPortfolios);
     }

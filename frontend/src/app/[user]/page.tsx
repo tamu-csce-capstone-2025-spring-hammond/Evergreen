@@ -1,6 +1,6 @@
 "use client";
 
-
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/user/sidebar";
 import PortfolioList from "../../components/user/portfolio/portfolioList";
 import Watchlist from "../../components/user/watchlist";
@@ -8,37 +8,65 @@ import Chart from "../../components/user/chart";
 import News from "../../components/user/news";
 import Header from "../../components/user/header";
 
-const exampleCards = [
-    {
-      name: "Retirement",
-      color: "#4CAF50",
-      total: 100000.01,
-      percent: 5.12,
-      startDate: "2020-01-01",
-      endDate: "2030-01-01",
-      deposited: 123.00
-    },
-    {
-      name: "Emergency",
-      color: "#4CAF50",
-      total: 15000.12,
-      percent: 2.34,
-      startDate: "2021-05-15",
-      endDate: "2026-05-15",
-      deposited: 1233.00
-    },
-    {
-      name: "Vacation",
-      color: "#4CAF50",
-      total: 5000.12,
-      percent: 3.54,
-      startDate: "2022-03-01",
-      endDate: "2027-03-01",
-      deposited: 123.56
-    },
-];  
+interface PortfolioCardProps {
+  portfolioId: number,
+  name: string;
+  color: string;
+  total: number;
+  percent: number;
+  startDate: string;
+  endDate: string;
+  deposited: number;
+}
 
 export default function Dashboard() {
+  const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
+    const userId = 1;
+    
+    const fetchPortfolios = async (userId: number) => {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  
+      try {
+        const response = await fetch(`${backendUrl}/portfolio/user/${userId}`);
+        if (!response.ok) {
+          throw new Error(`Error fetching portfolios: ${response.statusText}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Failed to fetch portfolios:", error);
+        return [];
+      }
+    }
+    
+    
+    useEffect(() => {
+      async function getPortfolios() {
+        const data = await fetchPortfolios(userId);
+        
+        const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
+          const deposited = parseFloat(portfolio.deposited_cash) || 0;
+          const total = parseFloat(portfolio.cash) || 0;
+          const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
+  
+          return {
+            portfolioId: portfolio.portfolio_id,
+            name: portfolio.portfolio_name,
+            color: portfolio.color,
+            total,
+            percent: Number(percent.toFixed(2)),
+            startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
+            endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
+            deposited,
+          };
+        });
+  
+        setPortfolios(formattedPortfolios);
+      }
+      getPortfolios();
+    }, [userId]);
+  
+    const exampleCards = portfolios;
+
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
       <Sidebar />
