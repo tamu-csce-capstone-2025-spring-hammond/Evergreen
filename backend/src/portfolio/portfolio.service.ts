@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { PortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { GraphPoint, Investment, PortfolioType } from './portfolio.types';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PortfolioService {
@@ -18,15 +24,65 @@ export class PortfolioService {
     });
   }
 
-  async findOne(id: number) {
-    const portfolio = await this.prisma.portfolio.findUnique({
+  async getFullPortfolioInfo(id: number, userId: number) {
+    const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: id },
     });
 
-    if (!portfolio) {
+    if (!portfolioData) {
       throw new NotFoundException(`Portfolio with ID ${id} not found`);
     }
 
+    if (portfolioData.user_id != userId) {
+      throw new UnauthorizedException(
+        "User trying to access portfolio they don't own",
+      );
+    }
+    const holdings = await this.prisma.holdings.findMany({
+      where: { portfolio_id: id },
+    });
+
+    const graphData = await this.prisma.portfolio_snapshot.findMany({
+      where: { portfolio_id: id },
+      orderBy: {
+        snapshot_time: 'asc',
+      },
+    });
+
+    const graph: GraphPoint[] = graphData.map((pt) => {
+      const point: GraphPoint = {
+        snapshot_time: pt.snapshot_time,
+        snapshot_value: pt.snapshot_value,
+      };
+      return point;
+    });
+
+    const investments: Investment[] = holdings.map((holding) => {
+      const investment: Investment = {
+        ticker: holding.ticker,
+        name: 'Stock name', //placeholder
+        quantity_owned: holding.quantity,
+        average_cost_basis: holding.average_cost_basis,
+        current_price: holding.average_cost_basis,
+        percent_change: Decimal(0),
+      };
+      return investment;
+    });
+    // const value = 0.0
+    // investments.forEach
+
+    const portfolio: PortfolioType = {
+      portfolio_id: portfolioData.portfolio_id,
+      portfolio_name: portfolioData.portfolio_name,
+      created_at: portfolioData.created_at,
+      target_date: portfolioData.target_date,
+      uninvested_cash: portfolioData.uninvested_cash,
+      current_value: graph[graph.length - 1].snapshot_value,
+      percent_change: Decimal(0.015),
+      amount_change: Decimal(500),
+      investments: investments,
+      performance_graph: graph,
+    };
     return portfolio;
   }
 

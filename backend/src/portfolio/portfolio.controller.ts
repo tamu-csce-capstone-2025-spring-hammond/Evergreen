@@ -31,8 +31,12 @@ export class PortfolioController {
 
   @Get(':id')
   @UseGuards(JwtGuard)
-  async findOne(@Param('id') id: string) {
-    return this.portfolioService.findOne(+id);
+  async findOne(
+    @Param('id') id: string,
+    @Request() request: { userid: number },
+  ) {
+    const { userid: userID } = request;
+    return this.portfolioService.getFullPortfolioInfo(+id, userID);
   }
 
   @Get()
