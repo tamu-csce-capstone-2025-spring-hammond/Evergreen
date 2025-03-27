@@ -6,7 +6,7 @@ import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
 import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface PortfolioCardProps {
     portfolioId: number,
@@ -23,16 +23,16 @@ export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const userId = 1;
-  
+  const router = useRouter();
   const searchParams = useSearchParams();
-const portfolioId = searchParams.get("portfolioId");
+  const portfolioId = searchParams.get("portfolioId");
 
-useEffect(() => {
-  if (portfolioId) {
-    const selectedCard = portfolios.find((card) => card.portfolioId === parseInt(portfolioId));
-    setSelectedCard(selectedCard);
-  }
-}, [portfolioId, portfolios]);
+  useEffect(() => {
+    if (portfolioId) {
+      const selectedCard = portfolios.find((card) => card.portfolioId === parseInt(portfolioId));
+      setSelectedCard(selectedCard);
+    }
+  }, [portfolioId, portfolios]);
 
   const fetchPortfolios = async (userId: number) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -84,8 +84,12 @@ useEffect(() => {
   const netReturnSymbol = (netReturn > 0) ? "+" : (netReturn < 0)  ? "-" : "";
   const feedbackColor = (netReturn > 0) ? "text-evergreen-500" : (netReturn < 0)  ? "text-everred-500" : "text-evergray-500";
 
+  const selectCard = (card: PortfolioCardProps) => {
+    router.push(`/user/portfolios?portfolioId=${card.portfolioId}`);
+  }
   const deselectCard = () => {
     setSelectedCard(undefined);
+    router.push('/user/portfolios');
   };
 
   return (
@@ -99,7 +103,7 @@ useEffect(() => {
                         <h2 className="text-xl text-evergray-500">Your Portfolios</h2>
                         <button type="button" className="cursor-pointer">Create New <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">add</span></button>
                     </div>
-                    <PortfolioList home={false} cards={exampleCards} onCardClick={setSelectedCard} selectedCardName={selectedCard ? selectedCard.name : undefined}/>
+                    <PortfolioList home={false} cards={exampleCards} onCardClick={selectCard} selectedCardName={selectedCard ? selectedCard.name : undefined}/>
                 </div>
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">    
