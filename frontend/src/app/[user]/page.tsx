@@ -12,7 +12,7 @@ export default function Dashboard() {
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
-        <div className="flex-1 grid grid-rows-[5fr_4fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden">
+        <div className="flex-1 grid grid-rows-[450px_1fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden min-h-">
             <Chart />
             <Watchlist />
             <div className="bg-evergray-400 overflow-y-auto">
