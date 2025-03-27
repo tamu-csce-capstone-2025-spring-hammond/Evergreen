@@ -4,18 +4,50 @@ const prisma = new PrismaClient();
 
 async function main() {
   //   // Your seeding logic here
+  //   await prisma.portfolio.create({
+  //     data: {
+  //       target_date: new Date('2027-06-15'),
+  //       user_id: 1,
+  //       portfolio_name: 'retirement',
+  //       cash: 2000,
+  //       color: '#33ff33',
+  //       deposited_cash: 1000,
+  //       holdings: {
+  //         create: [
+  //           {
+  //             ticker: 'BOXX',
+  //             quantity: 40,
+  //             average_cost_basis: 111.41,
+  //             last_updated: new Date(),
+  //           },
+  //           {
+  //             ticker: 'VCIT',
+  //             quantity: 12.2,
+  //             average_cost_basis: 81.18,
+  //             last_updated: new Date(),
+  //           },
+  //           {
+  //             ticker: 'BND',
+  //             quantity: 18.2,
+  //             average_cost_basis: 73.18,
+  //             last_updated: new Date(),
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
   await prisma.portfolio.create({
     data: {
       target_date: new Date('2027-06-15'),
       user_id: 1,
-      portfolio_name: 'retirement',
-      cash: 2000,
-      color: '#33ff33',
-      deposited_cash: 1000,
+      portfolio_name: 'house',
+      cash: 40000,
+      color: '#0066ff',
+      deposited_cash: 25000,
       holdings: {
         create: [
           {
-            ticker: 'BOXX',
+            ticker: 'VTI',
             quantity: 40,
             average_cost_basis: 111.41,
             last_updated: new Date(),
@@ -27,7 +59,7 @@ async function main() {
             last_updated: new Date(),
           },
           {
-            ticker: 'BND',
+            ticker: 'NVDA',
             quantity: 18.2,
             average_cost_basis: 73.18,
             last_updated: new Date(),
