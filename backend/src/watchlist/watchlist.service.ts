@@ -28,9 +28,7 @@ export class WatchlistService {
     let stockData: AlpacaSnapshotResponse;
     try {
       stockData = await this.alpacaService.getTickerValues(tickers);
-      console.log(stockData);
     } catch (error) {
-      console.log(error);
       throw new Error(ErrorCodes.EXTERNAL_API_FAILURE);
     }
     // Transform watchlist with stock data

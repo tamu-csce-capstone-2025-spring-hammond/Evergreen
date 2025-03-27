@@ -11,7 +11,7 @@
 
 @import "tailwindcss";
 
-/* @custom-variant dark (&:where(.dark, .dark *)); implement in future - toggle dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
   
 @theme {
     --font-ntwagner: NTWagner, sans-serif;
@@ -26,6 +26,15 @@
     --color-evergreen-600:#486A46;
     --color-evergreen-700:#1F291F;
     --color-evergreen-800:#0C0F0C;
+
+    --color-everred-100:#FCE9E8;
+    --color-everred-200:#F2C2C0;
+    --color-everred-300:#DF9390;
+    --color-everred-400:#BD5551;
+    --color-everred-500:#A9403D;
+    --color-everred-600:#7D2E2C;
+    --color-everred-700:#3E1514;
+    --color-everred-800:#180706;
 
     --color-everblue-100:#F1FAFC;
     --color-everblue-200:#D7EAF1;

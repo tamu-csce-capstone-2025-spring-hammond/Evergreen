@@ -51,7 +51,7 @@ export default function News() {
       if (!token) {
         throw new Error("No JWT token");
       }
-      const response = await fetch(`${backendUrl}news`, {
+      const response = await fetch(`${backendUrl}/news`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function News() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-evergray-400 overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       <div className="p-3 font-semibold">
         <h2>Latest News</h2>
       </div>

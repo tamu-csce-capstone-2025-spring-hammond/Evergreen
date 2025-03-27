@@ -34,7 +34,6 @@ export class NewsService {
       }
 
       const data = await response.json();
-      console.log(data);
       return filterNewsWithoutImages(data);
     } catch (error) {
       console.error('Error fetching news:', error);

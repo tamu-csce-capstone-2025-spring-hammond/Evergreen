@@ -29,7 +29,7 @@ export default function Login() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     e.preventDefault();
     try {
-      const response = await fetch(`${backendUrl}auth/login`, {
+      const response = await fetch(`${backendUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
