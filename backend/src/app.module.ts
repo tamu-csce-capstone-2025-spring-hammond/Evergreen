@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { WatchlistModule } from './watchlist/watchlist.module';
 import { StockApisModule } from './stock-apis/stock-apis.module';
 import { NewsModule } from './news/news.module';
+import { PortfolioModule } from './portfolio/portfolio.module'
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { NewsModule } from './news/news.module';
     WatchlistModule,
     StockApisModule,
     NewsModule,
+    PortfolioModule,
   ],
 })
 export class AppModule {}
