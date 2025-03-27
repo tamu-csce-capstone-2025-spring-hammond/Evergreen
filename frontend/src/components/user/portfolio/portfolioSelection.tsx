@@ -30,11 +30,11 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
     };
 
     return (
-        <div className="h-full border-1 rounded-3xl p-6 flex flex-col items-center" style={{ borderColor: card.color }}>
+        <div className="h-full border-1 rounded-3xl px-8 py-7 flex flex-col items-center" style={{ borderColor: card.color }}>
             {/* Top Section */}
-            <div className="w-full flex items-center justify-between">
-                <button className="text-xl cursor-pointer">{'<'}</button>
-                <h1 className="text-lg font-medium text-center flex-1">{card.name}</h1>
+            <div className="w-full flex items-center justify-between relative">
+                <button className="text-xl cursor-pointer">{'<'}</button> {/* TODO: Make this btn clear the current selection */}
+                <h1 className="text-2xl text-center flex-1 absolute left-1/2 -translate-x-1/2">{card.name}</h1>
                 <button className="flex items-center gap-1 cursor-pointer">
                     <span>Edit</span>
                     <img src="/editIcon.svg" alt="Edit Icon" className="w-5 h-5" />
@@ -42,16 +42,16 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
             </div>
 
             {/* Card total */}
-            <div className="mt-4 font-mono text-[48px] font-normal" style={{ color: card.color }}>
+            <div className="my-8 mt-10 font-roboto text-4xl" style={{ color: card.color }}>
                 ${card.total.toLocaleString()}
             </div>
 
             {/* Deposit and Withdraw */}
-            <div className="mt-4 flex gap-10 text-[28px] w-full button-container">
-                <button onClick={() => handleOpenModal("deposit")} className="flex-1 py-2 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
+            <div className="mt-4 flex gap-4 text-xl w-full button-container">
+                <button onClick={() => handleOpenModal("deposit")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                     Deposit
                 </button>
-                <button onClick={() => handleOpenModal("withdraw")} className="flex-1 py-2 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
+                <button onClick={() => handleOpenModal("withdraw")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                     Withdraw
                 </button>
             </div>
