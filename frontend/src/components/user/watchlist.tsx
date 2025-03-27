@@ -30,12 +30,42 @@ const Watchlist = () => {
         .catch((err) => console.error("Fetch error:", err)); // 👈 Step 4
     }, []);
 
-  return (
-    <div className="p-4 bg-evergray-400">
-      <h2 className="text-2xl align-middle">Watchlist</h2>
-      <pre>{JSON.stringify(watchlist, null, 2)}</pre>
-    </div>
-  );
+    return (
+        <div className="p-4 bg-evergray-400 rounded-xl">
+          <h2 className="text-2xl font-semibold mb-4">Watchlist</h2>
+    
+          {watchlist.length === 0 ? (
+            <p className="text-gray-500">No items in watchlist.</p>
+          ) : (
+            <table className="min-w-full text-sm text-left">
+              <thead>
+                <tr className="border-b border-gray-300">
+                  <th className="px-4 py-2">Ticker</th>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Last Price</th>
+                  <th className="px-4 py-2">% Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {watchlist.map((item, index) => (
+                  <tr key={index} className="border-b border-gray-200">
+                    <td className="px-4 py-2 font-semibold">{item.ticker}</td>
+                    <td className="px-4 py-2">{item.name}</td>
+                    <td className="px-4 py-2">${item.last_price.toFixed(2)}</td>
+                    <td
+                      className={`px-4 py-2 ${
+                        item.day_percent_change >= 0 ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {item.day_percent_change.toFixed(2)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      );
 };
 
 export default Watchlist;
