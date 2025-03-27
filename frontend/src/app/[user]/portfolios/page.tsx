@@ -1,43 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PortfolioList from "@/components/user/portfolio/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
 import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
 
-const exampleCards = [
-    {
-      name: "Retirement",
-      color: "#4CAF50",
-      total: 100000.01,
-      percent: 5.12,
-      startDate: "2020-01-01",
-      endDate: "2030-01-01",
-      deposited: 123.00
-    },
-    {
-      name: "Emergency",
-      color: "#6137CC",
-      total: 15000.12,
-      percent: 2.34,
-      startDate: "2021-05-15",
-      endDate: "2026-05-15",
-      deposited: 1233.00
-    },
-    {
-      name: "Vacation",
-      color: "#EAB813",
-      total: 5000.12,
-      percent: 3.54,
-      startDate: "2022-03-01",
-      endDate: "2027-03-01",
-      deposited: 123.56
-    },
-];  
+// const exampleCards = [
+//     {
+//       portfolioId: 1,
+//       name: "Retirement",
+//       color: "#4CAF50",
+//       total: 100000.01,
+//       percent: 5.12,
+//       startDate: "2020-01-01",
+//       endDate: "2030-01-01",
+//       deposited: 123.00
+//     },
+//     {
+//       portfolioId: 2,
+//       name: "Emergency",
+//       color: "#6137CC",
+//       total: 15000.12,
+//       percent: 2.34,
+//       startDate: "2021-05-15",
+//       endDate: "2026-05-15",
+//       deposited: 1233.00
+//     },
+//     {
+//       portfolioId: 2,
+//       name: "Vacation",
+//       color: "#EAB813",
+//       total: 5000.12,
+//       percent: 3.54,
+//       startDate: "2022-03-01",
+//       endDate: "2027-03-01",
+//       deposited: 123.56
+//     },
+// ];  
 
 interface PortfolioCardProps {
+    portfolioId: number,
     name: string;
     color: string;
     total: number;
@@ -49,6 +53,47 @@ interface PortfolioCardProps {
 
 export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
+  const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
+  const userId = 1;
+  
+  const fetchPortfolios = async (userId: number) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    try {
+      const response = await fetch(`${backendUrl}/portfolio/user/${userId}`);
+      if (!response.ok) {
+        throw new Error(`Error fetching portfolios: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to fetch portfolios:", error);
+      return [];
+    }
+  }
+  
+  
+  useEffect(() => {
+    async function getPortfolios() {
+      const data = await fetchPortfolios(userId);
+      
+      // Map fetched data to match PortfolioCardProps format
+      const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => ({
+        portfolioId: portfolio.portfolio_id,
+        name: portfolio.portfolio_name,
+        color: portfolio.color,
+        total: parseFloat(portfolio.cash),
+        percent: 0,
+        startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
+        endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
+        deposited: parseFloat(portfolio.deposited_cash) || 0,
+      }));
+
+      setPortfolios(formattedPortfolios);
+    }
+    getPortfolios();
+  }, [userId]);
+
+  const exampleCards = portfolios;
 
   const totalDeposited = exampleCards.reduce((sum, card) => sum + card.deposited, 0);
   const totalGained = Number(exampleCards.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2));

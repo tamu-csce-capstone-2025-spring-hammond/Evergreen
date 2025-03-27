@@ -1,6 +1,7 @@
 import PortfolioCard from "./portfolioCard";
 
 interface PortfolioCardProps {
+    portfolioId: number;
     name: string;
     color: string;
     total: number;

@@ -2,6 +2,7 @@ import Trendline from "../trendline";
 import { time_left } from "@/utils";
 
 interface PortfolioCard {
+    portfolioId: number;
     name: string;
     color: string;
     total: number;
