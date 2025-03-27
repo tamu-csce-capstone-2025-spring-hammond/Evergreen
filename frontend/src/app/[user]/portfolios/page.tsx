@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import PortfolioList from "@/components/user/portfolio/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
 import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
+import { useSearchParams } from "next/navigation";
 
 interface PortfolioCardProps {
     portfolioId: number,
@@ -23,6 +24,16 @@ export default function Portfolios() {
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const userId = 1;
   
+  const searchParams = useSearchParams();
+const portfolioId = searchParams.get("portfolioId");
+
+useEffect(() => {
+  if (portfolioId) {
+    const selectedCard = portfolios.find((card) => card.portfolioId === parseInt(portfolioId));
+    setSelectedCard(selectedCard);
+  }
+}, [portfolioId, portfolios]);
+
   const fetchPortfolios = async (userId: number) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -66,7 +77,7 @@ export default function Portfolios() {
   }, [userId]);
 
   const exampleCards = portfolios;
-
+  console.log(exampleCards);
   const totalDeposited = exampleCards.reduce((sum, card) => sum + card.deposited, 0);
   const totalGained = Number(exampleCards.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2));
   const netReturn = totalDeposited > 0 ? Number(((totalGained / totalDeposited) * 100).toFixed(2)) : 0.00;
