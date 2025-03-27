@@ -56,6 +56,10 @@ export default function Portfolios() {
   const netReturnSymbol = (netReturn > 0) ? "+" : (netReturn < 0)  ? "-" : "";
   const feedbackColor = (netReturn > 0) ? "text-evergreen-500" : (netReturn < 0)  ? "text-everred-500" : "text-evergray-500";
 
+  const deselectCard = () => {
+    setSelectedCard(undefined);
+  };
+
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
         <Sidebar />
@@ -72,7 +76,7 @@ export default function Portfolios() {
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">    
                     {selectedCard ? (
-                        <PortfolioSelection card={selectedCard} />
+                        <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} />
                     ) : (
                         <div className="px-8 py-7 flex flex-col h-full justify-between items-center">
                             <h2 className="text-2xl text-center">Total Distribution</h2>

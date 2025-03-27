@@ -14,9 +14,10 @@ interface PortfolioCardProps {
 
 interface Portfolio {
     card: PortfolioCardProps;
+    onDeselectCard: () => void;
 }
 
-const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
+const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState<"deposit" | "withdraw" | null>(null);
 
@@ -33,7 +34,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
         <div className="h-full border-1 rounded-3xl px-8 py-7 flex flex-col items-center" style={{ borderColor: card.color }}>
             {/* Top Section */}
             <div className="w-full flex items-center justify-between relative">
-                <button className="text-xl cursor-pointer">{'<'}</button> {/* TODO: Make this btn clear the current selection */}
+                <button className="text-xl cursor-pointer" onClick={onDeselectCard}>{'<'}</button> {/* TODO: Make this btn clear the current selection */}
                 <h1 className="text-2xl text-center flex-1 absolute left-1/2 -translate-x-1/2">{card.name}</h1>
                 <button className="flex items-center gap-1 cursor-pointer">
                     <span>Edit</span>
