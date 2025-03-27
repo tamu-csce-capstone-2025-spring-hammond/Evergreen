@@ -1,3 +1,5 @@
+"use client";
+
 import Sidebar from "../../components/user/sidebar";
 import PortfolioCard from "../../components/user/portfolioCard";
 import Watchlist from "../../components/user/watchlist";
