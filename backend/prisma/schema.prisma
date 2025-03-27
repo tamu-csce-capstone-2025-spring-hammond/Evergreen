@@ -81,10 +81,14 @@ model sample_portfolio_asset_allocation {
 }
 
 model watchlist {
-  user_id Int
-  ticker  String @db.VarChar(10)
-  name String @db.VarChar(255)
-  users   users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  user_id            Int
+  ticker             String   @db.VarChar(10)
+  name               String   @db.VarChar(255)
+  last_price         Float
+  day_percent_change Float
+
+  users users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([ticker, user_id])
 }
+
