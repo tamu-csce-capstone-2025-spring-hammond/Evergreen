@@ -24,6 +24,13 @@ export class PortfolioDto {
     portfolioName: string;
 
     @ApiProperty({
+        example: '#4CAF50',
+        description: 'The color of the portfolio',
+        required: true,
+    })
+    color: string;
+
+    @ApiProperty({
         example: '1-1-2025',
         description: 'The date the portfolio was created',
         required: true,

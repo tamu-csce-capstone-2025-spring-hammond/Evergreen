@@ -12,6 +12,7 @@ export class PortfolioService {
       data: {
         user_id: portfolioDto.userId,
         portfolio_name: portfolioDto.portfolioName,
+        color: portfolioDto.color,
         target_date: portfolioDto.targetDate,
         cash: portfolioDto.cash,
       },
