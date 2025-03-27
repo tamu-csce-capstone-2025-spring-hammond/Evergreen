@@ -47,7 +47,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
             </div>
 
             {/* Deposit and Withdraw */}
-            <div className="mt-4 flex gap-10 text-[28px] w-full">
+            <div className="mt-4 flex gap-10 text-[28px] w-full button-container">
                 <button onClick={() => handleOpenModal("deposit")} className="flex-1 py-2 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                     Deposit
                 </button>
@@ -57,7 +57,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card }) => {
             </div>
 
             <style jsx>{`
-                button:hover {
+                .button-container button:hover {
                     background-color: ${card.color};
                     color: white;
                 }
