@@ -7,84 +7,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
-  user_id       Int         @id @default(autoincrement())
-  email         String      @unique @db.VarChar(255)
-  password_hash String?
-  auth_provider String      @db.VarChar(10)  @default("email")
-  user_name     String?     @db.VarChar(100)
-  created_at    DateTime?   @default(now()) @db.Timestamp(6)
-  portfolio     portfolio[]
-  watchlist     watchlist[]
+model Users {
+  user_id       Int      @id @default(autoincrement())
+  email         String   @unique @db.VarChar(255)
+  password_hash String?  @db.VarChar
+  user_name     String?  @db.VarChar(100)
+  created_at    DateTime @default(now()) @db.Timestamp(3)
+
+  Portfolio       Portfolio[]
+  WatchlistTicker WatchlistTickers[]
 }
 
-model portfolio {
-  portfolio_id       Int                  @id @default(autoincrement())
-  user_id            Int?
-  portfolio_name     String               @db.VarChar(255)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  target_date        DateTime?            @db.Date
-  risk_aptitude      Int?                 @db.SmallInt
-  cash               Decimal?             @db.Decimal(12, 2)
-  holdings           holdings[]
-  users              users?               @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-  portfolio_snapshot portfolio_snapshot[]
-  trades             trades[]
+model Portfolio {
+  portfolio_id     Int       @id @default(autoincrement())
+  user_id          Int?
+  portfolio_name   String    @db.VarChar(255)
+  created_at       DateTime? @default(now()) @db.Timestamp(3)
+  target_date      DateTime? @db.Date
+  uninvested_cash  Decimal?  @db.Decimal(12, 2)
+  Bitcoin_focus    Boolean?
+  Small_Companies_focus Boolean?
+  Momentum_focus   Boolean?
+
+  Users             Users?             @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  Holdings          Holdings[]
+  PortfolioSnapshot PortfolioSnapshot[]
+  ExecutedTrades    ExecutedTrades[]
 }
 
-model trades {
-  trade_id      Int        @id @default(autoincrement())
-  portfolio_id  Int?
-  ticker        String     @db.VarChar(10)
-  trade_time    DateTime?  @default(now()) @db.Timestamp(6)
-  trade_is_buy  Boolean
-  amount_traded Decimal    @db.Decimal(10, 4)
-  av_price_paid Decimal    @db.Decimal(10, 2)
-  portfolio     portfolio? @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+model ExecutedTrades {
+  trade_id        Int       @id @default(autoincrement())
+  portfolio_id    Int?
+  ticker          String    @db.VarChar(10)
+  trade_time      DateTime? @default(now()) @db.Timestamp(6)
+  trade_is_buy    Boolean
+  amount_traded   Decimal   @db.Decimal(10, 4)
+  av_price_paid   Decimal   @db.Decimal(10, 2)
+
+  Portfolio       Portfolio? @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model holdings {
-  portfolio_id       Int
-  ticker             String    @db.VarChar(10)
-  quantity           Decimal   @db.Decimal(10, 4)
-  average_cost_basis Decimal   @db.Decimal(10, 2)
-  last_updated       DateTime  @db.Timestamp(6)
-  portfolio          portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+model Holdings {
+  portfolio_id         Int
+  ticker               String    @db.VarChar(10)
+  quantity             Decimal   @db.Decimal(10, 4)
+  average_cost_basis   Decimal   @db.Decimal(10, 2)
+  last_updated         DateTime  @db.Timestamp(3)
 
+  Portfolio            Portfolio  @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+  
   @@id([portfolio_id, ticker])
 }
 
-model portfolio_snapshot {
-  portfolio_id   Int
-  snapshot_time  DateTime  @db.Timestamp(6)
-  snapshot_value Decimal   @db.Decimal(10, 2)
-  portfolio      portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+model PortfolioSnapshot {
+  portfolio_id     Int
+  date             DateTime  @db.Timestamp(6)
+  snapshot_id      Int
+  value     Decimal   @db.Decimal(10, 2)
 
-  @@id([portfolio_id, snapshot_time])
+  Portfolio        Portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+  
+  @@id([portfolio_id, date])
 }
 
-model sample_portfolio {
-  sample_portfolio_id               Int                                 @id @default(autoincrement())
-  last_generated                    DateTime?                           @default(now()) @db.Timestamp(6)
-  timeline                          Unsupported("interval")?
-  sample_portfolio_name             String?                             @db.VarChar(255)
-  sample_portfolio_asset_allocation sample_portfolio_asset_allocation[]
+model PortfolioTemplate {
+  last_generated_id     Int       @id @default(autoincrement())
+  last_generated        DateTime @default(now()) @db.Timestamp(6)
+  sample_portfolio_name String?   @db.VarChar(255)
+  interval  DateTime @db.Timestamp(0)
+  Bitcoin_focus         Boolean?
+  Small_Companies_focus Boolean?
+  Solid_Companies_focus Boolean?
+  Momentum_focus        Boolean?
+
+  TemplateAssetAllocation TemplatePortfolioAssetAllocation[]
 }
 
-model sample_portfolio_asset_allocation {
-  sample_portfolio_id Int
-  ticker              String           @db.VarChar(10)
-  percentage          Decimal          @db.Decimal(5, 4)
-  sample_portfolio    sample_portfolio @relation(fields: [sample_portfolio_id], references: [sample_portfolio_id], onDelete: Cascade, onUpdate: NoAction)
+model TemplatePortfolioAssetAllocation {
+  sample_portfolio_id   Int
+  ticker                String    @db.VarChar(10)
+  asset_id              Int
+  percentage            Decimal   @db.Decimal(5, 4)
 
+  PortfolioTemplate     PortfolioTemplate @relation(fields: [sample_portfolio_id], references: [last_generated_id], onDelete: Cascade, onUpdate: NoAction)
+  
   @@id([ticker, sample_portfolio_id])
 }
 
-model watchlist {
-  user_id Int
-  ticker  String @db.VarChar(10)
-  name String @db.VarChar(255)
-  users   users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+model WatchlistTickers {
+  user_id       Int
+  ticker        String  @db.VarChar(10)
+  name          String  @db.VarChar(255)
 
+  Users         Users   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  
   @@id([ticker, user_id])
+}
+
+model TradeQ {
+  trade_q_id        Int       @id @default(autoincrement())
+  portfolio_id      Int?
+  ticker            String    @db.VarChar(10)
+  time_added        DateTime  @default(now()) @db.Timestamp(6)
+  trade_is_buy      Boolean
+  dollar_amount_to_trade Decimal @db.Decimal(10, 4)
 }
