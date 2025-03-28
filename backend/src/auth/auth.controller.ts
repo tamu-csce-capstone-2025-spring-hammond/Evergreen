@@ -66,6 +66,7 @@ export class AuthController {
     },
   })
   async signup(@Body() signupDto: SignUpDto): Promise<AuthResponseType> {
+    console.log('Signup time!!!');
     try {
       return await this.authService.signup(signupDto);
     } catch (error) {
