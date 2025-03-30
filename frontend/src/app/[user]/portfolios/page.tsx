@@ -92,6 +92,29 @@ export default function Portfolios() {
     router.push('/user/portfolios');
   };
 
+  const refreshPortfolios = async () => {
+    const data = await fetchPortfolios(userId);
+    
+    const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
+        const deposited = parseFloat(portfolio.deposited_cash) || 0;
+        const total = parseFloat(portfolio.cash) || 0;
+        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
+
+        return {
+            portfolioId: portfolio.portfolio_id,
+            name: portfolio.portfolio_name,
+            color: portfolio.color,
+            total,
+            percent: Number(percent.toFixed(2)),
+            startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
+            endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
+            deposited,
+        };
+    });
+
+    setPortfolios(formattedPortfolios);
+};
+
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
         <Sidebar />
@@ -108,7 +131,7 @@ export default function Portfolios() {
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">    
                     {selectedCard ? (
-                        <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} />
+                        <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} refreshPortfolios={refreshPortfolios} />
                     ) : (
                         <div className="px-8 py-7 flex flex-col h-full justify-between items-center">
                             <h2 className="text-2xl text-center">Total Distribution</h2>

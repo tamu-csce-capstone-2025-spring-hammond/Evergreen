@@ -16,9 +16,10 @@ interface PortfolioCardProps {
 interface Portfolio {
     card: PortfolioCardProps;
     onDeselectCard: () => void;
+    refreshPortfolios: () => void;
 }
 
-const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard }) => {
+const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refreshPortfolios }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState<"deposit" | "withdraw" | null>(null);
 
@@ -27,9 +28,36 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard }) => {
         setIsModalOpen(true);
     };
 
-    const handleConfirm = (amount: number, type: "deposit" | "withdraw") => {
-        console.log(`${type} confirmed: $${amount}`);
+    const handleConfirm = async (amount: number, type: "deposit" | "withdraw") => {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    
+        if (!backendUrl) {
+            console.error("Backend URL is not defined");
+            return;
+        }
+    
+        const updatedCash = type === "deposit" ? card.total + amount : card.total - amount;
+    
+        try {
+            const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ cash: updatedCash }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error updating portfolio: ${response.statusText}`);
+            }
+    
+            await refreshPortfolios();
+    
+        } catch (error) {
+            console.error("Failed to update portfolio:", error);
+        }
     };
+    
 
     return (
         <div className="h-full border-1 rounded-3xl px-8 py-7 flex flex-col items-center" style={{ borderColor: card.color }}>

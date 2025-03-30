@@ -36,6 +36,9 @@ export class PortfolioService {
       where: {
         user_id: userId,
       },
+      orderBy: {
+        portfolio_id: 'asc'
+      },
     });
 
     if (!portfolios || portfolios.length === 0) {
@@ -51,7 +54,7 @@ export class PortfolioService {
       data: {
         portfolio_name: updatePortfolioDto.portfolioName,
         target_date: updatePortfolioDto.targetDate,
-        cash: updatePortfolioDto.cash,
+        deposited_cash: updatePortfolioDto.cash,
       },
     });
   }

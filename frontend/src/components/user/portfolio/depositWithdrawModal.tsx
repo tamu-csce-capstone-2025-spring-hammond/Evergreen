@@ -40,6 +40,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
           <button
             onClick={() => {
               if (amount) onConfirm(parseFloat(amount), type);
+              setAmount("")
               onClose();
             }}
             className="px-4 py-2 bg-evergreen-500 text-white rounded-md cursor-pointer"
