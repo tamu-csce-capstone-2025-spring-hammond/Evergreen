@@ -2,20 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(
-    cors({
-      origin: [process.env.FRONTEND_URL],
-      methods: ['GET', 'POST', 'PUT', 'PATCH'],
-      credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-      maxAge: 86400, // 24 hours in seconds
-    }),
-  );
+  // Proper CORS setup
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'PATCH'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    maxAge: 86400, // 24 hours
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -43,6 +41,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document); // 'swagger' is the path where Swagger UI will be available
 
-  await app.listen(process.env.BACKEND_PORT);
+  await app.listen(process.env.BACKEND_PORT || 4000);
 }
 bootstrap();
