@@ -22,19 +22,29 @@ interface EditPortfolioModalProps {
 }
 
 const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
-  const [name, setName] = useState(card.name);
-  const [color, setColor] = useState(card.color);
-  const [targetDate, setTargetDate] = useState(card.endDate);
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
+  const [targetDate, setTargetDate] = useState("");
 
   if (!isOpen) return null;
 
   const handleConfirm = () => {
+    if (name === "" && color === "" && targetDate === ""){
+        onClose();
+    }
     onConfirm({ name, color, targetDate });
     onClose();
   };
 
+  const handleClose = () => {
+    setName("");
+    setColor("");
+    setTargetDate("");
+    onClose();
+  }
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={onClose}>
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={handleClose}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl mb-4">Edit Portfolio</h2>
         
@@ -42,6 +52,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
         <label className="block mb-2">Name:</label>
         <input 
             type="text" 
+            placeholder={card.name}
             value={name} 
             onChange={(e) => setName(e.target.value)} 
             className="w-full p-2 border rounded mb-4" 
@@ -51,6 +62,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
         <label className="block mb-2">Color:</label>
         <input 
             type="color" 
+            placeholder={card.color}
             value={color} 
             onChange={(e) => setColor(e.target.value)} 
             className="w-full h-10 border rounded mb-4 cursor-pointer" 
@@ -60,6 +72,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
         <label className="block mb-2">Target Date:</label>
         <input 
             type="date" 
+            placeholder={card.endDate}
             value={targetDate} 
             onChange={(e) => setTargetDate(e.target.value)} 
             className="w-full p-2 border rounded mb-4" 
