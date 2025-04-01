@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DepositWithdrawModal from "./depositWithdrawModal";
 import EditPortfolioModal from "./editPortfolioModal";
 
@@ -33,6 +33,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
     };
 
     const handleOpenEditModal = () => {
+        console.log(card)
         setIsEditModalOpen(true);
     };
 

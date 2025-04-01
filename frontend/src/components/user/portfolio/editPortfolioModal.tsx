@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PortfolioCardProps {
     portfolioId: number;
@@ -23,10 +23,10 @@ interface EditPortfolioModalProps {
 
 const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
   const [name, setName] = useState("");
-  const [color, setColor] = useState("");
-  const [targetDate, setTargetDate] = useState("");
+  const [color, setColor] = useState(card.color);
+  const [targetDate, setTargetDate] = useState(card.endDate);
 
-  if (!isOpen) return null;
+  
 
   const handleConfirm = () => {
     if (name === "" && color === "" && targetDate === ""){
@@ -38,11 +38,18 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
 
   const handleClose = () => {
     setName("");
-    setColor("");
-    setTargetDate("");
+    setColor(card.color);
+    setTargetDate(card.endDate);
     onClose();
   }
 
+  useEffect(() => {
+    setName("");
+    setColor(card.color);
+    setTargetDate(card.endDate);
+  }, [card]);
+  
+  if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={handleClose}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
