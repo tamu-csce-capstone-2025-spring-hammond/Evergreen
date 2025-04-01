@@ -2,22 +2,28 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { PortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { Prisma } from '@prisma/client';
+
 
 @Injectable()
 export class PortfolioService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(portfolioDto: PortfolioDto) {
+    console.log("in backend create function")
     return this.prisma.portfolio.create({
       data: {
-        user_id: portfolioDto.userId,
-        portfolio_name: portfolioDto.portfolioName,
+        user_id: portfolioDto.user_id,
+        portfolio_name: portfolioDto.portfolio_name,
         color: portfolioDto.color,
-        target_date: portfolioDto.targetDate,
+        target_date: new Date(portfolioDto.target_date),
+        risk_aptitude: portfolioDto.risk_aptitude,
         cash: portfolioDto.cash,
+        deposited_cash: portfolioDto.deposited_cash,
       },
     });
-  }
+}
+
 
   async findOne(id: number) {
     const portfolio = await this.prisma.portfolio.findUnique({

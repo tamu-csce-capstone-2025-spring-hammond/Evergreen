@@ -5,27 +5,35 @@ import { useState } from "react";
 interface CreatePortfolioModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (deposited_cash: number, target_date: string, color: string, risk_aptitude: number) => void;
+  onConfirm: (name: string, deposited_cash: number, target_date: string, color: string, risk_aptitude: number) => void;
 }
 
 const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({ isOpen, onClose, onConfirm }) => {
+  const [name, setName] = useState<string>("");
   const [depositedCash, setDepositedCash] = useState<number | null>(null);
   const [targetDate, setTargetDate] = useState<string>("");
   const [color, setColor] = useState<string>("#000000");
   const [riskAptitude, setRiskAptitude] = useState<number>(3);
 
-  const [errors, setErrors] = useState<{ depositedCash?: string; targetDate?: string }>({});
+  // Error states
+  const [errors, setErrors] = useState<{ name?: string; depositedCash?: string; targetDate?: string }>({});
 
   const clearModal = () => {
+    setName("");
     setDepositedCash(null);
     setTargetDate("");
     setColor("#000000");
     setRiskAptitude(3);
-    setErrors({});
+    setErrors({}); // Clear errors
   };
 
   const onSubmit = () => {
-    const newErrors: { depositedCash?: string; targetDate?: string } = {};
+    // Validation
+    const newErrors: { name?: string; depositedCash?: string; targetDate?: string } = {};
+    
+    if (!name.trim()) {
+      newErrors.name = "Portfolio name is required.";
+    }
     
     if (depositedCash === null || depositedCash <= 0) {
       newErrors.depositedCash = "Initial deposit is required and must be greater than 0.";
@@ -40,7 +48,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({ isOpen, onC
       return;
     }
 
-    onConfirm(depositedCash as number, targetDate, color, riskAptitude);
+    onConfirm(name, depositedCash as number, targetDate, color, riskAptitude);
     clearModal();
   };
 
@@ -62,8 +70,19 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({ isOpen, onC
       >
         <h2 className="text-xl font-semibold mb-4">Create New Portfolio</h2>
 
+        {/* Portfolio Name */}
+        <label className="block mb-2">Portfolio Name</label>
+        <input 
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full p-2 border rounded mb-1"
+          placeholder="Enter portfolio name"
+        />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
         {/* Initial Deposit */}
-        <label className="block mb-2">Initial Deposit ($)</label>
+        <label className="block mt-4 mb-2">Initial Deposit ($)</label>
         <input 
           type="number"
           value={depositedCash ?? ""}

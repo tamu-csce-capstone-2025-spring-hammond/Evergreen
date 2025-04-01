@@ -8,7 +8,7 @@ export class PortfolioController {
   constructor(private readonly portfolioService: PortfolioService) {}
 
   @Post() 
-  async create(@Body() portfolioDto: PortfolioDto) {
+  async create(@Body() portfolioDto: any) { // ******FIX THIS SOMETHING WRONG*****
     return this.portfolioService.create(portfolioDto);
   }
 

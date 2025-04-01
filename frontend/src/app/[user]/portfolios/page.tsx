@@ -24,6 +24,7 @@ export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState("");
   const userId = 1;
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -116,11 +117,43 @@ export default function Portfolios() {
     setPortfolios(formattedPortfolios);
 };
 
-const handleCreatePortfolio = (deposited_cash: number, target_date: string, color: string, risk_aptitude: number) => {
-  console.log("New Portfolio Data:", { deposited_cash, target_date, color, risk_aptitude });
-  
+const handleCreatePortfolio = async (name: string, depositedCash: number, targetDate: string, color: string, riskAptitude: number) => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const payload = {
+    user_id: userId,
+    portfolio_name: name,
+    color: color,
+    target_date: new Date(targetDate).toISOString().split("T")[0],
+    cash: Number(depositedCash), 
+    deposited_cash: Number(depositedCash),
+    risk_aptitude: riskAptitude,
+  };
+
+  try {
+    console.log("Sending data:", JSON.stringify(payload));
+    const response = await fetch(`${backendUrl}/portfolio`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    console.log("Finish fetch")
+    const responseData = await response.json();
+    console.log("Got response data: " + JSON.stringify(responseData))
+    if (!response.ok) {
+      throw new Error(responseData.message || "Portfolio creation failed");
+    }
+
+    console.log("Portfolio created successfully", responseData);
+  } catch (error: any) {
+    setError(error.message);
+  }
   setIsModalOpen(false);
+  refreshPortfolios();
 };
+
+
 
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">

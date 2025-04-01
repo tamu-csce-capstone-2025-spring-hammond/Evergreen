@@ -1,27 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsDate, IsInt, IsOptional, IsString, IsNumber } from 'class-validator';
+
+
 
 export class PortfolioDto {
-    @ApiProperty({
-        example: '1',
-        description: 'The id of the portfolio',
-        required: true,
-    })
-    portfolioId: number;
+    // @ApiProperty({
+    //     example: '1',
+    //     description: 'The id of the portfolio',
+    //     required: true,
+    // })
+    // portfolioId?: number;
 
     @ApiProperty({
         example: '1',
         description: 'The id of the user',
         required: true,
     })
-    userId: number;
+    user_id: number;
 
     @ApiProperty({
         example: 'Retirement',
         description: 'The name of the portfolio',
         required: true,
     })
-    portfolioName: string;
+    portfolio_name: string;
 
     @ApiProperty({
         example: '#4CAF50',
@@ -31,23 +34,31 @@ export class PortfolioDto {
     color: string;
 
     @ApiProperty({
-        example: '1-1-2025',
-        description: 'The date the portfolio was created',
-        required: true,
-    })
-    createdDate: Date;
-
-    @ApiProperty({
-        example: '1-1-2050',
+        example: '2050-01-20',
         description: 'The target date of the portfolio',
         required: true,
     })
-    targetDate: Date;
+    @Transform(({ value }) => new Date(value))
+    target_date: Date;
 
     @ApiProperty({
-        example: '1,000,000',
+        example: 3,
+        description: 'The amount of risk the user is willing to take for this portfolio',
+        required: true,
+    })
+    risk_aptitude: number;
+
+    @ApiProperty({
+        example: 1000000,
         description: 'The amount of cash inside the portfolio',
         required: true,
     })
     cash: number;
+
+    @ApiProperty({
+        example: 1000000,
+        description: 'The amount of cash inside the portfolio that was deposited',
+        required: true,
+    })
+    deposited_cash: number;
 }
