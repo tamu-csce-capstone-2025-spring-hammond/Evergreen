@@ -82,12 +82,10 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
 
     const handleConfirmEdit = async (updatedPortfolio : {name?: string, color?: string, targetDate?: string}) => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        console.log(updatedPortfolio.targetDate);
         if (!backendUrl) {
             console.error("Backend URL is not defined");
             return;
         }
-        
         try {
             const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
                 method: "PATCH",
@@ -96,7 +94,6 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
                 },
                 body: JSON.stringify({ portfolioName: updatedPortfolio.name, color: updatedPortfolio.color, targetDate: updatedPortfolio.targetDate }),
             });
-            console.log(response)
             if (!response.ok) {
                 throw new Error(`Error updating portfolio: ${response.statusText}`);
             }

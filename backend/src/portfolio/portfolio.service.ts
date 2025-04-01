@@ -59,6 +59,7 @@ export class PortfolioService {
       data: {
         portfolio_name: updatePortfolioDto.portfolioName,
         target_date: new Date(updatePortfolioDto.targetDate),
+        color: updatePortfolioDto.color,
         cash: updatePortfolioDto.cash,
         deposited_cash: updatePortfolioDto.depositedCash,
       },

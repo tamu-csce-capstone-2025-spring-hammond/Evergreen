@@ -30,11 +30,13 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
 
   const handleConfirm = () => {
     if (name === "" && color === card.color && targetDate === card.endDate){
-        onClose();
-        return
+    } else if (name === "" && (color !== card.color || targetDate !== card.endDate)) {
+      onConfirm({ name: card.name, color, targetDate});
+    } else {
+      onConfirm({ name, color, targetDate });
     }
-    onConfirm({ name, color, targetDate });
     onClose();
+    return
   };
 
   const handleClose = () => {
