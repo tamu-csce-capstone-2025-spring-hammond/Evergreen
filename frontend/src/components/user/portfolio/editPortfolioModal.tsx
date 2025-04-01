@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 
@@ -12,32 +12,66 @@ interface PortfolioCardProps {
     endDate: string;
     deposited: number;
 }
+
 interface EditPortfolioModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  onDelete: (portfolioId: number) => void
-  card: PortfolioCardProps
+  onConfirm: (updatedPortfolio: { name?: string; color?: string; targetDate?: string }) => void;
+  onDelete: (portfolioId: number) => void;
+  card: PortfolioCardProps;
 }
 
-const CreatePortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
-
+const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
+  const [name, setName] = useState(card.name);
+  const [color, setColor] = useState(card.color);
+  const [targetDate, setTargetDate] = useState(card.endDate);
 
   if (!isOpen) return null;
 
+  const handleConfirm = () => {
+    onConfirm({ name, color, targetDate });
+    onClose();
+  };
+
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white p-6 rounded-lg shadow-lg w-96"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl mb-4">Edit Portfolio</h2>
         
+        {/* Name */}
+        <label className="block mb-2">Name:</label>
+        <input 
+            type="text" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            className="w-full p-2 border rounded mb-4" 
+        />
+        
+        {/* Color */}
+        <label className="block mb-2">Color:</label>
+        <input 
+            type="color" 
+            value={color} 
+            onChange={(e) => setColor(e.target.value)} 
+            className="w-full h-10 border rounded mb-4 cursor-pointer" 
+        />
+        
+        {/* Target Date */}
+        <label className="block mb-2">Target Date:</label>
+        <input 
+            type="date" 
+            value={targetDate} 
+            onChange={(e) => setTargetDate(e.target.value)} 
+            className="w-full p-2 border rounded mb-4" 
+        />
+        
+        <div className="flex justify-between mt-4">
+          <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+          <button onClick={() => onDelete(card.portfolioId)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default CreatePortfolioModal;
+export default EditPortfolioModal;
