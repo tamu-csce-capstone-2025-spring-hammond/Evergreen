@@ -27,7 +27,7 @@ export class PortfolioController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePortfolioDto: UpdatePortfolioDto) {
+  async update(@Param('id') id: string, @Body() updatePortfolioDto: any) {
     return this.portfolioService.update(+id, updatePortfolioDto);
   }
 

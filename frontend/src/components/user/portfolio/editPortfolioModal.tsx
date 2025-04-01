@@ -29,8 +29,9 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
   
 
   const handleConfirm = () => {
-    if (name === "" && color === "" && targetDate === ""){
+    if (name === "" && color === card.color && targetDate === card.endDate){
         onClose();
+        return
     }
     onConfirm({ name, color, targetDate });
     onClose();
@@ -50,6 +51,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
   }, [card]);
   
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={handleClose}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
@@ -72,7 +74,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
             placeholder={card.color}
             value={color} 
             onChange={(e) => setColor(e.target.value)} 
-            className="w-full h-10 border rounded mb-4 cursor-pointer" 
+            className="w-full h-10 border rounded mb-4" 
         />
         
         {/* Target Date */}
@@ -82,12 +84,12 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
             placeholder={card.endDate}
             value={targetDate} 
             onChange={(e) => setTargetDate(e.target.value)} 
-            className="w-full p-2 border rounded mb-4" 
+            className="w-full p-2 border rounded mb-4  cursor-pointer" 
         />
         
         <div className="flex justify-between mt-4">
-          <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-          <button onClick={() => onDelete(card.portfolioId)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+          <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Save</button>
+          <button onClick={() => onDelete(card.portfolioId)} className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer">Delete</button>
         </div>
       </div>
     </div>

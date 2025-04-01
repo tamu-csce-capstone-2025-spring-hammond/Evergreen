@@ -18,7 +18,7 @@ export class UpdatePortfolioDto extends PartialType(PortfolioDto) {
     })
     @IsOptional()
     @IsDate()
-    targetDate?: Date;
+    targetDate?: string;
 
     @ApiPropertyOptional({
         example: 1500000,

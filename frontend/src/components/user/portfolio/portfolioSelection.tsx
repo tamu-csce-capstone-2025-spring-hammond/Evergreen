@@ -33,11 +33,10 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
     };
 
     const handleOpenEditModal = () => {
-        console.log(card)
         setIsEditModalOpen(true);
     };
 
-    const handleConfirm = async (amount: number, type: "deposit" | "withdraw") => {
+    const handleConfirmWitdrawDeposit = async (amount: number, type: "deposit" | "withdraw") => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     
         if (!backendUrl) {
@@ -70,6 +69,34 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
                 body: JSON.stringify({ depositedCash: updatedDeposit,cash: updatedCash }),
             });
     
+            if (!response.ok) {
+                throw new Error(`Error updating portfolio: ${response.statusText}`);
+            }
+    
+            await refreshPortfolios();
+    
+        } catch (error) {
+            console.error("Failed to update portfolio:", error);
+        }
+    };
+
+    const handleConfirmEdit = async (updatedPortfolio : {name?: string, color?: string, targetDate?: string}) => {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        console.log(updatedPortfolio.targetDate);
+        if (!backendUrl) {
+            console.error("Backend URL is not defined");
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ portfolioName: updatedPortfolio.name, color: updatedPortfolio.color, targetDate: updatedPortfolio.targetDate }),
+            });
+            console.log(response)
             if (!response.ok) {
                 throw new Error(`Error updating portfolio: ${response.statusText}`);
             }
@@ -126,15 +153,16 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
             <DepositWithdrawModal 
                 isOpen={isDepositWithdrawOpen} 
                 onClose={() => setIsDepositWithdrawOpen(false)} 
-                onConfirm={handleConfirm} 
+                onConfirm={handleConfirmWitdrawDeposit} 
                 type={transactionType as "deposit" | "withdraw"} 
             />
 
+            {/* Edit Portfolio Modal */}
             <EditPortfolioModal
                 card={card}
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                onConfirm={() => setIsEditModalOpen(false)}
+                onConfirm={handleConfirmEdit}
                 onDelete={() => setIsEditModalOpen(false)}
             />
         </div>
