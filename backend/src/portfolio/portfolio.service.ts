@@ -10,7 +10,6 @@ export class PortfolioService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(portfolioDto: PortfolioDto) {
-    console.log("in backend create function")
     return this.prisma.portfolio.create({
       data: {
         user_id: portfolioDto.user_id,
