@@ -36,16 +36,30 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
             console.error("Backend URL is not defined");
             return;
         }
-    
+
+        if (type === "withdraw" && amount > card.total) {
+            console.error("Withdrawal amount exceeds available balance.");
+            return;
+        }
+        if (type === "withdraw" && amount > card.deposited) {
+            console.error("Withdrawal amount exceeds deposited amount.");
+            return;
+        }
+        
+        console.log("total: " + card.total + " " + type + ": " + amount);
         const updatedCash = type === "deposit" ? card.total + amount : card.total - amount;
-    
+        const updatedDeposit = type === "deposit" ? card.deposited + amount : card.deposited - amount;
+
+        console.log("Updated cash: " + updatedCash);
+
+        
         try {
             const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ cash: updatedCash }),
+                body: JSON.stringify({ depositedCash: updatedDeposit,cash: updatedCash }),
             });
     
             if (!response.ok) {

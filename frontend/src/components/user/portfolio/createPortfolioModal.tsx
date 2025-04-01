@@ -85,6 +85,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({ isOpen, onC
         <label className="block mt-4 mb-2">Initial Deposit ($)</label>
         <input 
           type="number"
+          placeholder="Enter Inital Deposit"
           value={depositedCash ?? ""}
           onChange={(e) => setDepositedCash(parseFloat(e.target.value) || null)}
           className="w-full p-2 border rounded mb-1"

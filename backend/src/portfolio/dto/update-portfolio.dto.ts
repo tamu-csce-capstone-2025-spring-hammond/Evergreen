@@ -27,4 +27,12 @@ export class UpdatePortfolioDto extends PartialType(PortfolioDto) {
     @IsOptional()
     @IsNumber()
     cash?: number;
+
+    @ApiPropertyOptional({
+        example: 140000,
+        description: 'The updated amount of cash deposited the portfolio',
+    })
+    @IsOptional()
+    @IsNumber()
+    depositedCash?: number;
 }

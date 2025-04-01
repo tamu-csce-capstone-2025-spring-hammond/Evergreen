@@ -60,7 +60,8 @@ export class PortfolioService {
       data: {
         portfolio_name: updatePortfolioDto.portfolioName,
         target_date: updatePortfolioDto.targetDate,
-        deposited_cash: updatePortfolioDto.cash,
+        cash: updatePortfolioDto.cash,
+        deposited_cash: updatePortfolioDto.depositedCash,
       },
     });
   }

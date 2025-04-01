@@ -2,14 +2,25 @@
 
 import { useState } from "react";
 
+interface PortfolioCardProps {
+    portfolioId: number;
+    name: string;
+    color: string;
+    total: number;
+    percent: number;
+    startDate: string;
+    endDate: string;
+    deposited: number;
+}
 interface EditPortfolioModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   onDelete: (portfolioId: number) => void
+  card: PortfolioCardProps
 }
 
-const CreatePortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete }) => {
+const CreatePortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
 
 
   if (!isOpen) return null;
