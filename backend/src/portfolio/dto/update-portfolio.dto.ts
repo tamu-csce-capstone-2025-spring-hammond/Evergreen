@@ -1,30 +1,70 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString, IsDate } from 'class-validator';
-import { PortfolioDto } from './create-portfolio.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsDate,
+  IsBoolean,
+  Matches,
+} from 'class-validator';
 
-export class UpdatePortfolioDto extends PartialType(PortfolioDto) {
-    @ApiPropertyOptional({
-        example: 'Retirement Growth',
-        description: 'The updated name of the portfolio',
-    })
-    @IsOptional()
-    @IsString()
-    portfolioName?: string;
+export class UpdatePortfolioDto {
+  @ApiPropertyOptional({
+    example: 'Retirement Growth',
+    description: 'The updated name of the portfolio',
+  })
+  @IsOptional()
+  @IsString()
+  portfolioName?: string;
 
-    @ApiPropertyOptional({
-        example: '1-1-2055',
-        description: 'The updated target date of the portfolio',
-    })
-    @IsOptional()
-    @IsDate()
-    targetDate?: Date;
+  @ApiPropertyOptional({
+    example: '#FF5733',
+    description: 'The updated color of the portfolio',
+  })
+  @IsOptional()
+  @Matches(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, {
+    message: 'Color must be a valid hex code (e.g., #RRGGBB or #RGB)',
+  })
+  color?: string;
 
-    @ApiPropertyOptional({
-        example: 1500000,
-        description: 'The updated amount of cash inside the portfolio',
-    })
-    @IsOptional()
-    @IsNumber()
-    cash?: number;
+  @ApiPropertyOptional({
+    example: '1-1-2055',
+    description: 'The updated target date of the portfolio',
+  })
+  @IsOptional()
+  @IsDate()
+  targetDate?: Date;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'If portfolio will have a bitcoin focus',
+  })
+  @IsOptional()
+  @IsBoolean()
+  bitcoin_focus?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'If portfolio will have a small-cap focus',
+  })
+  @IsOptional()
+  @IsBoolean()
+  smallcap_focus?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'If portfolio will have a value focus',
+  })
+  @IsOptional()
+  @IsBoolean()
+  value_focus?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'If portfolio will have a momentum focus',
+  })
+  @IsOptional()
+  @IsBoolean()
+  momentum_focus?: boolean;
 }

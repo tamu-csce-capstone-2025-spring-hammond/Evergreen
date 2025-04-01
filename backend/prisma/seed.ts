@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const password_hash = await argon2.hash('Password12!');
-  const user1 = await prisma.users.create({
+  await prisma.users.create({
     data: {
       email: 'bob@c.com',
       password_hash: password_hash,
