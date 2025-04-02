@@ -105,6 +105,32 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
         }
     };
     
+    const handleDelete = async (portfolioId: number) => {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        if (!backendUrl) {
+            console.error("Backend URL is not defined");
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${backendUrl}/portfolio/${portfolioId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error deleting portfolio: ${response.statusText}`);
+            }
+    
+            await refreshPortfolios();
+    
+        } catch (error) {
+            console.error("Failed to delete portfolio:", error);
+        }
+    };
+    
 
     return (
         <div className="h-full border-1 rounded-3xl px-8 py-7 flex flex-col items-center" style={{ borderColor: card.color }}>
@@ -160,7 +186,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 onConfirm={handleConfirmEdit}
-                onDelete={() => setIsEditModalOpen(false)}
+                onDelete={handleDelete}
             />
         </div>
     );

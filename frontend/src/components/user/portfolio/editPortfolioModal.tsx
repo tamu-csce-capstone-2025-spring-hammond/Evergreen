@@ -46,6 +46,11 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
     onClose();
   }
 
+  const handleDelete = () => {
+    onDelete(card.portfolioId);
+    onClose();
+  }
+
   useEffect(() => {
     setName("");
     setColor(card.color);
@@ -91,7 +96,7 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
         
         <div className="flex justify-between mt-4">
           <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Save</button>
-          <button onClick={() => onDelete(card.portfolioId)} className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer">Delete</button>
+          <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer">Delete</button>
         </div>
       </div>
     </div>
