@@ -54,11 +54,12 @@ export class PortfolioService {
   }
 
   async update(id: number, updatePortfolioDto: any) {
+    const newDate = updatePortfolioDto.targetDate ? new Date(updatePortfolioDto.targetDate) : undefined;
     return this.prisma.portfolio.update({
       where: { portfolio_id: id },
       data: {
         portfolio_name: updatePortfolioDto.portfolioName,
-        target_date: new Date(updatePortfolioDto.targetDate),
+        target_date: newDate,
         color: updatePortfolioDto.color,
         cash: updatePortfolioDto.cash,
         deposited_cash: updatePortfolioDto.depositedCash,
