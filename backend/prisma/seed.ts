@@ -16,7 +16,7 @@ async function main() {
             target_date: new Date('2035-06-15'),
             created_at: new Date('2024-03-31'),
             portfolio_name: 'retirement',
-            uninvested_cash: 3000,
+            uninvested_cash: 0,
             color: '#33ff33',
             total_deposited: 10000,
             momentum_focus: true,
@@ -38,7 +38,7 @@ async function main() {
                 },
               ],
             },
-            portfolio_snapshot: { create: createSnapshots(13000, 400) },
+            portfolio_snapshot: { create: createSnapshots(10000, 400) },
             trades: {
               create: [
                 {

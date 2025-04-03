@@ -14,10 +14,15 @@ import {
   PortfolioOutput,
 } from './portfolio.types';
 import { Decimal } from '@prisma/client/runtime/library';
+import { AlpacaService } from 'src/stock-apis/alpaca.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PortfolioService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private alpacaService: AlpacaService,
+  ) {}
 
   async create(portfolioDto: PortfolioDto, userId: number) {
     return this.prisma.portfolio.create({
@@ -42,7 +47,7 @@ export class PortfolioService {
     userId: number,
   ): Promise<PortfolioOutput> {
     const portfolioData = await this.prisma.portfolio.findUnique({
-      where: { portfolio_id: id },
+      where: { portfolio_id: id, user_id: userId },
     });
 
     if (!portfolioData || portfolioData.user_id !== userId) {
@@ -69,6 +74,24 @@ export class PortfolioService {
         snapshot_value,
       }),
     );
+
+    if (this.alpacaService.isTradingOpen()) {
+      const snapshotTime = new Date();
+
+      const holdingsSnapshot = holdings.map((holding) => ({
+        ticker: holding.ticker,
+        quantity: holding.quantity.toNumber(),
+      }));
+
+      const snapshotValue = new Prisma.Decimal(
+        await this.alpacaService.getCurrentValue(holdingsSnapshot),
+      );
+
+      performance_graph.push({
+        snapshot_time: snapshotTime,
+        snapshot_value: snapshotValue,
+      });
+    }
 
     // Calculate current portfolio value
     const current_value =
@@ -264,5 +287,13 @@ export class PortfolioService {
     return this.prisma.portfolio.delete({
       where: { portfolio_id: id, user_id: userID },
     });
+  }
+
+  async test() {
+    const data = await this.alpacaService.getCurrentValue([
+      { ticker: 'VTI', quantity: 5 },
+      { ticker: 'T', quantity: 10 },
+    ]);
+    console.log(data);
   }
 }

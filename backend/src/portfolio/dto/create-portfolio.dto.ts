@@ -7,15 +7,9 @@ import {
   IsBoolean,
   IsOptional,
 } from 'class-validator';
+import { Type } from 'class-transformer'; // Add this import
 
 export class PortfolioDto {
-  @ApiProperty({
-    example: '1',
-    description: 'The id of the portfolio',
-    required: true,
-  })
-  portfolioId: number;
-
   @ApiProperty({
     example: 'Retirement',
     description: 'The name of the portfolio',
@@ -35,32 +29,33 @@ export class PortfolioDto {
   color: string;
 
   @ApiProperty({
-    example: '1-1-2025',
+    example: '2025-01-01T00:00:00.000Z',
     description: 'The date the portfolio was created',
     required: true,
   })
+  @Type(() => Date) // Ensures transformation from string to Date
   @IsDate()
   createdDate: Date;
 
   @ApiProperty({
-    example: '1-1-2050',
+    example: '2050-01-01T00:00:00.000Z',
     description: 'The target date of the portfolio',
     required: true,
   })
+  @Type(() => Date)
   @IsDate()
   targetDate: Date;
 
   @ApiProperty({
-    example: '1,000,000',
+    example: '1000000',
     description: 'Initial Deposit',
     required: true,
   })
-  
   @IsNumber()
   inital_deposit: number;
 
   @ApiPropertyOptional({
-    example: 'true',
+    example: true,
     description:
       'If portfolio will have a bitcoin focus (if no value is passed it will be assumed to be false)',
   })
@@ -69,7 +64,7 @@ export class PortfolioDto {
   bitcoin_focus: boolean = false;
 
   @ApiPropertyOptional({
-    example: 'true',
+    example: true,
     description:
       'If portfolio will have a small-cap focus (if no value is passed it will be assumed to be false)',
   })
@@ -78,7 +73,7 @@ export class PortfolioDto {
   smallcap_focus: boolean = false;
 
   @ApiPropertyOptional({
-    example: 'true',
+    example: true,
     description:
       'If portfolio will have a value focus (if no value is passed it will be assumed to be false)',
   })
@@ -87,7 +82,7 @@ export class PortfolioDto {
   value_focus: boolean = false;
 
   @ApiPropertyOptional({
-    example: 'true',
+    example: true,
     description:
       'If portfolio will have a momentum focus (if no value is passed it will be assumed to be false)',
   })

@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNumber,
   IsOptional,
@@ -33,6 +34,7 @@ export class UpdatePortfolioDto {
     description: 'The updated target date of the portfolio',
   })
   @IsOptional()
+  @Type(() => Date) // Ensures transformation from string to Date
   @IsDate()
   targetDate?: Date;
 

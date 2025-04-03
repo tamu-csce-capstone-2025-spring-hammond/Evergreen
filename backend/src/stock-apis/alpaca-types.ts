@@ -44,3 +44,10 @@ export interface TickerSnapshot {
 export interface AlpacaSnapshotResponse {
   [ticker: string]: TickerSnapshot;
 }
+
+export interface MarketClockInfo {
+  timestamp: Date;
+  is_open: boolean;
+  next_open: Date;
+  next_close: Date;
+}

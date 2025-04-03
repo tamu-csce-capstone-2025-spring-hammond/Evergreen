@@ -27,7 +27,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Evergreen API')
-    .setVersion('1.02')
+    .setVersion('2.0')
     .addBearerAuth(
       {
         type: 'http',
