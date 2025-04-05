@@ -47,6 +47,7 @@ export class PortfolioService {
     id: number,
     userId: number,
   ): Promise<PortfolioOutput> {
+    console.log("Getting full protfolio info")
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: id, user_id: userId },
     });
@@ -116,7 +117,6 @@ export class PortfolioService {
         percent_change: new Decimal(0), // Placeholder
       }),
     );
-
     // Construct the PortfolioType object
     return {
       portfolio_id: portfolioData.portfolio_id,
@@ -147,7 +147,6 @@ export class PortfolioService {
     if (portfolios.length === 0) {
       throw new NotFoundException(`No portfolios found for user ID ${userId}`);
     }
-
     return portfolios.map(
       ({
         portfolio_id,

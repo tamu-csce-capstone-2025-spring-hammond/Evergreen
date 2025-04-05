@@ -8,6 +8,7 @@ import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import CreatePortfolioModal from "@/components/user/portfolio/createPortfolioModal";
+import useJwtStore from "@/store/jwtStore";
 
 interface PortfolioCardProps {
     portfolioId: number,
@@ -20,12 +21,23 @@ interface PortfolioCardProps {
     deposited: number;
 }
 
+interface PortfolioResponse {
+  portfolio_id: number,
+  portfolio_name: string,
+  created_at: Date,
+  target_date: Date,
+  color: string,
+  total_deposited: string,
+  uninvested_cash: string
+}
+
 export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [portfolioIds, setPortfolioIds] = useState<number[]>([]);
   const [error, setError] = useState("");
-  const userId = 1;
+  const { getToken } = useJwtStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const portfolioId = searchParams.get("portfolioId");
@@ -37,48 +49,87 @@ export default function Portfolios() {
     }
   }, [portfolioId, portfolios]);
 
-  const fetchPortfolios = async (userId: number) => {
+  const fetchPortfolios = async () => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const token = getToken();
 
     try {
-      const response = await fetch(`${backendUrl}/portfolio/user/${userId}`);
+      const response = await fetch(`${backendUrl}/portfolio`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
       if (!response.ok) {
         throw new Error(`Error fetching portfolios: ${response.statusText}`);
       }
+  
       return await response.json();
     } catch (error) {
       console.error("Failed to fetch portfolios:", error);
       return [];
     }
   }
+
+  const getPortfolios = async () => {
+    if (!portfolioIds) return;
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const token = getToken();
   
+    try {
+      console.log("inside try statement")
+      const portfolioFetches = portfolioIds.map(async (id) => {
+        console.log("inside the portfolio fetches call")
+        const res = await fetch(`${backendUrl}/portfolio/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!res.ok) {
+          throw new Error(`Failed to fetch portfolio ${id}: ${res.statusText}`);
+        }
+
+        return await res.json();
+      });
+      
+      const fullPortfolios = await Promise.all(portfolioFetches);
+
+      const formattedPortfolios: PortfolioCardProps[] = fullPortfolios.map((portfolio: any) => ({
+        portfolioId: portfolio.portfolio_id,
+        name: portfolio.portfolio_name,
+        color: portfolio.color || "#000000",
+        total: Number(portfolio.current_value),
+        percent: Number(portfolio.percent_change),
+        startDate: new Date(portfolio.created_at).toISOString().split("T")[0],
+        endDate: new Date(portfolio.target_date).toISOString().split("T")[0],
+        deposited: Number(portfolio.amount_change) 
+          ? Number(portfolio.current_value) - Number(portfolio.amount_change)
+          : 0,
+      }));
+  
+      setPortfolios(formattedPortfolios);
+    } catch (error) {
+      console.error("Error fetching full portfolio data:", error);
+    }
+  };
+  
+
+  const getPortfolioIds = async () => {
+    const data = await fetchPortfolios();
+    const portfolioIds: number[] = data.map((portfolio: PortfolioResponse) => {
+      return(portfolio.portfolio_id);
+    })
+    setPortfolioIds(portfolioIds);
+  };
   
   useEffect(() => {
-    async function getPortfolios() {
-      const data = await fetchPortfolios(userId);
-      
-      const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
-        const deposited = parseFloat(portfolio.deposited_cash) || 0;
-        const total = parseFloat(portfolio.cash) || 0;
-        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
-
-        return {
-          portfolioId: portfolio.portfolio_id,
-          name: portfolio.portfolio_name,
-          color: portfolio.color,
-          total,
-          percent: Number(percent.toFixed(2)),
-          startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
-          endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
-          deposited,
-        };
-      });
-
-      setPortfolios(formattedPortfolios);
-    }
+    getPortfolioIds();
     getPortfolios();
-  }, [userId]);
+  }, []);
 
+  // console.log("Here are the portfolios ids: " + portfolioIds)
   const exampleCards = portfolios;
   const totalDeposited = exampleCards.reduce((sum, card) => sum + card.deposited, 0);
   const totalGained = Number(exampleCards.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2));
@@ -95,32 +146,12 @@ export default function Portfolios() {
   };
 
   const refreshPortfolios = async () => {
-    const data = await fetchPortfolios(userId);
-    
-    const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
-        const deposited = parseFloat(portfolio.deposited_cash) || 0;
-        const total = parseFloat(portfolio.cash) || 0;
-        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
-
-        return {
-            portfolioId: portfolio.portfolio_id,
-            name: portfolio.portfolio_name,
-            color: portfolio.color,
-            total,
-            percent: Number(percent.toFixed(2)),
-            startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
-            endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
-            deposited,
-        };
-    });
-
-    setPortfolios(formattedPortfolios);
+    await getPortfolios();
 };
 
 const handleCreatePortfolio = async (name: string, depositedCash: number, targetDate: string, color: string, riskAptitude: number) => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const payload = {
-    user_id: userId,
     portfolio_name: name,
     color: color,
     target_date: new Date(targetDate).toISOString().split("T")[0],
