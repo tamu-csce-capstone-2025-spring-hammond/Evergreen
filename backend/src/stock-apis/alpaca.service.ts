@@ -37,7 +37,7 @@ export class AlpacaService {
     try {
       const response = await fetch(url, this.options);
       const data: AlpacaSnapshotResponse = await response.json();
-      console.log(data);
+      // console.log(data);
       return data;
     } catch (err) {
       console.error('Error fetching ticker values:', err);

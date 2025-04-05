@@ -75,7 +75,7 @@ export class PortfolioService {
       }),
     );
 
-    if (this.alpacaService.isTradingOpen()) {
+    if (holdings.length > 0 && this.alpacaService.isTradingOpen()) {
       const snapshotTime = new Date();
 
       const holdingsSnapshot = holdings.map((holding) => ({
@@ -96,8 +96,10 @@ export class PortfolioService {
     // Calculate current portfolio value
     const current_value =
       graphData.length > 0
-        ? new Decimal(graphData[graphData.length - 1].snapshot_value)
-        : new Decimal(0);
+        ? new Decimal(graphData[graphData.length - 1].snapshot_value).add(
+            portfolioData.uninvested_cash,
+          )
+        : new Decimal(portfolioData.uninvested_cash);
     const initial_value = portfolioData.total_deposited;
     const amount_change = current_value.minus(initial_value);
     const percent_change = initial_value.gt(0)
@@ -144,25 +146,75 @@ export class PortfolioService {
       throw new NotFoundException(`No portfolios found for user ID ${userId}`);
     }
 
-    return portfolios.map(
-      ({
-        portfolio_id,
-        portfolio_name,
-        created_at,
-        target_date,
-        bitcoin_focus,
-        smallcap_focus,
-        value_focus,
-        momentum_focus,
-      }) => ({
-        portfolio_id,
-        portfolio_name,
-        created_at,
-        target_date,
-        bitcoin_focus,
-        smallcap_focus,
-        value_focus,
-        momentum_focus,
+    const allHoldings = await this.prisma.holdings.findMany({
+      where: {
+        portfolio_id: { in: portfolios.map((p) => p.portfolio_id) },
+      },
+    });
+
+    return await Promise.all(
+      portfolios.map(async (portfolioData) => {
+        const holdings = allHoldings.filter(
+          (h) => h.portfolio_id === portfolioData.portfolio_id,
+        );
+        const recentSnapshot = await this.prisma.portfolioSnapshot.findFirst({
+          where: { portfolio_id: portfolioData.portfolio_id },
+          orderBy: { snapshot_time: 'desc' },
+        });
+        let current_value: Decimal;
+
+        if (!recentSnapshot) {
+          current_value = portfolioData.uninvested_cash;
+        } else {
+          current_value = recentSnapshot.snapshot_value.add(
+            portfolioData.uninvested_cash,
+          );
+        }
+
+        if (holdings.length > 0 && this.alpacaService.isTradingOpen()) {
+          const snapshotTime = new Date();
+
+          const holdingsSnapshot = holdings.map((holding) => ({
+            ticker: holding.ticker,
+            quantity: holding.quantity.toNumber(),
+          }));
+
+          current_value = new Prisma.Decimal(
+            await this.alpacaService.getCurrentValue(holdingsSnapshot),
+          );
+        }
+        const initial_value = portfolioData.total_deposited;
+        const amount_change = current_value.minus(initial_value);
+        const percent_change = initial_value.gt(0)
+          ? amount_change.div(initial_value).times(100)
+          : new Decimal(0);
+
+        const investments: InvestmentOutput[] = holdings.map(
+          ({ ticker, quantity, average_cost_basis }) => ({
+            ticker,
+            name: 'Stock name', // Placeholder
+            quantity_owned: quantity,
+            average_cost_basis,
+            current_price: average_cost_basis, // Placeholder
+            percent_change: new Decimal(0), // Placeholder
+          }),
+        );
+
+        return {
+          portfolio_id: portfolioData.portfolio_id,
+          portfolio_name: portfolioData.portfolio_name,
+          created_at: portfolioData.created_at,
+          target_date: portfolioData.target_date,
+          uninvested_cash: portfolioData.uninvested_cash,
+          current_value,
+          percent_change,
+          amount_change,
+          bitcoin_focus: portfolioData.bitcoin_focus,
+          smallcap_focus: portfolioData.smallcap_focus,
+          value_focus: portfolioData.value_focus,
+          momentum_focus: portfolioData.momentum_focus,
+          investments,
+        };
       }),
     );
   }
