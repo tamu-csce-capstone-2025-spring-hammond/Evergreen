@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 
 interface DepositWithdrawModalProps {
@@ -18,8 +20,8 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50">
-      <div className="bg-white dark:bg-evergray-800 p-6 rounded-lg shadow-lg w-96">
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50" onClick={handleClose}>
+      <div className="bg-white dark:bg-evergray-800 p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl font-semibold text-center mb-4">
           {type === "deposit" ? "Deposit Funds" : "Withdraw Funds"}
         </h2>
@@ -40,6 +42,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
           <button
             onClick={() => {
               if (amount) onConfirm(parseFloat(amount), type);
+              setAmount("")
               onClose();
             }}
             className="px-4 py-2 bg-evergreen-500 text-white rounded-md cursor-pointer"

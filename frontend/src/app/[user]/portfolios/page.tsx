@@ -7,6 +7,7 @@ import Header from "@/components/user/header";
 import PortfolioSelection from "@/components/user/portfolio/portfolioSelection";
 import PieChart from "@/components/user/pieChart";
 import { useRouter, useSearchParams } from "next/navigation";
+import CreatePortfolioModal from "@/components/user/portfolio/createPortfolioModal";
 
 interface PortfolioCardProps {
     portfolioId: number,
@@ -22,6 +23,8 @@ interface PortfolioCardProps {
 export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState("");
   const userId = 1;
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -77,7 +80,6 @@ export default function Portfolios() {
   }, [userId]);
 
   const exampleCards = portfolios;
-  console.log(exampleCards);
   const totalDeposited = exampleCards.reduce((sum, card) => sum + card.deposited, 0);
   const totalGained = Number(exampleCards.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2));
   const netReturn = totalDeposited > 0 ? Number(((totalGained / totalDeposited) * 100).toFixed(2)) : 0.00;
@@ -92,6 +94,67 @@ export default function Portfolios() {
     router.push('/user/portfolios');
   };
 
+  const refreshPortfolios = async () => {
+    const data = await fetchPortfolios(userId);
+    
+    const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
+        const deposited = parseFloat(portfolio.deposited_cash) || 0;
+        const total = parseFloat(portfolio.cash) || 0;
+        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
+
+        return {
+            portfolioId: portfolio.portfolio_id,
+            name: portfolio.portfolio_name,
+            color: portfolio.color,
+            total,
+            percent: Number(percent.toFixed(2)),
+            startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
+            endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
+            deposited,
+        };
+    });
+
+    setPortfolios(formattedPortfolios);
+};
+
+const handleCreatePortfolio = async (name: string, depositedCash: number, targetDate: string, color: string, riskAptitude: number) => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const payload = {
+    user_id: userId,
+    portfolio_name: name,
+    color: color,
+    target_date: new Date(targetDate).toISOString().split("T")[0],
+    cash: Number(depositedCash), 
+    deposited_cash: Number(depositedCash),
+    risk_aptitude: riskAptitude,
+  };
+
+  try {
+    console.log("Sending data:", JSON.stringify(payload));
+    const response = await fetch(`${backendUrl}/portfolio`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    console.log("Finish fetch")
+    const responseData = await response.json();
+    console.log("Got response data: " + JSON.stringify(responseData))
+    if (!response.ok) {
+      throw new Error(responseData.message || "Portfolio creation failed");
+    }
+
+    console.log("Portfolio created successfully", responseData);
+  } catch (error: any) {
+    setError(error.message);
+  }
+  setIsModalOpen(false);
+  refreshPortfolios();
+};
+
+
+
   return (
     <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
         <Sidebar />
@@ -101,14 +164,19 @@ export default function Portfolios() {
                 <div className="p-4 pb-0 space-y-4 flex-2">
                     <div className="px-4 mr-2 pt-4 flex justify-between items-end">
                         <h2 className="text-xl text-evergray-500">Your Portfolios</h2>
-                        <button type="button" className="cursor-pointer">Create New <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">add</span></button>
+                        <button 
+                        type="button" 
+                        className="cursor-pointer"
+                        onClick={() => {setIsModalOpen(true);}}
+                        >
+                          Create New <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">add</span></button>
                     </div>
                     <PortfolioList home={false} cards={exampleCards} onCardClick={selectCard} selectedCardName={selectedCard ? selectedCard.name : undefined}/>
                 </div>
                 <div className="flex-1 pt-8 pr-8 h-full">
                     <div className="h-full border-1 border-evergray-300 rounded-3xl">    
                     {selectedCard ? (
-                        <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} />
+                        <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} refreshPortfolios={refreshPortfolios} />
                     ) : (
                         <div className="px-8 py-7 flex flex-col h-full justify-between items-center">
                             <h2 className="text-2xl text-center">Total Distribution</h2>
@@ -124,6 +192,7 @@ export default function Portfolios() {
                 </div>
             </div>
         </div>
+        <CreatePortfolioModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onConfirm={handleCreatePortfolio} />
     </div>
   );
 }

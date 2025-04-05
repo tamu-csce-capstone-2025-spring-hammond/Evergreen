@@ -40,7 +40,8 @@ export class PortfolioService {
         momentum_focus: portfolioDto.momentum_focus ?? false,
       },
     });
-  }
+}
+
 
   async getFullPortfolioInfo(
     id: number,
@@ -138,6 +139,9 @@ export class PortfolioService {
   async findByUserId(userId: number): Promise<PortfolioSummary[]> {
     const portfolios = await this.prisma.portfolio.findMany({
       where: { user_id: userId },
+      orderBy: {
+        portfolio_id: 'asc'
+      },
     });
 
     if (portfolios.length === 0) {
