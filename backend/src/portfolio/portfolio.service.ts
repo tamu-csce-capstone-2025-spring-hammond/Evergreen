@@ -108,9 +108,9 @@ export class PortfolioService {
 
     // Map investments
     const investments: InvestmentOutput[] = holdings.map(
-      ({ ticker, quantity, average_cost_basis }) => ({
+      ({ ticker, ticker_name, quantity, average_cost_basis }) => ({
         ticker,
-        name: 'Stock name', // Placeholder
+        name: ticker_name,
         quantity_owned: quantity,
         average_cost_basis,
         current_price: average_cost_basis, // Placeholder
