@@ -5,10 +5,15 @@ export interface PortfolioSummary {
   portfolio_name: string;
   created_at: Date;
   target_date: Date;
+  uninvested_cash: Decimal;
+  current_value: Decimal;
+  percent_change: Decimal;
+  amount_change: Decimal;
   bitcoin_focus: boolean;
   smallcap_focus: boolean;
   value_focus: boolean;
   momentum_focus: boolean;
+  investments: InvestmentOutput[];
 }
 
 export interface PortfolioOutput {

@@ -77,7 +77,7 @@ export class PortfolioService {
       }),
     );
 
-    if (this.alpacaService.isTradingOpen()) {
+    if (holdings.length > 0 && this.alpacaService.isTradingOpen()) {
       const snapshotTime = new Date();
 
       const holdingsSnapshot = holdings.map((holding) => ({
@@ -98,8 +98,10 @@ export class PortfolioService {
     // Calculate current portfolio value
     const current_value =
       graphData.length > 0
-        ? new Decimal(graphData[graphData.length - 1].snapshot_value)
-        : new Decimal(0);
+        ? new Decimal(graphData[graphData.length - 1].snapshot_value).add(
+            portfolioData.uninvested_cash,
+          )
+        : new Decimal(portfolioData.uninvested_cash);
     const initial_value = portfolioData.total_deposited;
     const amount_change = current_value.minus(initial_value);
     const percent_change = initial_value.gt(0)
@@ -108,9 +110,9 @@ export class PortfolioService {
 
     // Map investments
     const investments: InvestmentOutput[] = holdings.map(
-      ({ ticker, quantity, average_cost_basis }) => ({
+      ({ ticker, ticker_name, quantity, average_cost_basis }) => ({
         ticker,
-        name: 'Stock name', // Placeholder
+        name: ticker_name,
         quantity_owned: quantity,
         average_cost_basis,
         current_price: average_cost_basis, // Placeholder
@@ -136,7 +138,7 @@ export class PortfolioService {
     };
   }
 
-  async findByUserId(userId: number): Promise<PortfolioSummary[]> {
+  async findByUserId(userId: number): Promise<PortfolioOutput[]> {
     const portfolios = await this.prisma.portfolio.findMany({
       where: { user_id: userId },
       orderBy: {
@@ -144,30 +146,16 @@ export class PortfolioService {
       },
     });
 
-    if (portfolios.length === 0) {
-      throw new NotFoundException(`No portfolios found for user ID ${userId}`);
-    }
-    return portfolios.map(
-      ({
-        portfolio_id,
-        portfolio_name,
-        created_at,
-        target_date,
-        bitcoin_focus,
-        smallcap_focus,
-        value_focus,
-        momentum_focus,
-      }) => ({
-        portfolio_id,
-        portfolio_name,
-        created_at,
-        target_date,
-        bitcoin_focus,
-        smallcap_focus,
-        value_focus,
-        momentum_focus,
-      }),
+    const portfolioInfo = await Promise.all(
+      portfolios.map((pt) =>
+        this.getFullPortfolioInfo(pt.portfolio_id, userId),
+      ),
     );
+    portfolioInfo.map((pt) => {
+      pt.performance_graph = [];
+      return pt;
+    });
+    return portfolioInfo;
   }
 
   async update(
