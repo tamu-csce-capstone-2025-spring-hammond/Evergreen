@@ -89,7 +89,6 @@ export default function Portfolios() {
     getPortfolios();
   }, []);
 
-  console.log(portfolios)
   const exampleCards = portfolios;
   const totalDeposited = exampleCards.reduce((sum, card) => sum + card.deposited, 0);
   const totalGained = Number(exampleCards.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2));
@@ -108,40 +107,70 @@ export default function Portfolios() {
     await getPortfolios();
 };
 
-const handleCreatePortfolio = async (name: string, depositedCash: number, targetDate: string, color: string, riskAptitude: number) => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const payload = {
-    portfolio_name: name,
-    color: color,
-    target_date: new Date(targetDate).toISOString().split("T")[0],
-    cash: Number(depositedCash), 
-    deposited_cash: Number(depositedCash),
-    risk_aptitude: riskAptitude,
-  };
+  const handleCreatePortfolio = async (
+    name: string,
+    depositedCash: number,
+    targetDate: string,
+    color: string,
+    riskAptitude: number,
+    focuses?: {
+      bitcoin_focus?: boolean;
+      smallcap_focus?: boolean;
+      value_focus?: boolean;
+      momentum_focus?: boolean;
+    }
+  ) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const token = getToken();
 
-  try {
-    console.log("Sending data:", JSON.stringify(payload));
-    const response = await fetch(`${backendUrl}/portfolio`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    console.log("Finish fetch")
-    const responseData = await response.json();
-    console.log("Got response data: " + JSON.stringify(responseData))
-    if (!response.ok) {
-      throw new Error(responseData.message || "Portfolio creation failed");
+    if (!backendUrl) {
+      console.error("Backend URL is not defined");
+      return;
     }
 
-    console.log("Portfolio created successfully", responseData);
-  } catch (error: any) {
-    setError(error.message);
-  }
-  setIsModalOpen(false);
-  refreshPortfolios();
-};
+    if (!token) {
+      console.error("Auth token is missing");
+      return;
+    }
+
+    const payload = {
+      portfolioName: name,
+      color: color,
+      createdDate: new Date(),
+      targetDate: new Date(targetDate),
+      inital_deposit: Number(depositedCash),
+      risk_aptitude: riskAptitude,
+      bitcoin_focus: focuses?.bitcoin_focus ?? false,
+      smallcap_focus: focuses?.smallcap_focus ?? false,
+      value_focus: focuses?.value_focus ?? false,
+      momentum_focus: focuses?.momentum_focus ?? false,
+    };
+
+    try {
+      const response = await fetch(`${backendUrl}/portfolio`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseData = await response.json();
+      console.log("Got response data:", responseData);
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Portfolio creation failed");
+      }
+
+    } catch (error: any) {
+      setError(error.message);
+    }
+
+    setIsModalOpen(false);
+    refreshPortfolios();
+  };
+
 
 
 

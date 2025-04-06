@@ -38,6 +38,7 @@ export class PortfolioService {
         smallcap_focus: portfolioDto.smallcap_focus ?? false,
         value_focus: portfolioDto.value_focus ?? false,
         momentum_focus: portfolioDto.momentum_focus ?? false,
+        risk_aptitude: portfolioDto.risk_aptitude
       },
     });
 }

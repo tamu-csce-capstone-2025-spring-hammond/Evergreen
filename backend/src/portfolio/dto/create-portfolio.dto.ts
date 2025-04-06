@@ -7,7 +7,7 @@ import {
   IsBoolean,
   IsOptional,
 } from 'class-validator';
-import { Type } from 'class-transformer'; // Add this import
+import { Type } from 'class-transformer';
 
 export class PortfolioDto {
   @ApiProperty({
@@ -89,4 +89,11 @@ export class PortfolioDto {
   @IsOptional()
   @IsBoolean()
   momentum_focus: boolean = false;
+
+  @ApiProperty({
+    example: 3,
+    description: 'Risk aptitude of the user (1–5). Required.',
+  })
+  @IsNumber()
+  risk_aptitude: number;
 }
