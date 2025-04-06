@@ -88,30 +88,62 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
       };
       
 
-    const handleConfirmEdit = async (updatedPortfolio : {name?: string, color?: string, targetDate?: string}) => {
+      const handleConfirmEdit = async (updatedPortfolio: {
+        name?: string;
+        color?: string;
+        targetDate?: string;
+        bitcoin_focus?: boolean;
+        smallcap_focus?: boolean;
+        value_focus?: boolean;
+        momentum_focus?: boolean;
+      }) => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const token = getToken();
+      
         if (!backendUrl) {
-            console.error("Backend URL is not defined");
-            return;
+          console.error("Backend URL is not defined");
+          return;
         }
+      
+        if (!token) {
+          console.error("Auth token missing");
+          return;
+        }
+      
         try {
-            const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ portfolioName: updatedPortfolio.name, color: updatedPortfolio.color, targetDate: updatedPortfolio.targetDate }),
-            });
-            if (!response.ok) {
-                throw new Error(`Error updating portfolio: ${response.statusText}`);
-            }
-    
-            await refreshPortfolios();
-    
+          const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              portfolioName: updatedPortfolio.name,
+              color: updatedPortfolio.color,
+              targetDate: updatedPortfolio.targetDate ? new Date(updatedPortfolio.targetDate) : undefined,
+              bitcoin_focus: updatedPortfolio.bitcoin_focus,
+              smallcap_focus: updatedPortfolio.smallcap_focus,
+              value_focus: updatedPortfolio.value_focus,
+              momentum_focus: updatedPortfolio.momentum_focus,
+            }),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error updating portfolio:", errorData.message || response.statusText);
+            return;
+          }
+      
+          const updated = await response.json();
+          console.log("Updated portfolio:", updated);
+      
+          await refreshPortfolios();
+      
         } catch (error) {
-            console.error("Failed to update portfolio:", error);
+          console.error("Failed to update portfolio:", error);
         }
-    };
+      };
+      
     
     const handleDelete = async (portfolioId: number) => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
