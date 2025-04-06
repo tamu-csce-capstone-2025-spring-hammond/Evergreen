@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DepositWithdrawModal from "./depositWithdrawModal";
 import EditPortfolioModal from "./editPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
+import { useRouter } from "next/navigation";
 
 interface PortfolioCardProps {
     portfolioId: number;
@@ -27,6 +28,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState<"deposit" | "withdraw" | null>(null);
     const { getToken } = useJwtStore()
+    const router = useRouter();
 
     const handleOpenDepositWithdrawModal = (type: "deposit" | "withdraw") => {
         setTransactionType(type);
@@ -145,31 +147,40 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
       };
       
     
-    const handleDelete = async (portfolioId: number) => {
+      const handleDelete = async (portfolioId: number) => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const token = getToken();
+      
         if (!backendUrl) {
-            console.error("Backend URL is not defined");
-            return;
+          console.error("Backend URL is not defined");
+          return;
         }
-    
+      
+        if (!token) {
+          console.error("Auth token is missing");
+          return;
+        }
+      
         try {
-            const response = await fetch(`${backendUrl}/portfolio/${portfolioId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Error deleting portfolio: ${response.statusText}`);
-            }
-    
-            await refreshPortfolios();
-    
+          const response = await fetch(`${backendUrl}/portfolio/${portfolioId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Error deleting portfolio: ${response.statusText}`);
+          }
+      
+          await refreshPortfolios();
         } catch (error) {
-            console.error("Failed to delete portfolio:", error);
+          console.error("Failed to delete portfolio:", error);
         }
-    };
+        router.push('/user/portfolios');
+      };
+      
     
 
     return (
