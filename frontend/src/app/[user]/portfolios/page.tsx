@@ -104,7 +104,6 @@ export default function Portfolios() {
     setSelectedCard(undefined);
     router.push('/user/portfolios');
   };
-
   const refreshPortfolios = async () => {
     await getPortfolios();
 };

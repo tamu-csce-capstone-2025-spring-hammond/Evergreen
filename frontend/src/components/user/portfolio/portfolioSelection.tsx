@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DepositWithdrawModal from "./depositWithdrawModal";
 import EditPortfolioModal from "./editPortfolioModal";
+import useJwtStore from "@/store/jwtStore";
 
 interface PortfolioCardProps {
     portfolioId: number;
@@ -24,8 +25,8 @@ interface Portfolio {
 const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refreshPortfolios }) => {
     const [isDepositWithdrawOpen, setIsDepositWithdrawOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
     const [transactionType, setTransactionType] = useState<"deposit" | "withdraw" | null>(null);
+    const { getToken } = useJwtStore()
 
     const handleOpenDepositWithdrawModal = (type: "deposit" | "withdraw") => {
         setTransactionType(type);
@@ -38,47 +39,54 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
 
     const handleConfirmWitdrawDeposit = async (amount: number, type: "deposit" | "withdraw") => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    
+        const token = getToken();
         if (!backendUrl) {
-            console.error("Backend URL is not defined");
-            return;
+          console.error("Backend URL is not defined");
+          return;
         }
-
-        if (type === "withdraw" && amount > card.total) {
+      
+        if (type === "withdraw") {
+          if (amount > card.total) {
             console.error("Withdrawal amount exceeds available balance.");
             return;
-        }
-        if (type === "withdraw" && amount > card.deposited) {
+          }
+          if (amount > card.deposited) {
             console.error("Withdrawal amount exceeds deposited amount.");
             return;
+          }
         }
-        
-        console.log("total: " + card.total + " " + type + ": " + amount);
-        const updatedCash = type === "deposit" ? card.total + amount : card.total - amount;
-        const updatedDeposit = type === "deposit" ? card.deposited + amount : card.deposited - amount;
-
-        console.log("Updated cash: " + updatedCash);
-
-        
+      
         try {
-            const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ depositedCash: updatedDeposit,cash: updatedCash }),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Error updating portfolio: ${response.statusText}`);
-            }
-    
-            await refreshPortfolios();
-    
+          const endpoint = `${backendUrl}/portfolio/${card.portfolioId}/${type}`;
+          const body = type === "deposit"
+            ? { depositAmount: amount }
+            : { withdrawAmount: amount };
+      
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error(`Error during ${type}:`, errorData.message || response.statusText);
+            return;
+          }
+      
+          const result = await response.json();
+          console.log(`${type} successful:`, result);
+      
+          await refreshPortfolios();
+      
         } catch (error) {
-            console.error("Failed to update portfolio:", error);
+          console.error(`Failed to process ${type}:`, error);
         }
-    };
+      };
+      
 
     const handleConfirmEdit = async (updatedPortfolio : {name?: string, color?: string, targetDate?: string}) => {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
