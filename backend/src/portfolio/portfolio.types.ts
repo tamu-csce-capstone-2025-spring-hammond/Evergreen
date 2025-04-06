@@ -31,6 +31,8 @@ export interface PortfolioOutput {
   momentum_focus: boolean;
   investments: InvestmentOutput[];
   performance_graph: GraphPoint[];
+  color: string,
+  total_deposited: Decimal
 }
 
 export interface InvestmentOutput {

@@ -47,7 +47,6 @@ export class PortfolioService {
     id: number,
     userId: number,
   ): Promise<PortfolioOutput> {
-    console.log("Getting full protfolio info")
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: id, user_id: userId },
     });
@@ -135,6 +134,8 @@ export class PortfolioService {
       momentum_focus: portfolioData.momentum_focus,
       investments,
       performance_graph,
+      color: portfolioData.color,
+      total_deposited: portfolioData.total_deposited
     };
   }
 
