@@ -153,7 +153,7 @@ export class PortfolioController {
     @Param('id') id: string,
     @Request() request: { userid: number },
   ) {
-    await this.portfolioService.test();
+    // await this.portfolioService.test();
     const { userid: userID } = request;
     return this.portfolioService.getFullPortfolioInfo(+id, userID);
   }

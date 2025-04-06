@@ -51,3 +51,8 @@ export interface MarketClockInfo {
   next_open: Date;
   next_close: Date;
 }
+
+export interface AlpacaPortfolioOverview {
+  total_portfolio_value: number;
+  holdings: { [ticker: string]: number };
+}

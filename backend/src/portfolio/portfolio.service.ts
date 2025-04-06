@@ -74,8 +74,8 @@ export class PortfolioService {
         snapshot_value,
       }),
     );
-
-    if (holdings.length > 0 && this.alpacaService.isTradingOpen()) {
+    let investments: InvestmentOutput[] = [];
+    if (holdings.length > 0) {
       const snapshotTime = new Date();
 
       const holdingsSnapshot = holdings.map((holding) => ({
@@ -83,14 +83,34 @@ export class PortfolioService {
         quantity: holding.quantity.toNumber(),
       }));
 
-      const snapshotValue = new Prisma.Decimal(
-        await this.alpacaService.getCurrentValue(holdingsSnapshot),
-      );
+      const portfolioInfo =
+        await this.alpacaService.getCurrentPortfolioInfo(holdingsSnapshot);
 
       performance_graph.push({
         snapshot_time: snapshotTime,
-        snapshot_value: snapshotValue,
+        snapshot_value: new Decimal(portfolioInfo.total_portfolio_value),
       });
+
+      investments = holdings.map(
+        ({ ticker, ticker_name, quantity, average_cost_basis }) => {
+          const current_price = new Decimal(portfolioInfo.holdings[ticker]);
+          const cost_basis = new Decimal(average_cost_basis);
+
+          const percent_change = current_price
+            .minus(cost_basis)
+            .dividedBy(cost_basis)
+            .times(100);
+
+          return {
+            ticker,
+            name: ticker_name,
+            quantity_owned: quantity,
+            average_cost_basis,
+            current_price,
+            percent_change,
+          };
+        },
+      );
     }
 
     // Calculate current portfolio value
@@ -106,17 +126,7 @@ export class PortfolioService {
       ? amount_change.div(initial_value).times(100)
       : new Decimal(0);
 
-    // Map investments
-    const investments: InvestmentOutput[] = holdings.map(
-      ({ ticker, ticker_name, quantity, average_cost_basis }) => ({
-        ticker,
-        name: ticker_name,
-        quantity_owned: quantity,
-        average_cost_basis,
-        current_price: average_cost_basis, // Placeholder
-        percent_change: new Decimal(0), // Placeholder
-      }),
-    );
+    // Map investment
 
     // Construct the PortfolioType object
     return {
@@ -274,13 +284,5 @@ export class PortfolioService {
     return this.prisma.portfolio.delete({
       where: { portfolio_id: id, user_id: userID },
     });
-  }
-
-  async test() {
-    const data = await this.alpacaService.getCurrentValue([
-      { ticker: 'VTI', quantity: 5 },
-      { ticker: 'T', quantity: 10 },
-    ]);
-    console.log(data);
   }
 }
