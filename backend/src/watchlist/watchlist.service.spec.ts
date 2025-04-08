@@ -45,8 +45,8 @@ describe('WatchlistService', () => {
 
   it('should return enriched watchlist when stock data is available', async () => {
     prismaService.watchlist.findMany = jest.fn().mockResolvedValue([
-      { ticker: 'AAPL', name: 'Apple Inc.', user_id: 1 },
-      { ticker: 'MSFT', name: 'Microsoft Corp.', user_id: 1 },
+      { ticker: 'AAPL', ticker_name: 'Apple Inc.', user_id: 1 },
+      { ticker: 'MSFT', ticker_name: 'Microsoft Corp.', user_id: 1 },
     ]);
     
     alpacaService.getTickerValues = jest.fn().mockResolvedValue({
@@ -69,7 +69,7 @@ describe('WatchlistService', () => {
 
   it('should return watchlist with null values if stock data is missing', async () => {
     prismaService.watchlist.findMany = jest.fn().mockResolvedValue([
-      { ticker: 'GOOG', name: 'Alphabet Inc.', user_id: 1 },
+      { ticker: 'GOOG', ticker_name: 'Alphabet Inc.', user_id: 1 },
     ]);
     
     alpacaService.getTickerValues = jest.fn().mockResolvedValue({}); // No data returned
@@ -82,7 +82,7 @@ describe('WatchlistService', () => {
 
   it('should throw an error if Alpaca API fails', async () => {
     prismaService.watchlist.findMany = jest.fn().mockResolvedValue([
-      { ticker: 'TSLA', name: 'Tesla Inc.', user_id: 1 },
+      { ticker: 'TSLA', ticker_name: 'Tesla Inc.', user_id: 1 },
     ]);
     
     alpacaService.getTickerValues = jest.fn().mockRejectedValue(new Error('API Error'));

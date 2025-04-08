@@ -8,6 +8,7 @@ import Chart from "../../components/user/chart";
 import News from "../../components/user/news";
 import Header from "../../components/user/header";
 import { useRouter } from "next/navigation";
+import useJwtStore from "@/store/jwtStore";
 
 interface PortfolioCardProps {
   portfolioId: number,
@@ -22,50 +23,60 @@ interface PortfolioCardProps {
 
 export default function Dashboard() {
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
+  const [error, setError] = useState("");
+  const { getToken } = useJwtStore();
   const userId = 1;
   const router = useRouter();
   
-  const fetchPortfolios = async (userId: number) => {
+  const getPortfolios = async () => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    try {
-      const response = await fetch(`${backendUrl}/portfolio/user/${userId}`);
-      if (!response.ok) {
-        throw new Error(`Error fetching portfolios: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Failed to fetch portfolios:", error);
-      return [];
+    const token = getToken();
+    if (!token) {
+      setError("User is not authenticated");
+      return;
     }
-  }
+    try {
+      const response = await fetch(`${backendUrl}/portfolio`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch portfolios");
+      }
+  
+      const transformed: PortfolioCardProps[] = data.map((item: any) => {
+        const deposited = Number(item.total_deposited ?? 0);
+        const total = Number(item.current_value ?? 0);
+        const amountChange = Number(item.amount_change ?? 0);
+        const percent = deposited > 0 ? Number(((amountChange / deposited) * 100).toFixed(2)) : 0;
+  
+        return {
+          portfolioId: item.portfolio_id,
+          name: item.portfolio_name,
+          color: item.color,
+          total,
+          percent,
+          startDate: new Date(item.created_at).toISOString().split("T")[0],
+          endDate: new Date(item.target_date).toISOString().split("T")[0],
+          deposited
+        };
+      });
+  
+      setPortfolios(transformed);
+    } catch (err: any) {
+      console.error("Error fetching portfolios:", err);
+      setError(err.message || "An error occurred while fetching portfolios");
+    }
+  };
   
   
   useEffect(() => {
-    async function getPortfolios() {
-      const data = await fetchPortfolios(userId);
-      
-      const formattedPortfolios: PortfolioCardProps[] = data.map((portfolio: any) => {
-        const deposited = parseFloat(portfolio.deposited_cash) || 0;
-        const total = parseFloat(portfolio.cash) || 0;
-        const percent = deposited > 0 ? ((total - deposited) / deposited) * 100 : 0;
-
-        return {
-          portfolioId: portfolio.portfolio_id,
-          name: portfolio.portfolio_name,
-          color: portfolio.color,
-          total,
-          percent: Number(percent.toFixed(2)),
-          startDate: portfolio.created_at ? new Date(portfolio.created_at).toISOString().split("T")[0] : "",
-          endDate: portfolio.target_date ? new Date(portfolio.target_date).toISOString().split("T")[0] : "",
-          deposited,
-        };
-      });
-
-      setPortfolios(formattedPortfolios);
-    }
     getPortfolios();
-  }, [userId]);
+  }, []);
 
   const onClick = (card: PortfolioCardProps) => {
     router.push(`/user/portfolios?portfolioId=${card.portfolioId}`);

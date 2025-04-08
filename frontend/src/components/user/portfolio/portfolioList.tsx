@@ -20,7 +20,7 @@ interface Portfolio {
 
   const PortfolioList: React.FC<Portfolio> = ({ home, cards, selectedCardName, onCardClick = () => {} }) => {
     return (
-      <div className="px-4 flex-1 overflow-y-auto space-y-4">
+      <div className="px-4 flex-1 overflow-y-auto space-y-4 h-full pb-20">
         {cards.map((card, index) => (
           <PortfolioCard
             key={index}

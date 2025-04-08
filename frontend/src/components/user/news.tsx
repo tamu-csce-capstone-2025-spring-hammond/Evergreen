@@ -28,7 +28,7 @@ interface NewsResponse {
 }
 
 export default function News() {
-  const { getToken, setToken, getPayload, clearToken } = useJwtStore();
+  const { getToken } = useJwtStore();
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 

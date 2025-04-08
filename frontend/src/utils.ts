@@ -1,8 +1,9 @@
 export const time_left = (start: string, end: string): string => {
-    const startDate = new Date(start);
+    const startDate = new Date();
     const endDate = new Date(end);
   
-    const diff = endDate.getTime() - startDate.getTime();
+    let diff = endDate.getTime() - startDate.getTime();
+    if (diff < 0) diff = 0;
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   
     const years = Math.floor(days / 365);
