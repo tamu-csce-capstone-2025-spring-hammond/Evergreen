@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AlpacaSnapshotResponse, TickerSnapshot } from './alpaca-types';
+import {
+  AlpacaSnapshotResponse,
+  MarketClockInfo,
+  TickerSnapshot,
+  AlpacaPortfolioOverview,
+} from './alpaca-types';
+import { promises } from 'dns';
 
 @Injectable()
 export class AlpacaService {
-  constructor(private configService: ConfigService) {}
-
-  async getTickerValues(tickers: string[]): Promise<AlpacaSnapshotResponse> {
-    if (tickers.length === 0) throw new Error('No tickers passed');
-
+  private options = {};
+  constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('ALPACA_API_KEY');
     const apiSecret = this.configService.get<string>('ALPACA_API_SECRET');
-
-    const options = {
+    this.options = {
       method: 'GET',
       headers: {
         accept: 'application/json',
@@ -20,6 +22,10 @@ export class AlpacaService {
         'APCA-API-SECRET-KEY': apiSecret,
       },
     };
+  }
+
+  async getTickerValues(tickers: string[]): Promise<AlpacaSnapshotResponse> {
+    if (tickers.length === 0) throw new Error('No tickers passed');
 
     const buildAlpacaSnapshotUrl = (tickers: string[]) => {
       const baseUrl = 'https://data.alpaca.markets/v2/stocks/snapshots';
@@ -30,9 +36,9 @@ export class AlpacaService {
     const url = buildAlpacaSnapshotUrl(tickers);
 
     try {
-      const response = await fetch(url, options);
+      const response = await fetch(url, this.options);
       const data: AlpacaSnapshotResponse = await response.json();
-      console.log(data);
+      // console.log(data);
       return data;
     } catch (err) {
       console.error('Error fetching ticker values:', err);
@@ -41,14 +47,14 @@ export class AlpacaService {
   }
 
   // Example of how to use the types
-  processTickerData(data: AlpacaSnapshotResponse) {
-    // Now you can safely access ticker data
-    Object.entries(data).forEach(([ticker, tickerData]) => {
-      console.log(`Ticker: ${ticker}`);
-      console.log(`Current Price: ${tickerData.latestTrade.p}`);
-      console.log(`Daily High: ${tickerData.dailyBar.h}`);
-    });
-  }
+  // processTickerData(data: AlpacaSnapshotResponse) {
+  //   // Now you can safely access ticker data
+  //   Object.entries(data).forEach(([ticker, tickerData]) => {
+  //     console.log(`Ticker: ${ticker}`);
+  //     console.log(`Current Price: ${tickerData.latestTrade.p}`);
+  //     console.log(`Daily High: ${tickerData.dailyBar.h}`);
+  //   });
+  // }
   calculatePercentChange = (tickerData: TickerSnapshot) => {
     const { dailyBar, prevDailyBar } = tickerData;
     const previousClose = prevDailyBar.c;
@@ -58,6 +64,26 @@ export class AlpacaService {
     return Number(percentChange.toFixed(2));
   };
 
+  getCurrentPortfolioInfo = async (
+    tickers: { ticker: string; quantity: number }[],
+  ): Promise<AlpacaPortfolioOverview> => {
+    const data = await this.getTickerValues(tickers.map((t) => t.ticker));
+
+    const holdings: { [ticker: string]: number } = {};
+    let totalValue = 0;
+
+    tickers.forEach(({ ticker, quantity }) => {
+      const latestPrice = this.calculateLatestQuote(data[ticker]);
+      holdings[ticker] = latestPrice;
+      totalValue += latestPrice * quantity;
+    });
+
+    return {
+      total_portfolio_value: totalValue,
+      holdings,
+    };
+  };
+
   calculateLatestQuote = (tickerData: TickerSnapshot) => {
     const { latestQuote, latestTrade } = tickerData;
     if (!latestQuote || !latestQuote.ap || !latestQuote.bp) {
@@ -65,5 +91,19 @@ export class AlpacaService {
       return latestTrade.p; // Or fallback to last traded price if available
     }
     return (latestQuote.ap + latestQuote.bp) / 2;
+  };
+
+  isTradingOpen = async (): Promise<boolean> => {
+    try {
+      const output = await fetch(
+        'https://paper-api.alpaca.markets/v2/clock',
+        this.options,
+      );
+      const data: MarketClockInfo = await output.json();
+      return data.is_open;
+    } catch (err) {
+      console.error('Error fetching ticker values:', err);
+      throw err;
+    }
   };
 }

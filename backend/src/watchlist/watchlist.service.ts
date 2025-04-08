@@ -41,7 +41,7 @@ export class WatchlistService {
           ticker: item.ticker,
           last_price: null,
           day_percent_change: null,
-          name: item.name,
+          name: item.ticker_name,
         };
       }
 
@@ -50,7 +50,7 @@ export class WatchlistService {
         last_price: this.alpacaService.calculateLatestQuote(tickerData),
         day_percent_change:
           this.alpacaService.calculatePercentChange(tickerData),
-        name: item.name,
+        name: item.ticker_name,
       };
     });
 

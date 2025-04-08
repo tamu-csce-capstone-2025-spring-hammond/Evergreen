@@ -10,6 +10,8 @@ import useJwtStore from "@/store/jwtStore";
 export default function Login() {
   const router = useRouter();
   const { setToken } = useJwtStore();
+  const [error, setError] = useState("");
+
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -187,7 +189,4 @@ export default function Login() {
       </div>
     </div>
   );
-}
-function setError(message: any) {
-  throw new Error("Function not implemented.");
 }
