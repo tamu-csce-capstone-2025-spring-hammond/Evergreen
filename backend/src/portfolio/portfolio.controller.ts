@@ -18,15 +18,18 @@ import {
 import { PortfolioService } from './portfolio.service';
 import { PortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
-import { JwtGuard } from 'src/auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
+  ApiServiceUnavailableResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { DepositDto, WithdrawDto } from './dto/deposit-withdraw.dto';
+import { ErrorCodes, ErrorMessages } from '../error-codes.enum';
 
 @Controller('portfolio')
 export class PortfolioController {
@@ -34,7 +37,7 @@ export class PortfolioController {
 
   @Post()
   @UseGuards(JwtGuard)
-  @ApiBearerAuth() // Specifies that this endpoint requires authentication
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a new portfolio',
     description:
@@ -63,9 +66,15 @@ export class PortfolioController {
     status: 400,
     description: 'Validation error. Check the request body format.',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized. User authentication is required.',
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
   })
   async create(
     @Body() portfolioDto: PortfolioDto,
@@ -141,21 +150,26 @@ export class PortfolioController {
     status: 400,
     description: 'Invalid ID format or missing parameter.',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized. User authentication is required.',
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
   })
   @ApiResponse({
     status: 404,
-    description: 'Portfolio not found for the given ID.',
+    description: 'Portfolio with ID ${id} not found',
   })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Request() request: { userid: number },
   ) {
-    await this.portfolioService.test();
     const { userid: userID } = request;
-    return this.portfolioService.getFullPortfolioInfo(+id, userID);
+    return this.portfolioService.getFullPortfolioInfo(id, userID);
   }
 
   @Get()
@@ -172,36 +186,75 @@ export class PortfolioController {
     schema: {
       example: [
         {
-          portfolio_id: 1,
-          portfolio_name: 'retirement',
-          created_at: '2024-03-31T00:00:00.000Z',
-          target_date: '2035-06-15T00:00:00.000Z',
-          bitcoin_focus: false,
-          smallcap_focus: false,
-          value_focus: false,
-          momentum_focus: true,
+          portfolio_id: 5,
+          portfolio_name: 'Retirement',
+          created_at: '2025-01-01T00:00:00.000Z',
+          target_date: '2050-01-01T00:00:00.000Z',
+          uninvested_cash: '1000000',
+          current_value: '1000000',
+          percent_change: '0',
+          amount_change: '0',
+          bitcoin_focus: true,
+          smallcap_focus: true,
+          value_focus: true,
+          momentum_focus: false,
+          investments: [],
+          performance_graph: [],
         },
         {
-          portfolio_id: 2,
-          portfolio_name: 'home',
+          portfolio_id: 1,
+          portfolio_name: 'Retirement Growth 2',
           created_at: '2024-03-31T00:00:00.000Z',
-          target_date: '2030-06-15T00:00:00.000Z',
-          bitcoin_focus: false,
-          smallcap_focus: false,
+          target_date: '2055-01-01T00:00:00.000Z',
+          uninvested_cash: '2000',
+          current_value: '15016.24',
+          percent_change: '66.847111111111111111',
+          amount_change: '6016.24',
+          bitcoin_focus: true,
+          smallcap_focus: true,
           value_focus: false,
-          momentum_focus: false,
+          momentum_focus: true,
+          investments: [
+            {
+              ticker: 'BND',
+              name: 'Total Bond Market',
+              quantity_owned: '20',
+              average_cost_basis: '105',
+              current_price: '73.76',
+              percent_change: '-29.752380952380952381',
+            },
+            {
+              ticker: 'VTI',
+              name: 'Vanguard Total Market',
+              quantity_owned: '25',
+              average_cost_basis: '220',
+              current_price: '248.065',
+              percent_change: '12.756818181818181818',
+            },
+          ],
+          performance_graph: [],
         },
       ],
     },
   })
-  @ApiResponse({
-    status: 400,
-    description:
-      'Bad request. Ensure the request body or parameters are valid.',
+  @ApiServiceUnavailableResponse({
+    description: 'Alpaca or Polygon is down, not working, or over used',
+    schema: {
+      example: {
+        error: ErrorCodes.EXTERNAL_API_FAILURE,
+        message: ErrorMessages.EXTERNAL_API_FAILURE,
+      },
+    },
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized. User authentication is required.',
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
   })
   @ApiResponse({
     status: 404,
@@ -249,13 +302,31 @@ export class PortfolioController {
       },
     },
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid ID format or missing parameter.',
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Portfolio with ID ${id} not found',
+  })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Request() request: { userid: number },
   ) {
     const { userid: userID } = request;
-    return this.portfolioService.update(+id, updatePortfolioDto, userID);
+    return this.portfolioService.update(id, updatePortfolioDto, userID);
   }
 
   @Delete(':id')
@@ -264,9 +335,26 @@ export class PortfolioController {
   @ApiOperation({ summary: 'Delete portfolio by ID' })
   @ApiParam({ name: 'id', description: 'Portfolio ID' })
   @ApiResponse({ status: 204, description: 'Portfolio successfully deleted' })
-  @ApiResponse({ status: 404, description: 'Portfolio not found' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid ID format or missing parameter.',
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Portfolio with ID ${id} not found',
+  })
   async remove(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Request() request: { userid: number },
   ): Promise<void> {
     const { userid: userID } = request;
@@ -311,18 +399,24 @@ export class PortfolioController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Deposit amount must be positive',
+    description: 'Deposit amount must be positive and portfolio id must be a integer',
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
   })
   @ApiResponse({
     status: 404,
-    description: 'Portfolio not found',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Failed to process deposit',
+    description: 'Portfolio with ID ${id} not found',
   })
   async deposit(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() depositDto: DepositDto,
     @Request() request: { userid: number },
   ) {
@@ -336,7 +430,7 @@ export class PortfolioController {
     try {
       const result = await this.portfolioService.deposit(
         userID,
-        +id,
+        id,
         depositAmount,
       );
       return {
@@ -400,16 +494,22 @@ export class PortfolioController {
       },
     },
   })
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
+  })
   @ApiResponse({
     status: 404,
-    description: 'Portfolio not found',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Failed to process withdrawal',
+    description: 'Portfolio with ID ${id} not found',
   })
   async withdraw(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() withdrawDto: WithdrawDto,
     @Request() request: { userid: number },
   ) {

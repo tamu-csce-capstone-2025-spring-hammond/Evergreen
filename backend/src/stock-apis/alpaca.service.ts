@@ -4,6 +4,7 @@ import {
   AlpacaSnapshotResponse,
   MarketClockInfo,
   TickerSnapshot,
+  AlpacaPortfolioOverview,
 } from './alpaca-types';
 import { promises } from 'dns';
 
@@ -63,12 +64,24 @@ export class AlpacaService {
     return Number(percentChange.toFixed(2));
   };
 
-  getCurrentValue = async (tickers: { ticker: string; quantity: number }[]) => {
+  getCurrentPortfolioInfo = async (
+    tickers: { ticker: string; quantity: number }[],
+  ): Promise<AlpacaPortfolioOverview> => {
     const data = await this.getTickerValues(tickers.map((t) => t.ticker));
-    const value = tickers.reduce((sum, { ticker, quantity }) => {
-      return sum + this.calculateLatestQuote(data[ticker]) * quantity;
-    }, 0);
-    return value;
+
+    const holdings: { [ticker: string]: number } = {};
+    let totalValue = 0;
+
+    tickers.forEach(({ ticker, quantity }) => {
+      const latestPrice = this.calculateLatestQuote(data[ticker]);
+      holdings[ticker] = latestPrice;
+      totalValue += latestPrice * quantity;
+    });
+
+    return {
+      total_portfolio_value: totalValue,
+      holdings,
+    };
   };
 
   calculateLatestQuote = (tickerData: TickerSnapshot) => {
