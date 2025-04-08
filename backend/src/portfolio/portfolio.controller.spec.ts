@@ -58,6 +58,7 @@ describe('PortfolioController', () => {
         smallcap_focus: false,
         value_focus: true,
         momentum_focus: false,
+        risk_aptitude: 2,
       };
       const result = { id: 1, ...dto };
       mockService.create.mockResolvedValue(result);
