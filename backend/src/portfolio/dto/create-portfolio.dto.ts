@@ -52,7 +52,7 @@ export class PortfolioDto {
     required: true,
   })
   @IsNumber()
-  inital_deposit: number;
+  initial_deposit: number;
 
   @ApiPropertyOptional({
     example: true,
