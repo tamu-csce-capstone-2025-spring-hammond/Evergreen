@@ -1,27 +1,145 @@
-const PieChart = () => {
-    return (
-        <div className="flex-1">
-            <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 100 100">
-                <defs>
-                    <filter id="Filter1" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox">
-                        <feTurbulence baseFrequency="0.1" numOctaves="2" result="turbulence"/>
-                        <feComposite in="SourceGraphic" in2="turbulence" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
-                    </filter>
-                    <radialGradient id="Gradient1" cx="20" cy="20" r="75" transform-origin="50 50" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stop-color="#6Ca091"/>
-                        <stop offset="0.25" stop-color="#305067"/>
-                        <stop offset="0.65" stop-color="#13131C"/>
-                        <stop offset="1" stop-color="black"/>
-                        <animateTransform attributeName="gradientTransform" type="translate" values="0;60 0;60 60;0 60;0" dur="8s" repeatCount="indefinite" />
-                    </radialGradient>
-                </defs>
-	            <g>
-	                <rect fill="url(#Gradient1)" width="100%" height="100%" opacity="0.85" rx="10"/>
-                    <rect width="100%" height="100%" filter="url(#Filter1)" rx="10"/>
-	            </g>
-            </svg>
-        </div>
-    );
-};
+"use client";
 
-export default PieChart;
+import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Legend,
+  Tooltip,
+  ChartOptions,
+  ChartData,
+  Plugin,
+} from "chart.js";
+import { useEffect, useState } from "react";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+interface PortfolioCardProps {
+  portfolioId: number;
+  name: string;
+  color: string;
+  total: number;
+  percent: number;
+  startDate: string;
+  endDate: string;
+  deposited: number;
+}
+
+interface InvestmentData {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface PieChartProps {
+  portfolios?: PortfolioCardProps[];
+  data?: InvestmentData[];
+  showLegend: boolean;
+}
+
+export default function PieChart({ portfolios, data, showLegend }: PieChartProps) {
+  const [chartData, setChartData] = useState<ChartData<"doughnut"> | null>(null);
+  const [total, setTotal] = useState<number>(0);
+
+  // Show center total only for portfolios
+  const showCenterTotal = portfolios && portfolios.length > 0;
+
+  useEffect(() => {
+    if (portfolios && portfolios.length > 0) {
+      const totalValue = portfolios.reduce((sum, p) => sum + p.total, 0);
+      setTotal(totalValue);
+
+      const portfolioChart = {
+        labels: portfolios.map((p) => p.name),
+        datasets: [
+          {
+            data: portfolios.map((p) => p.total),
+            backgroundColor: portfolios.map((p) => p.color),
+            borderColor: "#ffffff",
+            borderWidth: 2,
+          },
+        ],
+      };
+      setChartData(portfolioChart);
+    } else if (data && data.length > 0) {
+      const defaultColors = ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"];
+      const totalValue = data.reduce((sum, d) => sum + d.value, 0);
+      setTotal(totalValue);
+
+      const dataset = {
+        labels: data.map((d) => d.label),
+        datasets: [
+          {
+            data: data.map((d) => d.value),
+            backgroundColor: data.map((d, i) => d.color || defaultColors[i % defaultColors.length]),
+            borderColor: "#ffffff",
+            borderWidth: 2,
+          },
+        ],
+      };
+      setChartData(dataset);
+    }
+  }, [portfolios, data]);
+
+  const centerTextPlugin: Plugin<"doughnut"> = {
+    id: "centerText",
+    beforeDraw: (chart) => {
+      const { width, height } = chart;
+      const ctx = chart.ctx;
+      ctx.save();
+
+      const fontSize = (height / 175).toFixed(2);
+      ctx.font = `${fontSize}em Roboto Mono, sans-serif`;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#737373";
+
+      const text = `$${total.toFixed(2)}`;
+      ctx.fillText(text, width / 2, height / 2);
+      ctx.restore();
+    },
+  };
+
+  if (!chartData) {
+    return <p className="text-center text-evergray-400">No data to display</p>;
+  }
+
+  const options: ChartOptions<"doughnut"> = {
+    cutout: "70%",
+    plugins: {
+      legend: {
+        display: showLegend,
+        position: "bottom",
+        labels: {
+          padding: 16,
+          boxWidth: 16,
+          color: "#4B5563", 
+          font: {
+            size: 14,
+          },
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || "";
+            const value = context.formattedValue || "0";
+            return `${label}: $${value}`;
+          },
+        },
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  return (
+    <div className={`w-full ${showCenterTotal ? "h-[300px]" : "h-[270px]"} relative`}>
+      <Doughnut
+        data={chartData}
+        options={options}
+        plugins={showCenterTotal ? [centerTextPlugin] : []}
+      />
+    </div>
+  );
+}

@@ -179,7 +179,7 @@ export default function Portfolios() {
         <Sidebar />
         <div className="flex-1 flex flex-col h-full overflow-hidden">
             <Header />
-            <div className="flex h-full pb-8">
+            <div className="flex h-full pb-12">
                 <div className="p-4 pb-0 space-y-4 flex-2">
                     <div className="px-4 mr-2 pt-4 flex justify-between items-end">
                         <h2 className="text-xl text-evergray-500">Your Portfolios</h2>
@@ -192,14 +192,14 @@ export default function Portfolios() {
                     </div>
                     <PortfolioList home={false} cards={exampleCards} onCardClick={selectCard} selectedCardName={selectedCard ? selectedCard.name : undefined}/>
                 </div>
-                <div className="flex-1 pt-8 pr-8 h-full">
-                    <div className="h-full border-1 border-evergray-300 rounded-3xl">    
+                <div className="flex-1 pt-8 pr-8 pb-8 h-full">
+                    <div className="h-full border-1 border-evergray-300 rounded-3xl mb-4">    
                     {selectedCard ? (
                         <PortfolioSelection card={selectedCard} onDeselectCard={deselectCard} refreshPortfolios={refreshPortfolios} />
                     ) : (
                         <div className="px-8 py-7 flex flex-col h-full justify-between items-center">
                             <h2 className="text-2xl text-center">Total Distribution</h2>
-                            <div className="w-3/4"><PieChart/></div>
+                            <div className="w-3/4"><PieChart portfolios={exampleCards} showLegend={false}/></div>
                             <div className="text-evergray-500 text-md space-y-6">
                                 <p>Total Deposited:<br></br><span className="text-evergray-600 font-roboto text-3xl">${totalDeposited}</span></p>
                                 <p>Total Gained:<br></br><span className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}>${totalGained}</span></p>

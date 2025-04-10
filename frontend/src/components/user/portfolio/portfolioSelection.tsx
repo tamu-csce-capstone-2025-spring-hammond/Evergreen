@@ -5,6 +5,7 @@ import DepositWithdrawModal from "./depositWithdrawModal";
 import EditPortfolioModal from "./editPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
 import { useRouter } from "next/navigation";
+import PieChart from "@/components/user/pieChart";
 
 interface PortfolioCardProps {
     portfolioId: number;
@@ -23,10 +24,20 @@ interface Portfolio {
     refreshPortfolios: () => void;
 }
 
+interface Investment {
+    ticker: string;
+    name: string;
+    quantity_owned: string;
+    average_cost_basis: string;
+    current_price: string;
+    percent_change: string;
+  }
+
 const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refreshPortfolios }) => {
     const [isDepositWithdrawOpen, setIsDepositWithdrawOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState<"deposit" | "withdraw" | null>(null);
+    const [investments, setInvestments] = useState<Investment[]>([]);
     const { getToken } = useJwtStore()
     const router = useRouter();
 
@@ -180,7 +191,40 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
         }
         router.push('/user/portfolios');
       };
+
+      useEffect(() => {
+        const fetchInvestments = async () => {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+          const token = getToken();
       
+          if (!token || !backendUrl) return;
+      
+          try {
+            const response = await fetch(`${backendUrl}/portfolio/${card.portfolioId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+      
+            const data = await response.json();
+            if (data.investments) {
+              setInvestments(data.investments);
+            }
+          } catch (err) {
+            console.error("Error fetching investments", err);
+          }
+        };
+      
+        fetchInvestments();
+      }, [card.portfolioId]);
+      
+      const investmentChartData = investments.map((inv) => {
+        const value = parseFloat(inv.current_price) * parseFloat(inv.quantity_owned);
+        return {
+          label: inv.ticker,
+          value: parseFloat(value.toFixed(2)),
+        };
+      });
     
 
     return (
@@ -221,7 +265,12 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
             <hr className="w-full my-4 border-gray-300" />
 
             {/* Holdings title */}
-            <h2 className="text-center">Holdings</h2>
+            <div className="w-full flex flex-col items-center justify-around flex-1">
+                <h2 className="text-center">Holdings</h2>
+                <div className="w-3/4">
+                <PieChart data={investmentChartData} showLegend={true} />
+                </div>
+            </div>
 
             {/* Deposit/Withdraw Modal */}
             <DepositWithdrawModal 
