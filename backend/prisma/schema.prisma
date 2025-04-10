@@ -123,4 +123,3 @@ model TradeQ {
 
   @@map("trade_q")
 }
-
