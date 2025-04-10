@@ -6,7 +6,7 @@ interface Trendline {
 
 const Trendline: React.FC<Trendline> = ({home, color, data}) => {
 
-    const strokeColor = color === "text-evergreen-500" ? "stroke-evergreen-500" : color === "text-everred-500" ? "stroke-everred-500" : "stroke-evergray-500";
+    const strokeColor = color === "text-evergreen-500" ? "#578555" : color === "#A9403D" ? "stroke-everred-500" : "#737373";
 
     const maxValue = Math.max(...data);
     const minValue = Math.min(...data);
@@ -29,8 +29,8 @@ const Trendline: React.FC<Trendline> = ({home, color, data}) => {
 
     return (
         <div className="flex-1">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox={`-5 -5 ${realWidth} 110`} className={`fill-transparent ${strokeColor}`}>
-                <path d={`${path.join('')}`} strokeWidth="2" strokeLinecap="round" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox={`-5 -5 ${realWidth} 110`}>
+                <path d={`${path.join('')}`} strokeWidth="2" strokeLinecap="round" fill="transparent" stroke={`${strokeColor}`} />
             </svg>
         </div>
     );
