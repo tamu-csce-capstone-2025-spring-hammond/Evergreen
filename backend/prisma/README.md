@@ -11,4 +11,4 @@ This prisma schema is the sole point of reference (source of authority) of datab
 ## Generate prisma-client
 
 1. Run `npx prisma generate` to generate prisma client scripts in node modules. The client can then be used in the code through prisma.service.ts
-2. Run `npx primsa db seed` to generate a sample user with simulated trade history, and 
+2. Run `npx prisma db seed` to generate a sample user with simulated trade history, and 
