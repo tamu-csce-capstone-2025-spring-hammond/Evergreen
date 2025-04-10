@@ -165,10 +165,10 @@ export class PortfolioService {
         this.getFullPortfolioInfo(pt.portfolio_id, userId),
       ),
     );
-    portfolioInfo.map((pt) => {
-      pt.performance_graph = [];
-      return pt;
-    });
+    // portfolioInfo.map((pt) => {
+    //   pt.performance_graph = [];
+    //   return pt;
+    // });
     return portfolioInfo;
   }
 
