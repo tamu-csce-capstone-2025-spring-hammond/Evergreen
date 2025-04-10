@@ -38,31 +38,31 @@ const Watchlist = () => {
   }, [getToken]); // Re-run the effect if the token changes
 
   return (
-    <div className="h-full flex flex-col bg-evergray-400 rounded-xl p-4">
-      <h2 className="text-2xl font-semibold mb-4">Watchlist</h2>
+    <div className="h-full flex flex-col p-4">
+      <h2 className="text-evergray-500 mb-4">Watchlist</h2>
 
-      <div className="flex-1 overflow-y-auto border border-gray-300 rounded-md scrollbar-clean">
+      <div className="flex-1 overflow-y-auto border border-evergray-600">
         <table className="min-w-full text-sm text-left">
-          <thead className="bg-evergray-600 text-white">
-            <tr className="border-b border-gray-300">
-              <th className="px-4 py-2">Symbol</th>
-              <th className="px-4 py-2">Last Price</th>
-              <th className="px-4 py-2">% Change</th>
+          <thead className="bg-evergray-200 text-evergray-700">
+            <tr className="border-b border-evergray-600 ">
+              <th className="px-4 py-3">Symbol</th>
+              <th className="px-4 py-3">Last Price</th>
+              <th className="px-4 py-3">% Change</th>
             </tr>
           </thead>
           <tbody>
             {watchlist.map((item, index) => (
-              <tr key={index} className="border-b border-gray-200">
+              <tr key={index} className="border-b border-evergray-200 text-evergray-600">
                 <td className="px-4 py-2">
                   <div className="font-semibold">{item.ticker}</div>
                   <div className="text-xs">{item.name}</div>
                 </td>
-                <td className="px-4 py-2">${item.last_price.toFixed(2)}</td>
-                <td className="px-4 py-2 font-medium">
+                <td className="px-4 py-3 font-mono">${item.last_price.toFixed(2)}</td>
+                <td className="px-4 py-3 font-medium">
                   {item.day_percent_change >= 0 ? (
-                    <span className="text-green-600">▲ {item.day_percent_change.toFixed(2)}%</span>
+                    <span className="text-evergreen-500">▲ {item.day_percent_change.toFixed(2)}%</span>
                   ) : (
-                    <span className="text-red-500">▼ {item.day_percent_change.toFixed(2)}%</span>
+                    <span className="text-everred-400">▼ {item.day_percent_change.toFixed(2)}%</span>
                   )}
                 </td>
               </tr>
