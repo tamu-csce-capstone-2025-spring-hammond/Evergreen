@@ -1,9 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react";
-"use client"
-
-import { useEffect, useState } from "react";
 import DepositWithdrawModal from "./depositWithdrawModal";
 import EditPortfolioModal from "./editPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
@@ -45,13 +42,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
     const router = useRouter();
 
     const handleOpenDepositWithdrawModal = (type: "deposit" | "withdraw") => {
-    const handleOpenDepositWithdrawModal = (type: "deposit" | "withdraw") => {
         setTransactionType(type);
-        setIsDepositWithdrawOpen(true);
-    };
-
-    const handleOpenEditModal = () => {
-        setIsEditModalOpen(true);
         setIsDepositWithdrawOpen(true);
     };
 
@@ -243,7 +234,6 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
                 <button className="text-xl cursor-pointer" onClick={onDeselectCard}>{'<'}</button>
                 <h1 className="text-2xl text-center flex-1 absolute left-1/2 -translate-x-1/2">{card.name}</h1>
                 <button className="flex items-center gap-1 cursor-pointer" onClick={() => handleOpenEditModal()}>
-                <button className="flex items-center gap-1 cursor-pointer" onClick={() => handleOpenEditModal()}>
                     <span>Edit</span>
                     <img src="/editIcon.svg" alt="Edit Icon" className="w-5 h-5" />
                 </button>
@@ -257,10 +247,8 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
             {/* Deposit and Withdraw */}
             <div className="mt-4 flex gap-4 text-xl w-full button-container">
                 <button onClick={() => handleOpenDepositWithdrawModal("deposit")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
-                <button onClick={() => handleOpenDepositWithdrawModal("deposit")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                     Deposit
                 </button>
-                <button onClick={() => handleOpenDepositWithdrawModal("withdraw")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                 <button onClick={() => handleOpenDepositWithdrawModal("withdraw")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
                     Withdraw
                 </button>
@@ -289,19 +277,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
                 isOpen={isDepositWithdrawOpen} 
                 onClose={() => setIsDepositWithdrawOpen(false)} 
                 onConfirm={handleConfirmWitdrawDeposit} 
-                isOpen={isDepositWithdrawOpen} 
-                onClose={() => setIsDepositWithdrawOpen(false)} 
-                onConfirm={handleConfirmWitdrawDeposit} 
                 type={transactionType as "deposit" | "withdraw"} 
-            />
-
-            {/* Edit Portfolio Modal */}
-            <EditPortfolioModal
-                card={card}
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                onConfirm={handleConfirmEdit}
-                onDelete={handleDelete}
             />
 
             {/* Edit Portfolio Modal */}
