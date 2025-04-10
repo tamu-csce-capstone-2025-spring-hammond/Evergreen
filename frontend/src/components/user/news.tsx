@@ -88,7 +88,7 @@ export default function News() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="p-3 font-semibold">
+      <div className="p-3 text-evergray-500">
         <h2>Latest News</h2>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -97,7 +97,7 @@ export default function News() {
             <p>Loading news...</p>
           </div>
         ) : newsArticles.length === 0 ? (
-          <div className="flex justify-center items-center p-4">
+          <div className="flex justify-center items-center p-4 text-evergray-400">
             <p>No news articles available.</p>
           </div>
         ) : (
