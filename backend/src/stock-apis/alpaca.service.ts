@@ -1,16 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   AlpacaSnapshotResponse,
   MarketClockInfo,
   TickerSnapshot,
   AlpacaPortfolioOverview,
+  AlpacaHistoricalBarsApiResponse,
+  BacktestResult,
+  GraphPoint,
+  PortfolioAllocation,
+  holdingInfo,
+  trade,
 } from './alpaca-types';
 import { promises } from 'dns';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AlpacaService {
   private options = {};
+  private logger = new Logger(AlpacaService.name);
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('ALPACA_API_KEY');
     const apiSecret = this.configService.get<string>('ALPACA_API_SECRET');
@@ -107,5 +115,161 @@ export class AlpacaService {
     }
   };
 
-  
+  getPortfolioBacktest = async (
+    tickers: { ticker: string; quantity: Decimal }[],
+    beginning: Date,
+    ending: Date = new Date(Date.now() - 15 * 60 * 1000),
+  ): Promise<BacktestResult> => {
+    const baseUrl = 'https://data.alpaca.markets/v2/stocks/bars';
+    const symbols = tickers.map(({ ticker }) => ticker).join(',');
+
+    const toISOString = (date: Date) => date.toISOString();
+    const start = toISOString(beginning);
+    const end = toISOString(ending);
+
+    const params = new URLSearchParams({
+      symbols,
+      timeframe: '1Day',
+      start,
+      end,
+      limit: '10000',
+      adjustment: 'all',
+      feed: 'sip',
+      sort: 'asc',
+    });
+
+    const url = `${baseUrl}?${params.toString()}`;
+    const response = await fetch(url, this.options);
+
+    if (!response.ok) {
+      this.logger.error(
+        `Failed to fetch portfolio history: ${response.statusText}`,
+      );
+      throw new Error(
+        `Alpaca API request failed with status ${response.status}`,
+      );
+    }
+
+    const history: AlpacaHistoricalBarsApiResponse = await response.json();
+
+    const portfolioGraph: GraphPoint[] = [];
+
+    const referenceTicker = tickers[0].ticker;
+    const barCount = history.bars[referenceTicker]?.length || 0;
+
+    for (let i = 0; i < barCount; i++) {
+      let totalValue = Decimal(0);
+
+      for (const { ticker, quantity } of tickers) {
+        const price = history.bars[ticker][i]?.c;
+        totalValue = totalValue.add(quantity.times(price));
+      }
+
+      const timestamp = history.bars[referenceTicker][i]?.t;
+
+      portfolioGraph.push({
+        snapshot_time: timestamp,
+        snapshot_value: totalValue,
+      });
+    }
+
+    return {
+      sharpe_ratio: Decimal(0),
+      omega_ratio: Decimal(0),
+      raw_returns: Decimal(0),
+      annualized_returns: Decimal(0),
+      TSP: Decimal(0),
+      graph: portfolioGraph,
+    };
+  };
+
+  getTickerName = async (ticker: string) => {
+    return fetch(
+      `https://paper-api.alpaca.markets/v2/assets/${ticker}`,
+      this.options,
+    )
+      .then((res) => res.json())
+      .then((res) => res.name)
+      .catch((err) => console.error(err));
+  };
+
+  backtestSim = async (
+    portfolio: PortfolioAllocation[],
+    initialInvestment: Decimal,
+    startDate: Date,
+    endDate: Date = new Date(Date.now() - 15 * 60 * 1000),
+  ): Promise<{
+    backtestResult: BacktestResult;
+    investments: holdingInfo[];
+    trades: trade[];
+  }> => {
+    const baseUrl = 'https://data.alpaca.markets/v2/stocks/bars';
+    const symbols = portfolio.map(({ ticker }) => ticker).join(',');
+
+    const toISOString = (date: Date) => date.toISOString();
+    const start = toISOString(startDate);
+    const end = toISOString(
+      new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+    );
+    const params = new URLSearchParams({
+      symbols,
+      timeframe: '1Day',
+      start,
+      end,
+      limit: '400',
+      adjustment: 'all',
+      feed: 'sip',
+      sort: 'asc',
+    });
+
+    const url = `${baseUrl}?${params.toString()}`;
+    const response = await fetch(url, this.options);
+
+    if (!response.ok) {
+      this.logger.error(
+        `Failed to fetch portfolio history: ${response.statusText}`,
+      );
+      throw new Error(
+        `Alpaca API request failed with status ${response.status}`,
+      );
+    }
+
+    const history: AlpacaHistoricalBarsApiResponse = await response.json();
+    // this.logger.debug(history.bars);
+    const investments = await Promise.all(
+      portfolio.map(async ({ ticker, percent }) => {
+        const quantity = initialInvestment
+          .times(percent)
+          .dividedBy(history.bars[ticker][0].c);
+
+        return {
+          ticker,
+          ticker_name: await this.getTickerName(ticker),
+          quantity,
+          average_cost_basis: Decimal(history.bars[ticker][0].c),
+          last_updated: history.bars[ticker][0].t,
+        };
+      }),
+    );
+    const trades: trade[] = investments.map(
+      ({ ticker, quantity, average_cost_basis, last_updated }) => {
+        return {
+          ticker,
+          trade_time: last_updated,
+          trade_is_buy: true,
+          amount_shares_traded: quantity,
+          av_price_paid: average_cost_basis,
+        };
+      },
+    );
+    return {
+      backtestResult: await this.getPortfolioBacktest(
+        investments,
+        startDate,
+        endDate,
+      ),
+      investments: investments,
+      trades,
+    };
+  };
 }
