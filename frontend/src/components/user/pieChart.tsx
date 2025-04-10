@@ -88,7 +88,7 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
       const ctx = chart.ctx;
       ctx.save();
 
-      const fontSize = (height / 175).toFixed(2);
+      const fontSize = (height / 170).toFixed(2);
       ctx.font = `${fontSize}em Roboto Mono, sans-serif`;
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
@@ -134,7 +134,7 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
   };
 
   return (
-    <div className={`w-full ${showCenterTotal ? "h-[300px]" : "h-[270px]"} relative`}>
+    <div className={`w-full h-full relative`}>
       <Doughnut
         data={chartData}
         options={options}

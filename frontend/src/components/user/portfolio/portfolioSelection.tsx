@@ -267,8 +267,8 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
             {/* Holdings title */}
             <div className="w-full flex flex-col items-center justify-around flex-1">
                 <h2 className="text-center">Holdings</h2>
-                <div className="w-3/4">
-                <PieChart data={investmentChartData} showLegend={true} />
+                <div className="max-w-3/4 flex-1 max-h-4/5">
+                    <PieChart data={investmentChartData} showLegend={true} />
                 </div>
             </div>
 

@@ -53,7 +53,7 @@ export class PortfolioController {
         color: '#4CAF50',
         createdDate: '2025-01-01T00:00:00.000Z',
         targetDate: '2050-01-01T00:00:00.000Z',
-        inital_deposit: 1000000,
+        initial_deposit: 1000000,
         bitcoin_focus: true,
         smallcap_focus: true,
         value_focus: true,
