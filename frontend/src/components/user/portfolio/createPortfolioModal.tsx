@@ -82,6 +82,18 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
     clearModal();
   };
 
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const dd = String(tomorrow.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+
   if (!isOpen) return null;
 
   return (
@@ -102,7 +114,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full p-2 border rounded mb-1"
-          placeholder="Enter portfolio name"
+          placeholder="Enter Portfolio Name"
         />
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name}</p>
@@ -117,6 +129,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             setDepositedCash(parseFloat(e.target.value) || null)
           }
           className="w-full p-2 border rounded mb-1"
+          placeholder="Enter Intial Deposit"
         />
         {errors.depositedCash && (
           <p className="text-red-500 text-sm">{errors.depositedCash}</p>
@@ -129,6 +142,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
           value={targetDate}
           onChange={(e) => setTargetDate(e.target.value)}
           className="w-full p-2 border rounded mb-1"
+          min={getTomorrowDate()}
         />
         {errors.targetDate && (
           <p className="text-red-500 text-sm">{errors.targetDate}</p>
