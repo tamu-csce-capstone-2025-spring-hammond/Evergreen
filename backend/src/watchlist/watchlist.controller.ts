@@ -30,27 +30,27 @@ export class WatchlistController {
   @UseGuards(JwtGuard)
   @ApiOperation({ summary: "Get current User's watchlist" })
   @ApiBearerAuth()
-  @ApiResponse({
-    status: 200,
-    description: 'Watchlist returned successfully',
-    isArray: true,
-    schema: {
-      example: [
-        {
-          ticker: 'SPY',
-          last_price: 30.33,
-          day_percent_change: 3,
-          name: 'SPDR S&P 500 ETF Trust',
-        },
-        {
-          ticker: 'APPL',
-          last_price: 300.33,
-          day_percent_change: -0.5,
-          name: 'Apple Inc',
-        },
-      ],
-    },
-  })
+@ApiResponse({
+  status: 200,
+  description: 'Watchlist returned successfully',
+  isArray: true,
+  schema: {
+    example: [
+      {
+        ticker: 'SPY',
+        last_price: 30.33,
+        day_percent_change: 3,
+        name: 'SPDR S&P 500 ETF Trust', // ✅ correct key for API output
+      },
+      {
+        ticker: 'AAPL',
+        last_price: 182.25,
+        day_percent_change: -0.5,
+        name: 'Apple Inc',
+      },
+    ],
+  },
+})
   @ApiServiceUnavailableResponse({
     description: 'Alpaca or Polygon is down, not working, or over used',
     schema: {
