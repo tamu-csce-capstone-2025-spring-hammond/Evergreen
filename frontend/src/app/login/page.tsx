@@ -48,7 +48,6 @@ export default function Login() {
       }
 
       // here is the token
-      console.log("Login successful:", data);
       setToken(data["access_token"]);
 
       router.push("/dashboard");

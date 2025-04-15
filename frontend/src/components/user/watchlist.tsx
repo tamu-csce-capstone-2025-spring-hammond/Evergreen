@@ -26,12 +26,10 @@ const Watchlist = () => {
       },
     })
       .then((res) => {
-        console.log("Response status:", res.status);
         if (!res.ok) throw new Error("Unauthorized or error fetching");
         return res.json();
       })
       .then((data) => {
-        console.log("Watchlist data:", data);
         setWatchlist(data); // Store the fetched data in the state
       })
       .catch((err) => console.error("Fetch error:", err)); // Catch and log errors

@@ -59,7 +59,6 @@ export default function News() {
         },
       });
 
-      console.log("Completed Fetch");
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

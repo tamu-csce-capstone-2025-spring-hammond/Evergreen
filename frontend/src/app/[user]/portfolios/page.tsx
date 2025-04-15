@@ -177,7 +177,6 @@ export default function Portfolios() {
       });
 
       const responseData = await response.json();
-      console.log("Got response data:", responseData);
 
       if (!response.ok) {
         throw new Error(responseData.message || "Portfolio creation failed");

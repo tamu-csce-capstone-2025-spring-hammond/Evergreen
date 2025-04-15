@@ -22,7 +22,6 @@ export class WatchlistService {
       },
     });
 
-    console.log("Fetched Watchlist items:", watchlistItems);
 
     // If no watchlist items, return an empty array
     if (watchlistItems.length === 0) {
@@ -35,9 +34,7 @@ export class WatchlistService {
     let stockData: AlpacaSnapshotResponse;
     try {
       stockData = await this.alpacaService.getTickerValues(tickers);
-      console.log("Fetched Stock Data:", stockData);
     } catch (error) {
-      console.log("Error fetching stock data:", error);
       throw new Error("Error fetching stock data from Alpaca.");
     }
 

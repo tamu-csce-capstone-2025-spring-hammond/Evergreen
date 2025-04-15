@@ -91,7 +91,6 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
           }
       
           const result = await response.json();
-          console.log(`${type} successful:`, result);
       
           await refreshPortfolios();
       
@@ -148,7 +147,6 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
           }
       
           const updated = await response.json();
-          console.log("Updated portfolio:", updated);
       
           await refreshPortfolios();
       

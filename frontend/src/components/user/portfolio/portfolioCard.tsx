@@ -45,7 +45,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
           }
       
           // extract and set data points
-          const points = data.performance_graph.map((item) => Number(item.snapshot_value));
+          const points = data.performance_graph.map((item : any) => Number(item.snapshot_value));
           setDataPoints(points);
       
         } catch (err: any) {
