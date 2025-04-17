@@ -157,7 +157,7 @@ export default function Chart({ portfolios }: ChartProps) {
         }
     };  
 
-    const options: ChartOptions<"line"> = {
+    const options: any = {
         responsive: true,
         scales: {
           x: {
@@ -174,7 +174,7 @@ export default function Chart({ portfolios }: ChartProps) {
           y: {
             beginAtZero: false,
             ticks: {
-              callback: (val) => `$${val}`,
+              callback: (val: number) => `$${val}`,
             },
             title: {
               display: false,
@@ -188,7 +188,7 @@ export default function Chart({ portfolios }: ChartProps) {
           },
           tooltip: {
             callbacks: {
-              label: (ctx) => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
+              label: (ctx: any) => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
             },
           },
         },
