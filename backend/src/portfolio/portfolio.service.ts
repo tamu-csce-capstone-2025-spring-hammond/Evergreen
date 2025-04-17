@@ -9,12 +9,14 @@ import { PortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import {
   GraphPoint,
+  investmentAllocation,
   InvestmentOutput,
   PortfolioOutput,
 } from './portfolio.types';
 import { Decimal } from '@prisma/client/runtime/library';
 import { AlpacaService } from '../stock-apis/alpaca.service';
 import { Prisma } from '@prisma/client';
+import { PortfolioPreviewDto } from './dto/preview-portfolio.dto';
 
 @Injectable()
 export class PortfolioService {
@@ -37,11 +39,10 @@ export class PortfolioService {
         smallcap_focus: portfolioDto.smallcap_focus ?? false,
         value_focus: portfolioDto.value_focus ?? false,
         momentum_focus: portfolioDto.momentum_focus ?? false,
-        risk_aptitude: portfolioDto.risk_aptitude
+        risk_aptitude: portfolioDto.risk_aptitude,
       },
     });
-}
-
+  }
 
   async getFullPortfolioInfo(
     id: number,
@@ -144,7 +145,7 @@ export class PortfolioService {
       investments,
       performance_graph,
       color: portfolioData.color,
-      total_deposited: portfolioData.total_deposited
+      total_deposited: portfolioData.total_deposited,
     };
   }
 
@@ -152,7 +153,7 @@ export class PortfolioService {
     const portfolios = await this.prisma.portfolio.findMany({
       where: { user_id: userId },
       orderBy: {
-        portfolio_id: 'asc'
+        portfolio_id: 'asc',
       },
     });
 
@@ -310,5 +311,61 @@ export class PortfolioService {
       }
       throw error;
     }
+  }
+
+  async getAllocations(
+    portfolioReviewDto: PortfolioPreviewDto,
+  ): Promise<investmentAllocation[]> {
+    return [
+      {
+        ticker: 'VTI',
+        name: 'Vanguard Total US Market',
+        percent_of_portfolio: Decimal(34),
+      },
+      {
+        ticker: 'BND',
+        name: 'Vanguard Total US Market',
+        percent_of_portfolio: Decimal(33),
+      },
+      {
+        ticker: 'VXUS',
+        name: 'Vanguard Total US Market',
+        percent_of_portfolio: Decimal(33),
+      },
+    ];
+  }
+
+  async preview(
+    portfolioReviewDto: PortfolioPreviewDto,
+    allocations: investmentAllocation[],
+  ) {
+    return {
+      createdDate: new Date(),
+      targetDate: portfolioReviewDto.targetDate,
+      initial_deposit: portfolioReviewDto.initial_deposit,
+      risk_aptitude: portfolioReviewDto.risk_aptitude,
+      bitcoin_focus: portfolioReviewDto.bitcoin_focus,
+      smallcap_focus: portfolioReviewDto.smallcap_focus,
+      value_focus: portfolioReviewDto.value_focus,
+      momentum_focus: portfolioReviewDto.momentum_focus,
+      investments: allocations,
+      historical_graph: [
+        {
+          snapshot_time: '2024-02-26T17:04:57.081Z',
+          snapshot_value: '16127.67',
+        },
+        {
+          snapshot_time: '2024-02-27T17:04:57.081Z',
+          snapshot_value: '16395.11',
+        },
+      ],
+      future_projections: {
+        time_interval: 'daily',
+        simulations: [
+          { id: 1, values: [100000, 100012, 100015, 100018] },
+          { id: 2, values: [100000, 99999, 99992, 99971] },
+        ],
+      },
+    };
   }
 }
