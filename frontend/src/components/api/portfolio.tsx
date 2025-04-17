@@ -39,9 +39,46 @@ export interface PortfolioDto {
   export interface WithdrawDto {
     withdrawAmount: number;
   }
+
+  export interface PortfolioStats {
+    totalDeposited: number;
+    totalGained: number;
+    netReturn: number;
+    netReturnSymbol: string;
+    feedbackColor: string;
+  }
   
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   
+  
+  export const calculatePortfolioStats = (
+    portfolios: PortfolioCardProps[]
+  ): PortfolioStats => {
+    const totalDeposited = portfolios.reduce((sum, card) => sum + card.deposited, 0);
+    const totalGained = Number(
+      portfolios.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2)
+    );
+    const netReturn =
+      totalDeposited > 0
+        ? Number(((totalGained / totalDeposited) * 100).toFixed(2))
+        : 0.0;
+    const netReturnSymbol = netReturn > 0 ? "+" : netReturn < 0 ? "-" : "";
+    const feedbackColor =
+      netReturn > 0
+        ? "text-evergreen-500"
+        : netReturn < 0
+        ? "text-everred-500"
+        : "text-evergray-500";
+  
+    return {
+      totalDeposited,
+      totalGained,
+      netReturn,
+      netReturnSymbol,
+      feedbackColor,
+    };
+  };
+
   const getAuthHeaders = (token: string) => ({
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -66,13 +103,32 @@ export interface PortfolioDto {
     return res.json();
   };
   
-  export const getAllPortfolios = async (token: string) => {
+  export const getAllPortfolios = async (token: string): Promise<PortfolioCardProps[]> => {
     const res = await fetch(`${BACKEND_URL}/portfolio`, {
       method: "GET",
       headers: getAuthHeaders(token),
     });
     if (!res.ok) throw new Error("Failed to fetch portfolios");
-    return res.json();
+  
+    const data = await res.json();
+  
+    return data.map((item: any) => {
+      const deposited = Number(item.total_deposited ?? 0);
+      const total = Number(item.current_value ?? 0);
+      const amountChange = Number(item.amount_change ?? 0);
+      const percent = deposited > 0 ? Number(((amountChange / deposited) * 100).toFixed(2)) : 0;
+  
+      return {
+        portfolioId: item.portfolio_id,
+        name: item.portfolio_name,
+        color: item.color,
+        total,
+        percent,
+        startDate: new Date(item.created_at).toISOString().split("T")[0],
+        endDate: new Date(item.target_date).toISOString().split("T")[0],
+        deposited,
+      } as PortfolioCardProps;
+    });
   };
   
   export const updatePortfolio = async (

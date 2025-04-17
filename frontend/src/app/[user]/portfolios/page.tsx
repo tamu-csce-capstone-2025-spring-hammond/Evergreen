@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect } from "react";
 import PortfolioList from "@/components/user/portfolio/portfolioList";
 import Sidebar from "@/components/user/sidebar";
 import Header from "@/components/user/header";
@@ -9,12 +9,16 @@ import PieChart from "@/components/user/pieChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import CreatePortfolioModal from "@/components/user/portfolio/createPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
-import { PortfolioCardProps } from "@/components/api/portfolio";
+import { 
+  PortfolioCardProps, 
+  createPortfolio, 
+  getAllPortfolios, 
+  PortfolioDto,
+  calculatePortfolioStats
+} from "@/components/api/portfolio";
 
 export default function Portfolios() {
-  const [selectedCard, setSelectedCard] = useState<
-    PortfolioCardProps | undefined
-  >(undefined);
+  const [selectedCard, setSelectedCard] = useState<PortfolioCardProps | undefined>(undefined);
   const [portfolios, setPortfolios] = useState<PortfolioCardProps[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [error, setError] = useState("");
@@ -32,79 +36,26 @@ export default function Portfolios() {
     }
   }, [portfolioId, portfolios]);
 
-  const getPortfolios = async () => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const fetchPortfolios = async () => {
     const token = getToken();
     if (!token) {
       setError("User is not authenticated");
       return;
     }
     try {
-      const response = await fetch(`${backendUrl}/portfolio`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch portfolios");
-      }
-
-      const transformed: PortfolioCardProps[] = data.map((item: any) => {
-        const deposited = Number(item.total_deposited ?? 0);
-        const total = Number(item.current_value ?? 0);
-        const amountChange = Number(item.amount_change ?? 0);
-        const percent =
-          deposited > 0
-            ? Number(((amountChange / deposited) * 100).toFixed(2))
-            : 0;
-
-        return {
-          portfolioId: item.portfolio_id,
-          name: item.portfolio_name,
-          color: item.color,
-          total,
-          percent,
-          startDate: new Date(item.created_at).toISOString().split("T")[0],
-          endDate: new Date(item.target_date).toISOString().split("T")[0],
-          deposited,
-        };
-      });
-
-      setPortfolios(transformed);
+      const formattedPortfolios = await getAllPortfolios(token);
+      setPortfolios(formattedPortfolios);
     } catch (err: any) {
       console.error("Error fetching portfolios:", err);
       setError(err.message || "An error occurred while fetching portfolios");
     }
-  };
+  };  
 
   useEffect(() => {
-    getPortfolios();
+    fetchPortfolios();
   }, []);
 
-  const exampleCards = portfolios;
-  const totalDeposited = exampleCards.reduce(
-    (sum, card) => sum + card.deposited,
-    0
-  );
-  const totalGained = Number(
-    exampleCards
-      .reduce((sum, card) => sum + (card.total - card.deposited), 0)
-      .toFixed(2)
-  );
-  const netReturn =
-    totalDeposited > 0
-      ? Number(((totalGained / totalDeposited) * 100).toFixed(2))
-      : 0.0;
-  const netReturnSymbol = netReturn > 0 ? "+" : netReturn < 0 ? "-" : "";
-  const feedbackColor =
-    netReturn > 0
-      ? "text-evergreen-500"
-      : netReturn < 0
-      ? "text-everred-500"
-      : "text-evergray-500";
+  const { totalDeposited, totalGained, netReturn, netReturnSymbol, feedbackColor } = calculatePortfolioStats(portfolios);
 
   const selectCard = (card: PortfolioCardProps) => {
     router.push(`/user/portfolios?portfolioId=${card.portfolioId}`);
@@ -114,7 +65,7 @@ export default function Portfolios() {
     router.push("/user/portfolios");
   };
   const refreshPortfolios = async () => {
-    await getPortfolios();
+    await fetchPortfolios();
   };
 
   const handleCreatePortfolio = async (
@@ -130,53 +81,30 @@ export default function Portfolios() {
       momentum_focus?: boolean;
     }
   ) => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const token = getToken();
-
-    if (!backendUrl) {
-      console.error("Backend URL is not defined");
-      return;
-    }
-
     if (!token) {
       console.error("Auth token is missing");
       return;
     }
-
-    const payload = {
+    const payload: PortfolioDto = {
       portfolioName: name,
-      color: color,
+      color,
       createdDate: new Date(),
       targetDate: new Date(targetDate),
-      initial_deposit: Number(depositedCash),
+      initial_deposit: depositedCash,
       risk_aptitude: riskAptitude,
       bitcoin_focus: focuses?.bitcoin_focus ?? false,
       smallcap_focus: focuses?.smallcap_focus ?? false,
       value_focus: focuses?.value_focus ?? false,
       momentum_focus: focuses?.momentum_focus ?? false,
     };
-
     try {
-      const response = await fetch(`${backendUrl}/portfolio`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Portfolio creation failed");
-      }
+      await createPortfolio(token, payload);
+      setIsModalOpen(false);
+      refreshPortfolios();
     } catch (error: any) {
       setError(error.message);
     }
-
-    setIsModalOpen(false);
-    refreshPortfolios();
   };
 
   return (
@@ -191,11 +119,9 @@ export default function Portfolios() {
               <button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
+                onClick={() => setIsModalOpen(true)}
               >
-                Create New{" "}
+                Create New
                 <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">
                   add
                 </span>
@@ -203,9 +129,9 @@ export default function Portfolios() {
             </div>
             <PortfolioList
               home={false}
-              cards={exampleCards}
+              cards={portfolios}
               onCardClick={selectCard}
-              selectedCardName={selectedCard ? selectedCard.name : undefined}
+              selectedCardName={selectedCard?.name}
             />
           </div>
           <div className="flex-1 pt-8 pr-8 pb-8 h-full">
@@ -219,27 +145,25 @@ export default function Portfolios() {
               ) : (
                 <div className="px-8 py-7 flex flex-col h-full justify-between items-center">
                   <h2 className="text-2xl text-center">Total Distribution</h2>
-                  <div className="max-w-3/4 flex-1 max-h-1/2"><PieChart portfolios={exampleCards} showLegend={false}/></div>
+                  <div className="max-w-3/4 flex-1 max-h-1/2">
+                    <PieChart portfolios={portfolios} showLegend={false} />
+                  </div>
                   <div className="text-evergray-500 text-md space-y-6">
                     <p>
-                      Total Deposited:<br></br>
+                      Total Deposited:<br />
                       <span className="text-evergray-600 font-roboto text-3xl">
                         ${totalDeposited}
                       </span>
                     </p>
                     <p>
-                      Total Gained:<br></br>
-                      <span
-                        className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}
-                      >
+                      Total Gained:<br />
+                      <span className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}>
                         ${totalGained}
                       </span>
                     </p>
                     <p>
-                      Net Return:<br></br>
-                      <span
-                        className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}
-                      >
+                      Net Return:<br />
+                      <span className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}>
                         {netReturnSymbol + netReturn}%
                       </span>
                     </p>
