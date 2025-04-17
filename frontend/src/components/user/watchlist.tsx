@@ -36,7 +36,7 @@ const Watchlist = () => {
   }, [getToken]); // Re-run the effect if the token changes
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="h-full flex flex-col p-4 pb-2">
         <h2 className="text-evergray-500 mb-4">Watchlist</h2>
 
         <div className="flex-1 flex flex-col overflow-hidden rounded-lg">

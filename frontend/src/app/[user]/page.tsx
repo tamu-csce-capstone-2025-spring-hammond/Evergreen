@@ -45,19 +45,14 @@ export default function Dashboard() {
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
-        <div className="flex-1 grid grid-rows-[450px_1fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden">
-          <Chart />
-          <Watchlist />
-          <div className="overflow-hidden flex flex-col">
-            <h2 className="p-4 text-evergray-500">Portfolios</h2>
-            <PortfolioList
-              home={true}
-              cards={portfolios}
-              selectedCardName={undefined}
-              onCardClick={onClick}
-            />
-          </div>
-          <News />
+        <div className="flex-1 grid grid-rows-[450px_1fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden min-h-">
+            <Chart portfolios={portfolios}/>
+            <Watchlist />
+            <div className="overflow-hidden flex flex-col">
+                <h2 className="p-4 text-evergray-500">Portfolios</h2>
+                <PortfolioList home={true} cards={portfolios} selectedCardName={undefined} onCardClick={onClick}/>
+            </div>
+            <News />
         </div>
       </div>
     </div>
