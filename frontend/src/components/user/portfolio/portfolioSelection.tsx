@@ -153,10 +153,10 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
       </div>
 
       <div className="mt-4 flex gap-4 text-xl w-full button-container">
-        <button onClick={() => handleOpenDepositWithdrawModal("deposit")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
+        <button onClick={() => handleOpenDepositWithdrawModal("deposit")} className="rounded-lg flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
           Deposit
         </button>
-        <button onClick={() => handleOpenDepositWithdrawModal("withdraw")} className="flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
+        <button onClick={() => handleOpenDepositWithdrawModal("withdraw")} className="rounded-lg flex-1 py-4 border border-gray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
           Withdraw
         </button>
       </div>
@@ -165,6 +165,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
         .button-container button:hover {
           background-color: ${card.color};
           color: white;
+          border: ${card.color};
         }
       `}</style>
 
