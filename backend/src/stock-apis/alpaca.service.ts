@@ -321,39 +321,100 @@ export class AlpacaService {
       const quantity = endingInvestment
         .times(percent_of_portfolio)
         .dividedBy(history.bars[ticker][history.bars[ticker].length - 1].c);
-      return {
-        ticker,
-        quantity,
-      };
+      return { ticker, quantity };
     });
-    const portfolioGraph: GraphPoint[] = [];
 
+    const portfolioGraph: GraphPoint[] = [];
     const referenceTicker = investments[0].ticker;
     const barCount = history.bars[referenceTicker]?.length || 0;
 
     for (let i = 0; i < barCount; i++) {
       let totalValue = Decimal(0);
-
       for (const { ticker, quantity } of investments) {
         const price = history.bars[ticker][i]?.c;
         totalValue = totalValue.add(quantity.times(price));
       }
-
       const timestamp = history.bars[referenceTicker][i]?.t;
-
       portfolioGraph.push({
         snapshot_time: timestamp,
         snapshot_value: totalValue,
       });
     }
 
+    // Compute log returns
+    const logReturns: Decimal[] = [];
+    for (let i = 1; i < portfolioGraph.length; i++) {
+      const prev = portfolioGraph[i - 1].snapshot_value;
+      const curr = portfolioGraph[i].snapshot_value;
+      const logReturn = Decimal.ln(curr.dividedBy(prev));
+      logReturns.push(logReturn);
+    }
+
+    // Blended method: long-term + recent (last 30 days)
+    const recentReturns = logReturns.slice(-30);
+    const longTermReturns = logReturns;
+
+    const meanLong = longTermReturns
+      .reduce((acc, r) => acc.plus(r), Decimal(0))
+      .dividedBy(longTermReturns.length);
+    const stdDevLong = Decimal.sqrt(
+      longTermReturns
+        .reduce((acc, r) => acc.plus(r.minus(meanLong).pow(2)), Decimal(0))
+        .dividedBy(longTermReturns.length),
+    );
+
+    const meanRecent = recentReturns
+      .reduce((acc, r) => acc.plus(r), Decimal(0))
+      .dividedBy(recentReturns.length);
+    const stdDevRecent = Decimal.sqrt(
+      recentReturns
+        .reduce((acc, r) => acc.plus(r.minus(meanRecent).pow(2)), Decimal(0))
+        .dividedBy(recentReturns.length),
+    );
+
+    const drift = meanLong.times(0.4).plus(meanRecent.times(0.6));
+    const volatility = stdDevLong.times(0.4).plus(stdDevRecent.times(0.6));
+
+    // Monte Carlo simulations
+    const lastValue = portfolioGraph[portfolioGraph.length - 1].snapshot_value;
+    const numDays = 60;
+    const numSimulations = 100;
+    const futureSimulations: { id: Decimal; values: Decimal[] }[] = [];
+
+    const boxMullerRandom = (): number => {
+      let u = 0,
+        v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    };
+
+    for (let sim = 0; sim < numSimulations; sim++) {
+      const values: Decimal[] = [];
+      let price = lastValue;
+
+      for (let day = 0; day < numDays; day++) {
+        const z = Decimal(boxMullerRandom());
+        const adjustedDrift = drift.minus(volatility.pow(2).dividedBy(2));
+        const shock = volatility.times(z);
+        const multiplier = Decimal.exp(adjustedDrift.plus(shock));
+        price = price.times(multiplier);
+        values.push(price);
+      }
+
+      futureSimulations.push({ id: Decimal(sim + 1), values });
+    }
+
+    // Sharpe ratio = (mean return / std dev) * sqrt(periods per year)
+    const sharpeRatio = meanLong.dividedBy(stdDevLong).times(Math.sqrt(252)); // daily returns assumed
+
     return {
       historical_graph: portfolioGraph,
       future_projections: {
         time_interval: 'Days',
-        simulations: [{ id: Decimal(1), values: [] }],
+        simulations: futureSimulations,
       },
-      sharpe_ratio: Decimal(2),
+      sharpe_ratio: sharpeRatio,
     };
   };
 }
