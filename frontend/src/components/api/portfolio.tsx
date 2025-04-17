@@ -43,6 +43,7 @@ export interface PortfolioDto {
   export interface PortfolioStats {
     totalDeposited: number;
     totalGained: number;
+    totalValue: number;
     netReturn: number;
     netReturnSymbol: string;
     feedbackColor: string;
@@ -55,14 +56,13 @@ export interface PortfolioDto {
     portfolios: PortfolioCardProps[]
   ): PortfolioStats => {
     const totalDeposited = portfolios.reduce((sum, card) => sum + card.deposited, 0);
-    const totalGained = Number(
-      portfolios.reduce((sum, card) => sum + (card.total - card.deposited), 0).toFixed(2)
-    );
+    const totalValue = portfolios.reduce((sum, card) => sum + card.total, 0);
+    const totalGained = Number((totalValue - totalDeposited).toFixed(2));
     const netReturn =
       totalDeposited > 0
         ? Number(((totalGained / totalDeposited) * 100).toFixed(2))
         : 0.0;
-    const netReturnSymbol = netReturn > 0 ? "+" : netReturn < 0 ? "-" : "";
+    const netReturnSymbol = netReturn > 0 ? " ▲ " : netReturn < 0 ? " ▼ " : "";
     const feedbackColor =
       netReturn > 0
         ? "text-evergreen-500"
@@ -73,6 +73,7 @@ export interface PortfolioDto {
     return {
       totalDeposited,
       totalGained,
+      totalValue,
       netReturn,
       netReturnSymbol,
       feedbackColor,
