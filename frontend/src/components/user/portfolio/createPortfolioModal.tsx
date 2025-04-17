@@ -58,6 +58,11 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
     setStep("form");
   };
 
+  const onCancel = () => {
+    onClose();
+    clearModal();
+  }
+
   const onNext = () => {
     const newErrors: typeof errors = {};
     if (!name.trim()) newErrors.name = "Portfolio name is required.";
@@ -98,10 +103,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   return (
     <div
       className="fixed inset-0 flex items-center justify-center backdrop-blur bg-opacity-1 z-50"
-      onClick={() => {
-        onClose();
-        clearModal();
-      }}
+      onClick={onCancel}
     >
       <div
         className="relative w-[28rem] h-[50rem] bg-white rounded-lg shadow-xl overflow-hidden"
@@ -184,7 +186,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
           </div>
 
           <div className="flex justify-end space-x-2 mt-4">
-            <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded">
+            <button onClick={onCancel} className="bg-gray-300 px-4 py-2 rounded">
               Cancel
             </button>
             <button onClick={onNext} className="bg-green-500 text-white px-4 py-2 rounded">
