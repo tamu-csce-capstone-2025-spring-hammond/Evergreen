@@ -39,11 +39,11 @@ const Watchlist = () => {
     <div className="h-full flex flex-col p-4">
         <h2 className="text-evergray-500 mb-4">Watchlist</h2>
 
-        <div className="border border-evergray-600 flex-1 flex flex-col overflow-hidden">
-            <div className="overflow-x-auto">
+        <div className="flex-1 flex flex-col overflow-hidden rounded-lg">
+            <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full text-sm text-left table-fixed">
                 <thead className="bg-evergray-200 text-evergray-700">
-                    <tr className="border-b border-evergray-600 ">
+                    <tr className="">
                         <th className="px-4 py-3 w-2/5 font-semibold">Symbol</th>
                         <th className="px-2 w-3/10 font-semibold">Last Price</th>
                         <th className="w-3/10 font-semibold">% Change</th>
