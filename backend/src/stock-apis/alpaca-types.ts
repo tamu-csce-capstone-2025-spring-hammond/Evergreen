@@ -103,3 +103,8 @@ export interface trade {
   amount_shares_traded: Decimal;
   av_price_paid: Decimal;
 }
+
+export interface FutureProjections {
+  time_interval: string;
+  simulations: [{ id: Decimal; values: Decimal[] }];
+}

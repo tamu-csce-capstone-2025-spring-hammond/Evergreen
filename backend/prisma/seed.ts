@@ -34,17 +34,17 @@ async function main() {
     { ticker: 'VTI', percent: Decimal(0.1) },
     { ticker: 'BND', percent: Decimal(0.9) },
   ];
-  const riskySim = await alpaca.backtestSim(
+  const riskySim = await alpaca.seedSim(
     riskyPortfolio,
     Decimal(10000),
     new Date('2024-03-31'),
   );
-  const safeSim = await alpaca.backtestSim(
+  const safeSim = await alpaca.seedSim(
     safePortfolio,
     Decimal(20000),
     new Date('2024-03-31'),
   );
-  const superSafeSim = await alpaca.backtestSim(
+  const superSafeSim = await alpaca.seedSim(
     superSafePortfolio,
     Decimal(12000),
     new Date('2024-03-31'),

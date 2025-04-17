@@ -11,9 +11,11 @@ import {
   PortfolioAllocation,
   holdingInfo,
   trade,
+  FutureProjections,
 } from './alpaca-types';
 import { promises } from 'dns';
 import { Decimal } from '@prisma/client/runtime/library';
+import { investmentAllocation } from 'src/portfolio/portfolio.types';
 
 @Injectable()
 export class AlpacaService {
@@ -193,7 +195,7 @@ export class AlpacaService {
       .catch((err) => console.error(err));
   };
 
-  backtestSim = async (
+  seedSim = async (
     portfolio: PortfolioAllocation[],
     initialInvestment: Decimal,
     startDate: Date,
@@ -270,6 +272,88 @@ export class AlpacaService {
       ),
       investments: investments,
       trades,
+    };
+  };
+
+  backtestSim = async (
+    portfolio: investmentAllocation[],
+    endingInvestment: Decimal,
+    startDate: Date,
+    endDate: Date = new Date(Date.now() - 15 * 60 * 1000),
+  ): Promise<{
+    historical_graph: GraphPoint[];
+    future_projections: FutureProjections;
+    sharpe_ratio: Decimal;
+  }> => {
+    const baseUrl = 'https://data.alpaca.markets/v2/stocks/bars';
+    const symbols = portfolio.map(({ ticker }) => ticker).join(',');
+
+    const toISOString = (date: Date) => date.toISOString();
+    const start = toISOString(startDate);
+    const end = toISOString(
+      new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000),
+    );
+    const params = new URLSearchParams({
+      symbols,
+      timeframe: '1Day',
+      start,
+      end,
+      limit: '10000',
+      adjustment: 'all',
+      feed: 'sip',
+      sort: 'asc',
+    });
+
+    const url = `${baseUrl}?${params.toString()}`;
+    const response = await fetch(url, this.options);
+
+    if (!response.ok) {
+      this.logger.error(
+        `Failed to fetch portfolio history: ${response.statusText}`,
+      );
+      throw new Error(
+        `Alpaca API request failed with status ${response.status}`,
+      );
+    }
+
+    const history: AlpacaHistoricalBarsApiResponse = await response.json();
+    const investments = portfolio.map(({ ticker, percent_of_portfolio }) => {
+      const quantity = endingInvestment
+        .times(percent_of_portfolio)
+        .dividedBy(history.bars[ticker][history.bars[ticker].length - 1].c);
+      return {
+        ticker,
+        quantity,
+      };
+    });
+    const portfolioGraph: GraphPoint[] = [];
+
+    const referenceTicker = investments[0].ticker;
+    const barCount = history.bars[referenceTicker]?.length || 0;
+
+    for (let i = 0; i < barCount; i++) {
+      let totalValue = Decimal(0);
+
+      for (const { ticker, quantity } of investments) {
+        const price = history.bars[ticker][i]?.c;
+        totalValue = totalValue.add(quantity.times(price));
+      }
+
+      const timestamp = history.bars[referenceTicker][i]?.t;
+
+      portfolioGraph.push({
+        snapshot_time: timestamp,
+        snapshot_value: totalValue,
+      });
+    }
+
+    return {
+      historical_graph: portfolioGraph,
+      future_projections: {
+        time_interval: 'Days',
+        simulations: [{ id: Decimal(1), values: [] }],
+      },
+      sharpe_ratio: Decimal(2),
     };
   };
 }

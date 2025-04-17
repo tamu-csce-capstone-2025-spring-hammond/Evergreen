@@ -134,6 +134,7 @@ export class PortfolioController {
             { id: 2, values: [100000, 99999, 99992, 99971] },
           ],
         },
+        sharpe_ratio: 1.2,
       },
     },
   })

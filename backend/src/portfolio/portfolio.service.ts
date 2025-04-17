@@ -17,6 +17,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { AlpacaService } from '../stock-apis/alpaca.service';
 import { Prisma } from '@prisma/client';
 import { PortfolioPreviewDto } from './dto/preview-portfolio.dto';
+import { PortfolioAllocation } from 'src/stock-apis/alpaca-types';
 
 @Injectable()
 export class PortfolioService {
@@ -339,6 +340,11 @@ export class PortfolioService {
     portfolioReviewDto: PortfolioPreviewDto,
     allocations: investmentAllocation[],
   ) {
+    const backtestSim = await this.alpacaService.backtestSim(
+      allocations,
+      Decimal(portfolioReviewDto.initial_deposit),
+      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+    );
     return {
       createdDate: new Date(),
       targetDate: portfolioReviewDto.targetDate,
@@ -349,23 +355,9 @@ export class PortfolioService {
       value_focus: portfolioReviewDto.value_focus,
       momentum_focus: portfolioReviewDto.momentum_focus,
       investments: allocations,
-      historical_graph: [
-        {
-          snapshot_time: '2024-02-26T17:04:57.081Z',
-          snapshot_value: '16127.67',
-        },
-        {
-          snapshot_time: '2024-02-27T17:04:57.081Z',
-          snapshot_value: '16395.11',
-        },
-      ],
-      future_projections: {
-        time_interval: 'daily',
-        simulations: [
-          { id: 1, values: [100000, 100012, 100015, 100018] },
-          { id: 2, values: [100000, 99999, 99992, 99971] },
-        ],
-      },
+      historical_graph: backtestSim.historical_graph,
+      future_projections: backtestSim.future_projections,
+      sharpe_ratio: backtestSim.sharpe_ratio,
     };
   }
 }
