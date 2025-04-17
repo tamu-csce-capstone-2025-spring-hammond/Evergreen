@@ -6,17 +6,7 @@ import EditPortfolioModal from "./editPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
 import { useRouter } from "next/navigation";
 import PieChart from "@/components/user/pieChart";
-
-interface PortfolioCardProps {
-    portfolioId: number;
-    name: string;
-    color: string;
-    total: number;
-    percent: number;
-    startDate: string;
-    endDate: string;
-    deposited: number;
-}
+import { PortfolioCardProps } from "@/components/api/portfolio";
 
 interface Portfolio {
     card: PortfolioCardProps;

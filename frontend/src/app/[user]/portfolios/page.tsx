@@ -9,17 +9,7 @@ import PieChart from "@/components/user/pieChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import CreatePortfolioModal from "@/components/user/portfolio/createPortfolioModal";
 import useJwtStore from "@/store/jwtStore";
-
-interface PortfolioCardProps {
-  portfolioId: number;
-  name: string;
-  color: string;
-  total: number;
-  percent: number;
-  startDate: string;
-  endDate: string;
-  deposited: number;
-}
+import { PortfolioCardProps } from "@/components/api/portfolio";
 
 export default function Portfolios() {
   const [selectedCard, setSelectedCard] = useState<

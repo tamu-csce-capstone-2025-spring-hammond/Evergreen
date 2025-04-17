@@ -1,17 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { PortfolioCardProps } from "@/components/api/portfolio";
 
-interface PortfolioCardProps {
-    portfolioId: number;
-    name: string;
-    color: string;
-    total: number;
-    percent: number;
-    startDate: string;
-    endDate: string;
-    deposited: number;
-}
 
 interface EditPortfolioModalProps {
   isOpen: boolean;
