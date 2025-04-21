@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PortfolioPreviewDto, previewPortfolio } from "@/components/api/portfolio";
 
 interface CreatePortfolioModalProps {
   isOpen: boolean;

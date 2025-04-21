@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import useJwtStore from "@/store/jwtStore";
 import 'chartjs-adapter-date-fns';
 import { Line } from "react-chartjs-2";
+import { PortfolioCardProps } from "../api/portfolio";
 import {
     Chart as ChartJS,
     LineElement,
@@ -26,17 +27,6 @@ ChartJS.register(
     Tooltip,
     Legend
 );
-
-interface PortfolioCardProps {
-    portfolioId: number;
-    name: string;
-    color: string;
-    total: number;
-    percent: number;
-    startDate: string;
-    endDate: string;
-    deposited: number;
-}
 
 interface ChartProps {
     portfolios: PortfolioCardProps[];

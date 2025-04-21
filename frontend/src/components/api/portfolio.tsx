@@ -9,6 +9,16 @@ export interface PortfolioCardProps {
     deposited: number;
   }
 
+export interface PortfolioPreviewDto {
+  targetDate: Date;
+  initial_deposit: number;
+  bitcoin_focus: boolean;
+  smallcap_focus: boolean;
+  value_focus: boolean;
+  momentum_focus: boolean;
+  risk_aptitude: number;
+}
+
 export interface PortfolioDto {
     portfolioName: string;
     color: string;
@@ -182,3 +192,7 @@ export interface PortfolioDto {
     return res.json();
   };
   
+
+  export const previewPortfolio = async (token: string, portfolio: PortfolioPreviewDto) => {
+
+  };
