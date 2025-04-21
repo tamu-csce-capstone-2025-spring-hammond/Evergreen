@@ -1,15 +1,60 @@
+// seed.ts or wherever you're writing this standalone script
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 import * as argon2 from 'argon2';
+import { AlpacaService } from '../src/stock-apis/alpaca.service';
+import * as dotenv from 'dotenv';
+import { kMaxLength } from 'buffer';
+
+// Load the .env file manually
+dotenv.config();
+
+// Initialize ConfigService with manually loaded env
+const config = new ConfigService();
+
+// Optionally, you can extend ConfigService to provide defaults or structure:
+config.get = (key: string) => process.env[key] || null;
 
 const prisma = new PrismaClient();
+const alpaca = new AlpacaService(config);
+
+// Now you can use config.get('SOME_ENV_VAR') like in your main app
 
 async function main() {
+  const riskyPortfolio = [
+    { ticker: 'VTI', percent: Decimal(0.75) },
+    { ticker: 'BND', percent: Decimal(0.25) },
+  ];
+  const safePortfolio = [
+    { ticker: 'VTI', percent: Decimal(0.25) },
+    { ticker: 'BND', percent: Decimal(0.75) },
+  ];
+  const superSafePortfolio = [
+    { ticker: 'VTI', percent: Decimal(0.1) },
+    { ticker: 'BND', percent: Decimal(0.9) },
+  ];
+  const riskySim = await alpaca.seedSim(
+    riskyPortfolio,
+    Decimal(10000),
+    new Date('2024-03-31'),
+  );
+  const safeSim = await alpaca.seedSim(
+    safePortfolio,
+    Decimal(20000),
+    new Date('2024-03-31'),
+  );
+  const superSafeSim = await alpaca.seedSim(
+    superSafePortfolio,
+    Decimal(12000),
+    new Date('2024-03-31'),
+  );
   const password_hash = await argon2.hash('Password12!');
   await prisma.users.create({
     data: {
-      email: 'bob@c.com',
+      email: 'bob3@c.com',
       password_hash: password_hash,
-      user_name: 'Bob',
+      user_name: 'Bob3',
       portfolio: {
         create: [
           {
@@ -21,133 +66,41 @@ async function main() {
             total_deposited: 10000,
             momentum_focus: true,
             holdings: {
-              create: [
-                {
-                  ticker: 'VTI',
-                  ticker_name: 'Vanguard Total Market',
-                  quantity: 25,
-                  average_cost_basis: 220,
-                  last_updated: new Date('2024-03-31'),
-                },
-                {
-                  ticker: 'BND',
-                  ticker_name: 'Total Bond Market',
-                  quantity: 20,
-                  average_cost_basis: 105,
-                  last_updated: new Date('2024-03-31'),
-                },
-              ],
+              create: riskySim.investments,
             },
-            portfolio_snapshot: { create: createSnapshots(10000, 400) },
-            trades: {
-              create: [
-                {
-                  ticker: 'VTI',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 25,
-                  av_price_paid: 220,
-                },
-                {
-                  ticker: 'BND',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 20,
-                  av_price_paid: 105,
-                },
-              ],
-            },
+            portfolio_snapshot: { create: riskySim.backtestResult.graph },
+            trades: { create: riskySim.trades },
           },
           {
             target_date: new Date('2030-06-15'),
             created_at: new Date('2024-03-31'),
             portfolio_name: 'home',
-            uninvested_cash: 5000,
+            uninvested_cash: 0,
             color: '#ff9933',
             total_deposited: 20000,
             momentum_focus: false,
             holdings: {
-              create: [
-                {
-                  ticker: 'BND',
-                  ticker_name: 'Total Bond Market',
-                  quantity: 50,
-                  average_cost_basis: 105,
-                  last_updated: new Date('2024-03-31'),
-                },
-                {
-                  ticker: 'VTI',
-                  ticker_name: 'Vanguard Total Market',
-                  quantity: 10,
-                  average_cost_basis: 220,
-                  last_updated: new Date('2024-03-31'),
-                },
-              ],
+              create: safeSim.investments,
             },
-            portfolio_snapshot: { create: createSnapshots(25000, 400) },
+            portfolio_snapshot: { create: safeSim.backtestResult.graph },
             trades: {
-              create: [
-                {
-                  ticker: 'BND',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 50,
-                  av_price_paid: 105,
-                },
-                {
-                  ticker: 'VTI',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 10,
-                  av_price_paid: 220,
-                },
-              ],
+              create: safeSim.trades,
             },
           },
           {
             target_date: new Date('2028-06-15'),
             created_at: new Date('2024-03-31'),
             portfolio_name: 'masters degree',
-            uninvested_cash: 2000,
+            uninvested_cash: 0,
             color: '#3366ff',
             total_deposited: 12000,
             momentum_focus: false,
             holdings: {
-              create: [
-                {
-                  ticker: 'VTI',
-                  ticker_name: 'Vanguard Total Market',
-                  quantity: 20,
-                  average_cost_basis: 220,
-                  last_updated: new Date('2024-03-31'),
-                },
-                {
-                  ticker: 'BND',
-                  ticker_name: 'Total Bond Market',
-                  quantity: 30,
-                  average_cost_basis: 105,
-                  last_updated: new Date('2024-03-31'),
-                },
-              ],
+              create: superSafeSim.investments,
             },
-            portfolio_snapshot: { create: createSnapshots(14000, 400) },
+            portfolio_snapshot: { create: superSafeSim.backtestResult.graph },
             trades: {
-              create: [
-                {
-                  ticker: 'VTI',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 20,
-                  av_price_paid: 220,
-                },
-                {
-                  ticker: 'BND',
-                  trade_time: new Date('2024-03-31'),
-                  trade_is_buy: true,
-                  amount_shares_traded: 30,
-                  av_price_paid: 105,
-                },
-              ],
+              create: superSafeSim.trades,
             },
           },
         ],

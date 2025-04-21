@@ -31,8 +31,8 @@ export interface PortfolioOutput {
   momentum_focus: boolean;
   investments: InvestmentOutput[];
   performance_graph: GraphPoint[];
-  color: string,
-  total_deposited: Decimal
+  color: string;
+  total_deposited: Decimal;
 }
 
 export interface InvestmentOutput {
@@ -47,4 +47,10 @@ export interface InvestmentOutput {
 export interface GraphPoint {
   snapshot_time: Date;
   snapshot_value: Decimal;
+}
+
+export interface investmentAllocation {
+  ticker: string;
+  name: string;
+  percent_of_portfolio: Decimal;
 }
