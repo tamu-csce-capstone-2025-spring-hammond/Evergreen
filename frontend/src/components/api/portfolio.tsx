@@ -194,5 +194,17 @@ export interface PortfolioDto {
   
 
   export const previewPortfolio = async (token: string, portfolio: PortfolioPreviewDto) => {
-
+    const res = await fetch(`${BACKEND_URL}/portfolio/preview`, {
+      method: "POST",
+      headers: getAuthHeaders(token),
+      body: JSON.stringify(portfolio),
+    });
+  
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to preview portfolio: ${res.status} ${errorText}`);
+    }
+  
+    return res.json();
   };
+  

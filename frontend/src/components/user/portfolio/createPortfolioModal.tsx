@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { PortfolioPreviewDto, previewPortfolio } from "@/components/api/portfolio";
+import useJwtStore from "@/store/jwtStore";
+
 
 interface CreatePortfolioModalProps {
   isOpen: boolean;
@@ -27,13 +29,13 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   onConfirm,
 }) => {
   const [step, setStep] = useState<"form" | "preview">("form");
+  const { getToken } = useJwtStore();
 
   const [name, setName] = useState("");
   const [depositedCash, setDepositedCash] = useState<number | null>(null);
   const [targetDate, setTargetDate] = useState("");
   const [color, setColor] = useState("#000000");
   const [riskAptitude, setRiskAptitude] = useState(3);
-
   const [bitcoinFocus, setBitcoinFocus] = useState(false);
   const [smallcapFocus, setSmallcapFocus] = useState(false);
   const [valueFocus, setValueFocus] = useState(false);
@@ -64,20 +66,46 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
     clearModal();
   }
 
-  const onNext = () => {
-    const newErrors: typeof errors = {};
-    if (!name.trim()) newErrors.name = "Portfolio name is required.";
-    if (depositedCash === null || depositedCash <= 0)
-      newErrors.depositedCash = "Initial deposit must be greater than 0.";
-    if (!targetDate) newErrors.targetDate = "Target date is required.";
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+const onNext = async () => {
+  const newErrors: typeof errors = {};
+  if (!name.trim()) newErrors.name = "Portfolio name is required.";
+  if (depositedCash === null || depositedCash <= 0)
+    newErrors.depositedCash = "Initial deposit must be greater than 0.";
+  if (!targetDate) newErrors.targetDate = "Target date is required.";
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  try {
+    const token = getToken();
+    if (!token) {
+      console.error("No auth token found.");
       return;
     }
 
+    const previewDto: PortfolioPreviewDto = {
+      targetDate: new Date(targetDate),
+      initial_deposit: depositedCash!,
+      bitcoin_focus: bitcoinFocus,
+      smallcap_focus: smallcapFocus,
+      value_focus: valueFocus,
+      momentum_focus: momentumFocus,
+      risk_aptitude: riskAptitude,
+    };
+
+    const previewResult = await previewPortfolio(token, previewDto);
+    console.log("Preview Result:", previewResult);
+
     setStep("preview");
-  };
+  } catch (err) {
+    console.error("Preview request failed:", err);
+    alert("Failed to generate portfolio preview.");
+  }
+};
+
 
   const handleFinalConfirm = () => {
     onConfirm(name, depositedCash!, targetDate, color, riskAptitude, {
