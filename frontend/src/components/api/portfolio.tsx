@@ -58,6 +58,12 @@ export interface PortfolioDto {
     netReturnSymbol: string;
     feedbackColor: string;
   }
+
+  export interface InvestmentData {
+    label: string;
+    value: number;
+    color?: string;
+  }
   
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   

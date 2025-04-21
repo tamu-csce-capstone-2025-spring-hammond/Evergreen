@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { PortfolioPreviewDto, previewPortfolio } from "@/components/api/portfolio";
+import { PortfolioPreviewDto, previewPortfolio, InvestmentData } from "@/components/api/portfolio";
 import useJwtStore from "@/store/jwtStore";
+import PieChart from "../pieChart";
+import Trendline from "../trendline";
 
 
 interface CreatePortfolioModalProps {
@@ -40,6 +42,9 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   const [smallcapFocus, setSmallcapFocus] = useState(false);
   const [valueFocus, setValueFocus] = useState(false);
   const [momentumFocus, setMomentumFocus] = useState(false);
+  const [previewData, setPreviewData] = useState<number[] | null>(null);
+  const [previewInvestments, setPreviewInvestments] = useState<InvestmentData[] | null>(null);
+
 
   const [errors, setErrors] = useState<{
     name?: string;
@@ -80,7 +85,7 @@ const onNext = async () => {
   }
 
   try {
-    const token = getToken();
+    const token = useJwtStore.getState().getToken();
     if (!token) {
       console.error("No auth token found.");
       return;
@@ -96,15 +101,28 @@ const onNext = async () => {
       risk_aptitude: riskAptitude,
     };
 
-    const previewResult = await previewPortfolio(token, previewDto);
-    console.log("Preview Result:", previewResult);
+    const result = await previewPortfolio(token, previewDto);
 
+    const investmentBreakdown: InvestmentData[] = result.investments.map((inv: any, i: number) => ({
+      label: inv.ticker,
+      value: parseFloat(inv.percent_of_portfolio),
+      color: ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"][i % 5],
+    }));
+
+    const historicalValues = result.historical_graph.map((point: any) =>
+      parseFloat(point.snapshot_value)
+    );
+
+    setPreviewData(historicalValues);
+    setPreviewInvestments(investmentBreakdown);
     setStep("preview");
+
   } catch (err) {
     console.error("Preview request failed:", err);
     alert("Failed to generate portfolio preview.");
   }
 };
+  
 
 
   const handleFinalConfirm = () => {
@@ -135,9 +153,12 @@ const onNext = async () => {
       onClick={onCancel}
     >
       <div
-        className="relative w-[28rem] h-[50rem] bg-white rounded-lg shadow-xl overflow-hidden"
+        className={`relative ${
+          step === "preview" ? "w-[40rem] h-[55rem]" : "w-[28rem] h-[50rem]"
+        } bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
+
         {/* Form Step - always visible */}
         <div className="absolute top-0 left-0 w-full h-full p-6 z-0">
           <h2 className="text-xl font-semibold mb-4">Create New Portfolio</h2>
@@ -241,6 +262,21 @@ const onNext = async () => {
               .filter(Boolean)
               .join(", ") || "None"
           }</p>
+          {previewData && (
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-2">Portfolio Value Trend</h3>
+              <Trendline home={false} color="#737373" data={previewData} />
+            </div>
+          )}
+          {previewInvestments && (
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-2">Investment Allocation</h3>
+              <div className="h-64 w-full">
+                <PieChart data={previewInvestments} showLegend={true} />
+              </div>
+            </div>
+          )}
+
 
           <div className="mt-6 flex justify-end space-x-2">
             <button
