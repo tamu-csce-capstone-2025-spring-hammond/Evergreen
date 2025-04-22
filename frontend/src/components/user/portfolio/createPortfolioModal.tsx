@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PortfolioPreviewDto, previewPortfolio, InvestmentData } from "@/components/api/portfolio";
 import useJwtStore from "@/store/jwtStore";
 import PieChart from "../pieChart";
-import Trendline from "../trendline";
+import ForecastTrendChart from "../forecastGraph";
 
 
 interface CreatePortfolioModalProps {
@@ -42,8 +42,10 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   const [smallcapFocus, setSmallcapFocus] = useState(false);
   const [valueFocus, setValueFocus] = useState(false);
   const [momentumFocus, setMomentumFocus] = useState(false);
-  const [previewData, setPreviewData] = useState<number[] | null>(null);
+  const [previewData, setPreviewData] = useState<{ date: string; value: number }[] | null>(null);
   const [previewInvestments, setPreviewInvestments] = useState<InvestmentData[] | null>(null);
+  const [forecastSimulations, setForecastSimulations] = useState<number[][] | null>(null);
+
 
 
   const [errors, setErrors] = useState<{
@@ -109,11 +111,17 @@ const onNext = async () => {
       color: ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"][i % 5],
     }));
 
-    const historicalValues = result.historical_graph.map((point: any) =>
-      parseFloat(point.snapshot_value)
+    const historicalFormatted = result.historical_graph.map((point: any) => ({
+      date: new Date(point.snapshot_time).toISOString().split("T")[0],
+      value: parseFloat(point.snapshot_value),
+    }));
+
+    const forecastSimulations: number[][] = result.future_projections.simulations.map(
+      (sim: any) => sim.values.map((v: any) => parseFloat(v))
     );
 
-    setPreviewData(historicalValues);
+    setPreviewData(historicalFormatted);
+    setForecastSimulations(forecastSimulations);
     setPreviewInvestments(investmentBreakdown);
     setStep("preview");
 
@@ -154,7 +162,7 @@ const onNext = async () => {
     >
       <div
         className={`relative ${
-          step === "preview" ? "w-[40rem] h-[55rem]" : "w-[28rem] h-[50rem]"
+          step === "preview" ? "w-[60rem] h-[50rem]" : "w-[28rem] h-[50rem]"
         } bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -247,52 +255,69 @@ const onNext = async () => {
 
         {/* Preview Step - slides over the form */}
         <div
-          className={`absolute top-0 left-0 w-full h-full p-6 bg-white transition-transform duration-500 ease-in-out z-10 shadow-md ${
-            step === "preview" ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
-          <p><strong>Name:</strong> {name}</p>
-          <p><strong>Deposit:</strong> ${depositedCash}</p>
-          <p><strong>Target Date:</strong> {targetDate}</p>
-          <p><strong>Color:</strong> <span className="inline-block w-6 h-6 rounded border" style={{ backgroundColor: color }} /></p>
-          <p><strong>Risk Level:</strong> {riskAptitude}</p>
-          <p><strong>Focuses:</strong> {
-            [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
-              .filter(Boolean)
-              .join(", ") || "None"
-          }</p>
-          {previewData && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-2">Portfolio Value Trend</h3>
-              <Trendline home={false} color="#737373" data={previewData} />
+        className={`absolute top-0 left-0 w-full h-full p-6 bg-white transition-transform duration-500 ease-in-out z-10 shadow-md ${
+          step === "preview" ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex h-full w-full gap-4">
+          {/* Left: Info and PieChart */}
+          <div className="w-2/10 flex flex-col overflow-y-auto pr-2">
+            <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
+            <div className="space-y-1 text-sm">
+              <p><strong>Name:</strong> {name}</p>
+              <p><strong>Deposit:</strong> ${depositedCash}</p>
+              <p><strong>Target Date:</strong> {targetDate}</p>
+              <p><strong>Color:</strong> <span className="inline-block w-6 h-6 rounded border" style={{ backgroundColor: color }} /></p>
+              <p><strong>Risk Level:</strong> {riskAptitude}</p>
+              <p><strong>Focuses:</strong> {
+                [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
+                  .filter(Boolean)
+                  .join(", ") || "None"
+              }</p>
             </div>
-          )}
-          {previewInvestments && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-2">Investment Allocation</h3>
-              <div className="h-64 w-full">
-                <PieChart data={previewInvestments} showLegend={true} />
+
+            {previewInvestments && (
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-2">Investment Allocation</h3>
+                <div className="h-64 w-full">
+                  <PieChart data={previewInvestments} showLegend={true} />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-auto flex justify-end space-x-2 pt-4">
+              <button
+                onClick={() => setStep("form")}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleFinalConfirm}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Chart */}
+          <div className="w-8/10 h-full flex flex-col">
+            <h3 className="text-lg font-medium mb-4">Portfolio Value Forecast</h3>
+            <div className="w-full h-full flex justify-center items-center">
+              <div className="w-full h-[20rem] px-4">
+                {previewData && forecastSimulations && (
+                  <ForecastTrendChart
+                    historical={previewData.slice(-30)}
+                    forecast={forecastSimulations}
+                  />
+                )}
               </div>
             </div>
-          )}
-
-
-          <div className="mt-6 flex justify-end space-x-2">
-            <button
-              onClick={() => setStep("form")}
-              className="bg-gray-300 px-4 py-2 rounded"
-            >
-              Back
-            </button>
-            <button
-              onClick={handleFinalConfirm}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Confirm
-            </button>
           </div>
         </div>
+      </div>
+
       </div>
     </div>
   );
