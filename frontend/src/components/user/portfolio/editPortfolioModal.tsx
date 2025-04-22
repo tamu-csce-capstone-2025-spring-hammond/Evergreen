@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PortfolioCardProps } from "@/components/api/portfolio";
-
-
-interface EditPortfolioModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (updatedPortfolio: { name?: string; color?: string; targetDate?: string }) => void;
-  onDelete: (portfolioId: number) => void;
-  card: PortfolioCardProps;
-}
+import { PortfolioCardProps, EditPortfolioModalProps } from "@/components/api/portfolio";
 
 const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
   const [name, setName] = useState("");

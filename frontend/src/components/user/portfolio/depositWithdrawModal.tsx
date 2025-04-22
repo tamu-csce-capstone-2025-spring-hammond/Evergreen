@@ -1,13 +1,9 @@
 "use client"
 
 import { useState } from "react";
+import { DepositWithdrawModalProps } from "@/components/api/portfolio";
 
-interface DepositWithdrawModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (amount: number, type: "deposit" | "withdraw") => void;
-  type: "deposit" | "withdraw";
-}
+
 
 const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onClose, onConfirm, type }) => {
   const [amount, setAmount] = useState("");

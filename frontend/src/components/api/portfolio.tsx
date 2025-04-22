@@ -65,6 +65,46 @@ export interface PortfolioDto {
     color?: string;
   }
   
+  export interface CreatePortfolioModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: (
+      name: string,
+      deposited_cash: number,
+      target_date: string,
+      color: string,
+      risk_aptitude: number,
+      focuses: {
+        bitcoin_focus: boolean;
+        smallcap_focus: boolean;
+        value_focus: boolean;
+        momentum_focus: boolean;
+      }
+    ) => void;
+  }
+
+  export interface DepositWithdrawModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: (amount: number, type: "deposit" | "withdraw") => void;
+    type: "deposit" | "withdraw";
+  }
+
+  export interface EditPortfolioModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: (updatedPortfolio: { name?: string; color?: string; targetDate?: string }) => void;
+    onDelete: (portfolioId: number) => void;
+    card: PortfolioCardProps;
+  }
+  
+  export interface Portfolio {
+    home: boolean;
+    cards: PortfolioCardProps[];
+    selectedCardName: string | undefined;
+    onCardClick?: (card: PortfolioCardProps) => void;
+  }
+
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   
   

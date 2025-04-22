@@ -1,29 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { PortfolioPreviewDto, previewPortfolio, InvestmentData } from "@/components/api/portfolio";
+import { PortfolioPreviewDto, previewPortfolio, InvestmentData, CreatePortfolioModalProps } from "@/components/api/portfolio";
 import useJwtStore from "@/store/jwtStore";
 import PieChart from "../pieChart";
 import ForecastTrendChart from "../forecastGraph";
 
 
-interface CreatePortfolioModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (
-    name: string,
-    deposited_cash: number,
-    target_date: string,
-    color: string,
-    risk_aptitude: number,
-    focuses: {
-      bitcoin_focus: boolean;
-      smallcap_focus: boolean;
-      value_focus: boolean;
-      momentum_focus: boolean;
-    }
-  ) => void;
-}
+
 
 const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   isOpen,
