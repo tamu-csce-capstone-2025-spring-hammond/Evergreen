@@ -2,30 +2,7 @@
 
 import useJwtStore from "@/store/jwtStore";
 import { useState, useEffect } from "react";
-
-interface NewsImage {
-  size: string;
-  url: string;
-}
-
-interface NewsArticle {
-  author: string;
-  content: string;
-  created_at: string;
-  headline: string;
-  id: number;
-  images: NewsImage[];
-  source: string;
-  summary: string;
-  symbols: string[];
-  updated_at: string;
-  url: string;
-}
-
-interface NewsResponse {
-  news: NewsArticle[];
-  next_page_token: string;
-}
+import { NewsArticle, getNews } from "../api/news";
 
 export default function News() {
   const { getToken } = useJwtStore();
@@ -37,33 +14,13 @@ export default function News() {
   }, []);
 
   const fetchNews = async () => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!backendUrl) {
-      console.error("Backend URL is not defined");
-      return;
-    }
-
+    const token = getToken();
     try {
       setLoading(true);
-      const myHeaders = new Headers();
-      const token = getToken();
       if (!token) {
         throw new Error("No JWT token");
       }
-      const response = await fetch(`${backendUrl}/news`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data: NewsArticle[] = await response.json();
+      const data: NewsArticle[] = await getNews(token);
       setNewsArticles(data);
     } catch (error: any) {
       console.error("Error fetching news:", error.message);

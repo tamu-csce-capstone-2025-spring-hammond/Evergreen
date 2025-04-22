@@ -1,13 +1,7 @@
 // Import necessary hooks and functions
 import { useEffect, useState } from "react";
 import useJwtStore from "@/store/jwtStore";
-
-type WatchlistItem = {
-  ticker: string;
-  ticker_name: string;
-  last_price: number;
-  day_percent_change: number;
-};
+import { WatchlistItem, getWatchlist } from "../api/watchlist"; 
 
 const Watchlist = () => {
   // Initialize state to store watchlist data
@@ -18,22 +12,17 @@ const Watchlist = () => {
 
   // Fetch watchlist data when the component mounts
   useEffect(() => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    fetch(`${backendUrl}/watchlist`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`, // Send the token in the Authorization header
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized or error fetching");
-        return res.json();
-      })
-      .then((data) => {
-        setWatchlist(data); // Store the fetched data in the state
-      })
-      .catch((err) => console.error("Fetch error:", err)); // Catch and log errors
-  }, [getToken]); // Re-run the effect if the token changes
+    fetchWatchlist();
+  }, []);
+  
+  const fetchWatchlist = async () => {
+    const token = getToken();
+    if (!token) {
+      throw new Error("No JWT token");
+    }
+    const data = await getWatchlist(token);
+    setWatchlist(data);
+  }
 
   return (
     <div className="h-full flex flex-col p-4 pb-2">
