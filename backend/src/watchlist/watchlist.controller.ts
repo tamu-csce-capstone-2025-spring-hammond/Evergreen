@@ -40,13 +40,13 @@ export class WatchlistController {
           ticker: 'SPY',
           last_price: 30.33,
           day_percent_change: 3,
-          name: 'SPDR S&P 500 ETF Trust',
+          ticker_name: 'SPDR S&P 500 ETF Trust',
         },
         {
           ticker: 'APPL',
           last_price: 300.33,
           day_percent_change: -0.5,
-          name: 'Apple Inc',
+          ticker_name: 'Apple Inc',
         },
       ],
     },
@@ -72,10 +72,12 @@ export class WatchlistController {
   })
   async watchlist(@Request() request: { userid: number }) {
     const { userid: userID } = request;
+    console.log("Incoming request.userid:", request.userid);
     try {
       const watchlist = await this.watchlistService.getWatchlist(userID);
       return watchlist;
     } catch (error) {
+      console.log("Watchlist error:")
       if (error.message == ErrorCodes.EXTERNAL_API_FAILURE) {
         throw new HttpException(
           {

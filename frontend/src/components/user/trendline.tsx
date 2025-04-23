@@ -1,21 +1,36 @@
 interface Trendline {
     home: boolean;
+    color: string;
+    data: Array<number>;
 }
 
-const Trendline: React.FC<Trendline> = ({home}) => {
+const Trendline: React.FC<Trendline> = ({home, color, data}) => {
+
+    const strokeColor = color === "text-evergreen-500" ? "#578555" : color === "#A9403D" ? "stroke-everred-500" : "#737373";
+
+    const maxValue = Math.max(...data);
+    const minValue = Math.min(...data);
+
+    const realWidth = (home) ? 290 : 410;
+    const width = realWidth - 10;
+    const height = 100;
+
+    let path = [];
+    
+    for(let i = 0; i < data.length; i++) {
+        let x = (i / (data.length - 1)) * width;
+        let y = (maxValue === minValue) ? height/2 : height - ((data[i] - minValue) / (maxValue - minValue) * height);
+
+        if(i === 0) path.push(`M ${x} ${y}`);
+        else path.push(`L ${x} ${y}`);
+    }
+
+    if(path.length === 0) path = [`M 0 ${height/2} L ${width} ${height/2}`]
+
     return (
         <div className="flex-1">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${home ? 300 : 420} 110`}>
-                <defs>
-                    <filter id="Diffuse" primitiveUnits="objectBoundingBox">
-                        <feDiffuseLighting in="SourceGraphic" result="light">
-                            <fePointLight x=".25" y=".25" z=".15" />
-                        </feDiffuseLighting>
-                        <feComposite in="SourceGraphic" in2="light" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
-                    </filter>
-                </defs>
-                <rect width="100%" height="100%" fill="gainsboro"/>
-                <circle id="circle" cx="50%" cy="50%" r="25" fill="blue" filter="url(#Diffuse)"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox={`-5 -5 ${realWidth} 110`}>
+                <path d={`${path.join('')}`} strokeWidth="2" strokeLinecap="round" fill="transparent" stroke={`${strokeColor}`} />
             </svg>
         </div>
     );
