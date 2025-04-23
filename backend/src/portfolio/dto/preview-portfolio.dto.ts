@@ -25,7 +25,7 @@ export class PortfolioPreviewDto {
     required: true,
   })
   @IsNumber()
-  initial_deposit: number;
+  current_value: number;
 
   @ApiPropertyOptional({
     example: true,

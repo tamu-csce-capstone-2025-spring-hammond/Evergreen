@@ -27,6 +27,27 @@ export class PortfolioService {
   ) {}
 
   async create(portfolioDto: PortfolioDto, userId: number) {
+    const previewDTO: PortfolioPreviewDto = {
+      targetDate: portfolioDto.targetDate,
+      current_value: portfolioDto.initial_deposit,
+      bitcoin_focus: portfolioDto.bitcoin_focus,
+      smallcap_focus: portfolioDto.smallcap_focus,
+      value_focus: portfolioDto.value_focus,
+      momentum_focus: portfolioDto.momentum_focus,
+      risk_aptitude: portfolioDto.risk_aptitude,
+    };
+    const allocations = await this.getAllocations(previewDTO);
+    const portfolioAllocations: PortfolioAllocation[] = allocations.map((a) => {
+      return {
+        ticker: a.ticker,
+        percent: a.percent_of_portfolio,
+      };
+    });
+    const sim = await this.alpacaService.seedSim(
+      portfolioAllocations,
+      Decimal(portfolioDto.initial_deposit),
+      new Date(),
+    );
     return this.prisma.portfolio.create({
       data: {
         user_id: userId,
@@ -41,8 +62,93 @@ export class PortfolioService {
         value_focus: portfolioDto.value_focus ?? false,
         momentum_focus: portfolioDto.momentum_focus ?? false,
         risk_aptitude: portfolioDto.risk_aptitude,
+        holdings: {
+          create: sim.investments,
+        },
+        trades: { create: sim.trades },
       },
     });
+  }
+
+  async reallocate(
+    id: number,
+    userId: number,
+    newPortfolioValue: Decimal = null,
+  ) {
+    const portfolioData = await this.prisma.portfolio.findUnique({
+      where: { portfolio_id: id, user_id: userId },
+    });
+
+    if (!portfolioData || portfolioData.user_id !== userId) {
+      throw portfolioData
+        ? new UnauthorizedException(
+            "User trying to access portfolio they don't own",
+          )
+        : new NotFoundException(`Portfolio with ID ${id} not found`);
+    }
+
+    const holdings = await this.prisma.holdings.findMany({
+      where: { portfolio_id: id },
+    });
+
+    const holdingsSnapshot = holdings.map((holding) => ({
+      ticker: holding.ticker,
+      quantity: holding.quantity.toNumber(),
+    }));
+
+    let portfolioValue: Decimal = newPortfolioValue;
+    if (!newPortfolioValue) {
+      if (holdings.length > 0) {
+        const portfolioInfo =
+          await this.alpacaService.getCurrentPortfolioInfo(holdingsSnapshot);
+        portfolioValue = Decimal(portfolioInfo.total_portfolio_value).add(
+          portfolioData.uninvested_cash,
+        );
+      } else {
+        portfolioValue = Decimal(portfolioData.uninvested_cash);
+      }
+    }
+
+    const previewDTO: PortfolioPreviewDto = {
+      targetDate: portfolioData.target_date,
+      current_value: portfolioValue.toNumber(),
+      bitcoin_focus: portfolioData.bitcoin_focus,
+      smallcap_focus: portfolioData.smallcap_focus,
+      value_focus: portfolioData.value_focus,
+      momentum_focus: portfolioData.momentum_focus,
+      risk_aptitude: portfolioData.risk_aptitude,
+    };
+    const allocations = await this.getAllocations(previewDTO);
+    const portfolioAllocations: PortfolioAllocation[] = allocations.map((a) => {
+      return {
+        ticker: a.ticker,
+        percent: a.percent_of_portfolio,
+      };
+    });
+
+    const sim = await this.alpacaService.seedSim(
+      portfolioAllocations,
+      portfolioValue,
+      new Date(),
+    );
+
+    const holdingsValues = sim.investments.map((i) => ({
+      portfolio_id: portfolioData.portfolio_id,
+      ticker: i.ticker,
+      ticker_name: i.ticker_name,
+      quantity: i.quantity,
+      average_cost_basis: i.average_cost_basis,
+      last_updated: i.last_updated,
+    }));
+
+    await Promise.all([
+      this.prisma.holdings.deleteMany({
+        where: { portfolio_id: portfolioData.portfolio_id },
+      }),
+      this.prisma.holdings.createMany({
+        data: holdingsValues,
+      }),
+    ]);
   }
 
   async getFullPortfolioInfo(
@@ -342,14 +448,14 @@ export class PortfolioService {
   ) {
     const backtestSim = await this.alpacaService.backtestSim(
       allocations,
-      Decimal(portfolioReviewDto.initial_deposit),
+      Decimal(portfolioReviewDto.current_value),
       new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
       portfolioReviewDto.targetDate,
     );
     return {
       createdDate: new Date(),
       targetDate: portfolioReviewDto.targetDate,
-      initial_deposit: portfolioReviewDto.initial_deposit,
+      initial_deposit: portfolioReviewDto.current_value,
       risk_aptitude: portfolioReviewDto.risk_aptitude,
       bitcoin_focus: portfolioReviewDto.bitcoin_focus,
       smallcap_focus: portfolioReviewDto.smallcap_focus,
