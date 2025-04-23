@@ -411,11 +411,53 @@ export class AlpacaService {
 
     const sharpeRatio = meanLong.dividedBy(stdDevLong).times(Math.sqrt(252)); // daily returns assumed
 
+    // Convert daily simulation values to yearly percentile projections
+    const yearlyProjections: {
+      year: number;
+      p20: Decimal;
+      p50: Decimal;
+      p80: Decimal;
+    }[] = [];
+
+    const daysPerYear = 252; // roughly trading days per year
+    const totalYears = Math.floor(numDays / daysPerYear);
+
+    for (let year = 1; year <= totalYears; year++) {
+      const dayIndex = year * daysPerYear - 1;
+
+      const valuesAtYear = futureSimulations.map((sim) => sim.values[dayIndex]);
+
+      valuesAtYear.sort((a, b) => a.minus(b).toNumber());
+
+      const getPercentile = (percentile: number): Decimal => {
+        const rank = Math.floor(percentile * valuesAtYear.length);
+        return valuesAtYear[Math.min(rank, valuesAtYear.length - 1)];
+      };
+
+      yearlyProjections.push({
+        year,
+        p20: getPercentile(0.2),
+        p50: getPercentile(0.5),
+        p80: getPercentile(0.8),
+      });
+    }
+
+    const startDateMs = todayDate.getTime();
+    const msPerDay = 1000 * 60 * 60 * 24;
+
     return {
       historical_graph: portfolioGraph,
       future_projections: {
-        time_interval: 'Days',
-        simulations: futureSimulations,
+        time_interval: 'Years',
+        simulations: yearlyProjections.map((proj, i) => {
+          const dayIndex = (i + 1) * daysPerYear - 1;
+          const futureDate = new Date(startDateMs + dayIndex * msPerDay);
+          const formattedDate = futureDate.toISOString().split('T')[0]; // YYYY-MM-DD
+          return {
+            id: formattedDate,
+            values: [proj.p20, proj.p50, proj.p80],
+          };
+        }),
       },
       sharpe_ratio: sharpeRatio,
     };

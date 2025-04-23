@@ -106,5 +106,5 @@ export interface trade {
 
 export interface FutureProjections {
   time_interval: string;
-  simulations: { id: Decimal; values: Decimal[] }[];
+  simulations: { id: string; values: Decimal[] }[];
 }
