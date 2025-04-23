@@ -55,7 +55,7 @@ export class PortfolioService {
         target_date: portfolioDto.targetDate,
         created_at: portfolioDto.createdDate,
         total_deposited: portfolioDto.initial_deposit,
-        uninvested_cash: portfolioDto.initial_deposit,
+        uninvested_cash: 0,
         color: portfolioDto.color,
         bitcoin_focus: portfolioDto.bitcoin_focus ?? false,
         smallcap_focus: portfolioDto.smallcap_focus ?? false,
@@ -147,6 +147,15 @@ export class PortfolioService {
       }),
       this.prisma.holdings.createMany({
         data: holdingsValues,
+      }),
+      await this.prisma.portfolio.update({
+        where: {
+          portfolio_id: id,
+          user_id: userId,
+        },
+        data: {
+          uninvested_cash: 0,
+        },
       }),
     ]);
   }
@@ -309,36 +318,64 @@ export class PortfolioService {
     }
   }
 
-  async deposit(userId: number, portfolioId: number, depositAmount: number) {
-    try {
-      return await this.prisma.$transaction(async (tx) => {
-        const updatedPortfolio = await tx.portfolio.update({
-          where: {
-            portfolio_id: portfolioId,
-            user_id: userId,
-          },
-          data: {
-            total_deposited: { increment: depositAmount },
-            uninvested_cash: { increment: depositAmount },
-          },
-          select: {
-            portfolio_id: true,
-            portfolio_name: true,
-            total_deposited: true,
-            uninvested_cash: true,
-          },
-        });
+  private async getPortfolioValue(portfolioId: number) {
+    const portfolioData = await this.prisma.portfolio.findUnique({
+      where: { portfolio_id: portfolioId },
+    });
+    const holdings = await this.prisma.holdings.findMany({
+      where: { portfolio_id: portfolioId },
+    });
 
-        return updatedPortfolio;
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(
-          `Portfolio with ID ${portfolioId} not found`,
-        );
-      }
-      throw error;
+    const holdingsSnapshot = holdings.map((holding) => ({
+      ticker: holding.ticker,
+      quantity: holding.quantity.toNumber(),
+    }));
+
+    let portfolioValue: Decimal = Decimal(0);
+    if (holdings.length > 0) {
+      const portfolioInfo =
+        await this.alpacaService.getCurrentPortfolioInfo(holdingsSnapshot);
+      portfolioValue = Decimal(portfolioInfo.total_portfolio_value).add(
+        portfolioData.uninvested_cash,
+      );
+    } else {
+      portfolioValue = Decimal(portfolioData.uninvested_cash);
     }
+    return portfolioValue;
+  }
+
+  async deposit(userId: number, portfolioId: number, depositAmount: number) {
+    const portfolioData = await this.prisma.portfolio.findUnique({
+      where: {
+        portfolio_id: portfolioId,
+        user_id: userId,
+      },
+    });
+
+    if (!portfolioData || portfolioData.user_id !== userId) {
+      throw portfolioData
+        ? new UnauthorizedException(
+            "User trying to access portfolio they don't own",
+          )
+        : new NotFoundException(`Portfolio with ID ${portfolioId} not found`);
+    }
+    const value = await this.getPortfolioValue(portfolioData.portfolio_id);
+    await this.prisma.portfolio.update({
+      where: { portfolio_id: portfolioId },
+      data: {
+        total_deposited: {
+          increment: depositAmount,
+        },
+      },
+    });
+    this.reallocate(userId, portfolioId, value.add(depositAmount));
+    const portfolioData2 = await this.prisma.portfolio.findUnique({
+      where: {
+        portfolio_id: portfolioId,
+        user_id: userId,
+      },
+    });
+    return portfolioData2;
   }
 
   async withdraw(userId: number, portfolioId: number, withdrawAmount: number) {
@@ -346,59 +383,29 @@ export class PortfolioService {
     if (withdrawAmount <= 0) {
       throw new BadRequestException('Withdraw amount must be positive');
     }
-
-    try {
-      return await this.prisma.$transaction(async (tx) => {
-        // First, get the current portfolio to check available cash
-        const portfolio = await tx.portfolio.findUnique({
-          where: {
-            portfolio_id: portfolioId,
-            user_id: userId,
-          },
-          select: {
-            uninvested_cash: true,
-          },
-        });
-
-        // Ensure the portfolio exists
-        if (!portfolio) {
-          throw new NotFoundException(
-            'Portfolio not found or does not belong to user',
-          );
-        }
-
-        // Check if there's enough uninvested cash
-        if (portfolio.uninvested_cash.lessThan(withdrawAmount)) {
-          throw new BadRequestException(
-            `Insufficient funds. Available: ${portfolio.uninvested_cash}, Requested: ${withdrawAmount}`,
-          );
-        }
-        const updatedPortfolio = await tx.portfolio.update({
-          where: {
-            portfolio_id: portfolioId,
-            user_id: userId,
-          },
-          data: {
-            uninvested_cash: { decrement: withdrawAmount },
-            total_deposited: { decrement: withdrawAmount },
-          },
-          select: {
-            portfolio_id: true,
-            portfolio_name: true,
-            uninvested_cash: true,
-          },
-        });
-
-        return updatedPortfolio;
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(
-          `Portfolio with ID ${portfolioId} not found`,
-        );
-      }
-      throw error;
+    const value = await this.getPortfolioValue(portfolioId);
+    if (value.lessThan(withdrawAmount)) {
+      throw new BadRequestException(
+        `Insufficient funds. Available: ${value}, Requested: ${withdrawAmount}`,
+      );
     }
+    await this.prisma.portfolio.update({
+      where: { portfolio_id: portfolioId },
+      data: {
+        total_deposited: {
+          decrement: withdrawAmount,
+        },
+      },
+    });
+
+    this.reallocate(portfolioId, userId, value.minus(withdrawAmount));
+    const portfolioData2 = await this.prisma.portfolio.findUnique({
+      where: {
+        portfolio_id: portfolioId,
+        user_id: userId,
+      },
+    });
+    return portfolioData2;
   }
 
   async remove(id: number, userID: number) {
