@@ -344,6 +344,7 @@ export class PortfolioService {
       allocations,
       Decimal(portfolioReviewDto.initial_deposit),
       new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+      portfolioReviewDto.targetDate,
     );
     return {
       createdDate: new Date(),

@@ -279,7 +279,7 @@ export class AlpacaService {
     portfolio: investmentAllocation[],
     endingInvestment: Decimal,
     startDate: Date,
-    endDate: Date = new Date(Date.now() - 15 * 60 * 1000),
+    targetDate: Date,
   ): Promise<{
     historical_graph: GraphPoint[];
     future_projections: FutureProjections;
@@ -287,17 +287,16 @@ export class AlpacaService {
   }> => {
     const baseUrl = 'https://data.alpaca.markets/v2/stocks/bars';
     const symbols = portfolio.map(({ ticker }) => ticker).join(',');
+    const todayDate: Date = new Date(Date.now() - 20 * 60 * 1000);
 
     const toISOString = (date: Date) => date.toISOString();
     const start = toISOString(startDate);
-    const end = toISOString(
-      new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000),
-    );
+    const today = toISOString(todayDate);
     const params = new URLSearchParams({
       symbols,
       timeframe: '1Day',
       start,
-      end,
+      end: today,
       limit: '10000',
       adjustment: 'all',
       feed: 'sip',
@@ -305,6 +304,7 @@ export class AlpacaService {
     });
 
     const url = `${baseUrl}?${params.toString()}`;
+    this.logger.debug(url);
     const response = await fetch(url, this.options);
 
     if (!response.ok) {
@@ -312,7 +312,7 @@ export class AlpacaService {
         `Failed to fetch portfolio history: ${response.statusText}`,
       );
       throw new Error(
-        `Alpaca API request failed with status ${response.status}`,
+        `Alpaca API request failed with status ${await response.body}`,
       );
     }
 
@@ -375,9 +375,13 @@ export class AlpacaService {
     const drift = meanLong.times(0.4).plus(meanRecent.times(0.6));
     const volatility = stdDevLong.times(0.4).plus(stdDevRecent.times(0.6));
 
-    // Monte Carlo simulations
     const lastValue = portfolioGraph[portfolioGraph.length - 1].snapshot_value;
-    const numDays = 60;
+
+    // Calculate difference in milliseconds
+    const diffInMs: number = targetDate.getTime() - todayDate.getTime();
+
+    // Convert milliseconds to days
+    const numDays: number = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
     const numSimulations = 100;
     const futureSimulations: { id: Decimal; values: Decimal[] }[] = [];
 
@@ -405,7 +409,6 @@ export class AlpacaService {
       futureSimulations.push({ id: Decimal(sim + 1), values });
     }
 
-    // Sharpe ratio = (mean return / std dev) * sqrt(periods per year)
     const sharpeRatio = meanLong.dividedBy(stdDevLong).times(Math.sqrt(252)); // daily returns assumed
 
     return {
