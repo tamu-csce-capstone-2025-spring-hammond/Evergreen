@@ -27,6 +27,9 @@ export class PortfolioService {
     private readonly prisma: PrismaService,
     private alpacaService: AlpacaService,
   ) {}
+  async onModuleInit() {
+    await this.updateCharts();
+  }
 
   async create(portfolioDto: PortfolioDto, userId: number) {
     const previewDTO: PortfolioPreviewDto = {
@@ -328,13 +331,10 @@ export class PortfolioService {
       quantity: holding.quantity.toNumber(),
     }));
 
-    console.log('Uninvested cash' + portfolioData.uninvested_cash);
-
     let portfolioValue: Decimal = Decimal(0);
     if (holdings.length > 0) {
       const portfolioInfo =
         await this.alpacaService.getCurrentPortfolioInfo(holdingsSnapshot);
-      console.log(portfolioInfo.total_portfolio_value);
       portfolioValue = Decimal(portfolioInfo.total_portfolio_value).add(
         portfolioData.uninvested_cash,
       );
@@ -542,5 +542,22 @@ export class PortfolioService {
       future_projections: backtestSim.future_projections,
       sharpe_ratio: backtestSim.sharpe_ratio,
     };
+  }
+
+  async updateCharts() {
+    const portfolios = await this.prisma.portfolio.findMany();
+
+    await Promise.all(
+      portfolios.map(async (portfolio) => {
+        const value = await this.getPortfolioValue(portfolio.portfolio_id);
+        await this.prisma.portfolioSnapshot.create({
+          data: {
+            portfolio_id: portfolio.portfolio_id,
+            snapshot_value: value,
+            snapshot_time: new Date(),
+          },
+        });
+      }),
+    );
   }
 }
