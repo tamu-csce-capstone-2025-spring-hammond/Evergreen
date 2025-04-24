@@ -29,7 +29,7 @@ export class PortfolioService {
   async create(portfolioDto: PortfolioDto, userId: number) {
     const previewDTO: PortfolioPreviewDto = {
       targetDate: portfolioDto.targetDate,
-      current_value: portfolioDto.initial_deposit,
+      value: portfolioDto.initial_deposit,
       bitcoin_focus: portfolioDto.bitcoin_focus,
       smallcap_focus: portfolioDto.smallcap_focus,
       value_focus: portfolioDto.value_focus,
@@ -111,7 +111,7 @@ export class PortfolioService {
 
     const previewDTO: PortfolioPreviewDto = {
       targetDate: portfolioData.target_date,
-      current_value: portfolioValue.toNumber(),
+      value: portfolioValue.toNumber(),
       bitcoin_focus: portfolioData.bitcoin_focus,
       smallcap_focus: portfolioData.smallcap_focus,
       value_focus: portfolioData.value_focus,
@@ -455,14 +455,14 @@ export class PortfolioService {
   ) {
     const backtestSim = await this.alpacaService.backtestSim(
       allocations,
-      Decimal(portfolioReviewDto.current_value),
+      Decimal(portfolioReviewDto.value),
       new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
       portfolioReviewDto.targetDate,
     );
     return {
       createdDate: new Date(),
       targetDate: portfolioReviewDto.targetDate,
-      initial_deposit: portfolioReviewDto.current_value,
+      initial_deposit: portfolioReviewDto.value,
       risk_aptitude: portfolioReviewDto.risk_aptitude,
       bitcoin_focus: portfolioReviewDto.bitcoin_focus,
       smallcap_focus: portfolioReviewDto.smallcap_focus,

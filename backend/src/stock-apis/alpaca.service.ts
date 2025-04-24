@@ -317,9 +317,10 @@ export class AlpacaService {
     }
 
     const history: AlpacaHistoricalBarsApiResponse = await response.json();
+    this.logger.error(portfolio[0].percent_of_portfolio);
     const investments = portfolio.map(({ ticker, percent_of_portfolio }) => {
       const quantity = endingInvestment
-        .times(percent_of_portfolio)
+        .times(percent_of_portfolio.div(100))
         .dividedBy(history.bars[ticker][history.bars[ticker].length - 1].c);
       return { ticker, quantity };
     });
@@ -377,87 +378,88 @@ export class AlpacaService {
 
     const lastValue = portfolioGraph[portfolioGraph.length - 1].snapshot_value;
 
+    this.logger.debug(lastValue);
+
     // Calculate difference in milliseconds
     const diffInMs: number = targetDate.getTime() - todayDate.getTime();
 
     // Convert milliseconds to days
     const numDays: number = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
     const numSimulations = 100;
-    const futureSimulations: { id: Decimal; values: Decimal[] }[] = [];
+    const futureSimulations: { id: Decimal; values: number[] }[] = [];
 
-    const boxMullerRandom = (): number => {
-      let u = 0,
-        v = 0;
-      while (u === 0) u = Math.random();
-      while (v === 0) v = Math.random();
-      return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    };
+    const fastBoxMuller = (() => {
+      let spare: number | null = null;
+      return (): number => {
+        if (spare !== null) {
+          const val = spare;
+          spare = null;
+          return val;
+        }
+
+        let u = 0,
+          v = 0;
+        while (u === 0) u = Math.random();
+        while (v === 0) v = Math.random();
+
+        const mag = Math.sqrt(-2.0 * Math.log(u));
+        spare = mag * Math.sin(2.0 * Math.PI * v);
+        return mag * Math.cos(2.0 * Math.PI * v);
+      };
+    })();
+
+    const adjustedDrift = drift.toNumber() - volatility.toNumber() ** 2 / 2;
+    const vol = volatility.toNumber();
+
+    this.logger.debug(adjustedDrift);
+    this.logger.debug(vol);
 
     for (let sim = 0; sim < numSimulations; sim++) {
-      const values: Decimal[] = [];
-      let price = lastValue;
+      const values: number[] = [];
+      let price = lastValue.toNumber();
 
       for (let day = 0; day < numDays; day++) {
-        const z = Decimal(boxMullerRandom());
-        const adjustedDrift = drift.minus(volatility.pow(2).dividedBy(2));
-        const shock = volatility.times(z);
-        const multiplier = Decimal.exp(adjustedDrift.plus(shock));
-        price = price.times(multiplier);
+        const z = fastBoxMuller();
+        const shock = vol * z;
+        price *= Math.exp(adjustedDrift + shock);
         values.push(price);
       }
 
       futureSimulations.push({ id: Decimal(sim + 1), values });
     }
 
+    // Map to final value with index
+    const finalValues = futureSimulations.map((sim, index) => ({
+      index,
+      finalValue: sim.values[sim.values.length - 1],
+    }));
+
+    // Sort by final value
+    finalValues.sort((a, b) => a.finalValue - b.finalValue);
+
+    // Find indices for each percentile
+    const lowest = finalValues[0].index;
+    const highest = finalValues[finalValues.length - 1].index;
+    const p25 = finalValues[Math.floor(finalValues.length * 0.25)].index;
+    const p50 = finalValues[Math.floor(finalValues.length * 0.5)].index;
+    const p75 = finalValues[Math.floor(finalValues.length * 0.75)].index;
+
+    // Extract those simulations
+    const representativeLines = [
+      futureSimulations[lowest],
+      futureSimulations[p25],
+      futureSimulations[p50],
+      futureSimulations[p75],
+      futureSimulations[highest],
+    ];
+
     const sharpeRatio = meanLong.dividedBy(stdDevLong).times(Math.sqrt(252)); // daily returns assumed
-
-    // Convert daily simulation values to yearly percentile projections
-    const yearlyProjections: {
-      year: number;
-      p20: Decimal;
-      p50: Decimal;
-      p80: Decimal;
-    }[] = [];
-
-    const daysPerYear = 252; // roughly trading days per year
-    const totalYears = Math.floor(numDays / daysPerYear);
-
-    for (let year = 1; year <= totalYears; year++) {
-      const dayIndex = year * daysPerYear - 1;
-
-      const valuesAtYear = futureSimulations.map((sim) => sim.values[dayIndex]);
-
-      valuesAtYear.sort((a, b) => a.minus(b).toNumber());
-
-      const getPercentile = (percentile: number): Decimal => {
-        const rank = Math.floor(percentile * valuesAtYear.length);
-        return valuesAtYear[Math.min(rank, valuesAtYear.length - 1)];
-      };
-
-      yearlyProjections.push({
-        year,
-        p20: getPercentile(0.2),
-        p50: getPercentile(0.5),
-        p80: getPercentile(0.8),
-      });
-    }
-
-    const startDateMs = todayDate.getTime();
-    const msPerDay = 1000 * 60 * 60 * 24;
 
     return {
       historical_graph: portfolioGraph,
       future_projections: {
         time_interval: 'Years',
-        simulations: yearlyProjections.map((proj, i) => {
-          const dayIndex = (i + 1) * daysPerYear - 1;
-          const futureDate = new Date(startDateMs + dayIndex * msPerDay);
-          const formattedDate = futureDate.toISOString().split('T')[0]; // YYYY-MM-DD
-          return {
-            id: formattedDate,
-            values: [proj.p20, proj.p50, proj.p80],
-          };
-        }),
+        simulations: representativeLines,
       },
       sharpe_ratio: sharpeRatio,
     };

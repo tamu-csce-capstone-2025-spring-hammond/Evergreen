@@ -25,7 +25,7 @@ export class PortfolioPreviewDto {
     required: true,
   })
   @IsNumber()
-  current_value: number;
+  value: number;
 
   @ApiPropertyOptional({
     example: true,
