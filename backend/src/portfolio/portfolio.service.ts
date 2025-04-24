@@ -27,9 +27,9 @@ export class PortfolioService {
     private readonly prisma: PrismaService,
     private alpacaService: AlpacaService,
   ) {}
-  async onModuleInit() {
-    await this.updateCharts();
-  }
+  // async onModuleInit() {
+  //   await this.updateCharts();
+  // }
 
   async create(portfolioDto: PortfolioDto, userId: number) {
     const previewDTO: PortfolioPreviewDto = {
