@@ -30,6 +30,7 @@ import {
 } from '@nestjs/swagger';
 import { DepositDto, WithdrawDto } from './dto/deposit-withdraw.dto';
 import { ErrorCodes, ErrorMessages } from '../error-codes.enum';
+import { PortfolioPreviewDto } from './dto/preview-portfolio.dto';
 
 @Controller('portfolio')
 export class PortfolioController {
@@ -82,6 +83,79 @@ export class PortfolioController {
   ) {
     const { userid: userID } = request;
     return this.portfolioService.create(portfolioDto, userID);
+  }
+
+  @Post('/preview')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Preview a new portfolio',
+    description: 'Previews a new investment portfolio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Portfolio preview generated.',
+    schema: {
+      example: {
+        createdDate: '2025-01-01T00:00:00.000Z',
+        targetDate: '2050-01-01T00:00:00.000Z',
+        initial_deposit: 100000,
+        risk_aptitude: 5,
+        bitcoin_focus: true,
+        smallcap_focus: true,
+        value_focus: true,
+        momentum_focus: true,
+        investments: [
+          {
+            ticker: 'BND',
+            name: 'Vanguard Total Bond Market',
+            percent_of_portfolio: '40',
+          },
+          {
+            ticker: 'VTI',
+            name: 'Vanguard Total US Stock Market',
+            percent_of_portfolio: '60',
+          },
+        ],
+        historical_graph: [
+          {
+            snapshot_time: '2024-02-26T17:04:57.081Z',
+            snapshot_value: '16127.67',
+          },
+          {
+            snapshot_time: '2024-02-27T17:04:57.081Z',
+            snapshot_value: '16395.11',
+          },
+        ],
+        future_projections: {
+          time_interval: 'daily',
+          simulations: [
+            { id: 1, values: [100000, 100012, 100015, 100018] },
+            { id: 2, values: [100000, 99999, 99992, 99971] },
+          ],
+        },
+        sharpe_ratio: 1.2,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error. Check the request body format.',
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'Invalid JWT Token in Bearer Auth Field (it may have expired, be blank, or be otherwise incorrect)',
+    schema: {
+      example: {
+        message: 'Invalid Bearer Token',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  async preview(@Body() portfolioReviewDto: PortfolioPreviewDto) {
+    const allocations =
+      this.portfolioService.getAllocations(portfolioReviewDto);
+    return this.portfolioService.preview(portfolioReviewDto, await allocations);
   }
 
   @Get(':id')
@@ -399,7 +473,8 @@ export class PortfolioController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Deposit amount must be positive and portfolio id must be a integer',
+    description:
+      'Deposit amount must be positive and portfolio id must be a integer',
   })
   @ApiUnauthorizedResponse({
     description:

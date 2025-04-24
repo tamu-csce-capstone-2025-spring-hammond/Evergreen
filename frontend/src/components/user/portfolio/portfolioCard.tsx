@@ -45,7 +45,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
           }
       
           // extract and set data points
-          const points = data.performance_graph.map((item) => Number(item.snapshot_value));
+          const points = data.performance_graph.map((item : any) => Number(item.snapshot_value));
           setDataPoints(points);
       
         } catch (err: any) {
@@ -83,7 +83,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
 
     if(home) {
         return (
-        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer" onClick={onClick}>
+        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer hover:bg-evergray-200/45 transition-colors" onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className="flex whitespace-nowrap justify-between w-40/100">
                 <div className="ml-6 w-45/100">
@@ -107,8 +107,8 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
     }
 
     return (
-        <div className={`p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer transition
-        ${selectedCardName === name ? `shadow-md` : '' }`} style={selectedCardName === name ? { borderColor: `${color}`} : {}} onClick={onClick}>
+        <div className={`p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer transition 
+        ${selectedCardName === name ? `shadow-md` : 'hover:bg-evergray-200/45' }`} style={selectedCardName === name ? { borderColor: `${color}`} : {}} onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className={`flex whitespace-nowrap justify-between w-1/2`}>
                 <div className="ml-6 w-55/100">

@@ -1,13 +1,7 @@
 // Import necessary hooks and functions
 import { useEffect, useState } from "react";
 import useJwtStore from "@/store/jwtStore";
-
-type WatchlistItem = {
-  ticker: string;
-  ticker_name: string;
-  last_price: number;
-  day_percent_change: number;
-};
+import { WatchlistItem, getWatchlist } from "../api/watchlist"; 
 
 const Watchlist = () => {
   // Initialize state to store watchlist data
@@ -18,34 +12,27 @@ const Watchlist = () => {
 
   // Fetch watchlist data when the component mounts
   useEffect(() => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    fetch(`${backendUrl}/watchlist`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`, // Send the token in the Authorization header
-      },
-    })
-      .then((res) => {
-        console.log("Response status:", res.status);
-        if (!res.ok) throw new Error("Unauthorized or error fetching");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Watchlist data:", data);
-        setWatchlist(data); // Store the fetched data in the state
-      })
-      .catch((err) => console.error("Fetch error:", err)); // Catch and log errors
-  }, [getToken]); // Re-run the effect if the token changes
+    fetchWatchlist();
+  }, []);
+  
+  const fetchWatchlist = async () => {
+    const token = getToken();
+    if (!token) {
+      throw new Error("No JWT token");
+    }
+    const data = await getWatchlist(token);
+    setWatchlist(data);
+  }
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="h-full flex flex-col p-4 pb-0">
         <h2 className="text-evergray-500 mb-4">Watchlist</h2>
 
-        <div className="border border-evergray-600 flex-1 flex flex-col overflow-hidden">
-            <div className="overflow-x-auto">
+        <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full text-sm text-left table-fixed">
                 <thead className="bg-evergray-200 text-evergray-700">
-                    <tr className="border-b border-evergray-600 ">
+                    <tr className="">
                         <th className="px-4 py-3 w-2/5 font-semibold">Symbol</th>
                         <th className="px-2 w-3/10 font-semibold">Last Price</th>
                         <th className="w-3/10 font-semibold">% Change</th>
@@ -54,7 +41,7 @@ const Watchlist = () => {
             </table>
             </div>
 
-            <div className="overflow-y-auto overflow-x-auto flex-1">
+            <div className="overflow-y-auto overflow-x-auto flex-1 border-b-1 border-evergray-200">
             <table className="min-w-full text-sm text-left table-fixed">
                 <tbody>
                 {watchlist.map((item, index) => (

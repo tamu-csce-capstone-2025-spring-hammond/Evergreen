@@ -1,13 +1,9 @@
 "use client"
 
 import { useState } from "react";
+import { DepositWithdrawModalProps } from "@/components/api/portfolio";
 
-interface DepositWithdrawModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (amount: number, type: "deposit" | "withdraw") => void;
-  type: "deposit" | "withdraw";
-}
+
 
 const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onClose, onConfirm, type }) => {
   const [amount, setAmount] = useState("");
@@ -35,7 +31,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ isOpen, onC
         <div className="flex justify-between mt-4">
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-gray-300 dark:bg-evergray-600 rounded-md cursor-pointer"
+            className="px-4 py-2 bg-evergray-200 dark:bg-evergray-600 rounded-md cursor-pointer"
           >
             Cancel
           </button>
