@@ -301,7 +301,7 @@ export class AlpacaService {
     const investments = await Promise.all(
       portfolio.map(async ({ ticker, percent }) => {
         const bar = history.bars[ticker];
-        // this.logger.debug(percent, "FML");
+        this.logger.debug(percent, "FML");
         const quantity = value.times(percent.div(100)).dividedBy(bar.c); // use the closing price directly
         this.logger.debug(
           ticker,
@@ -310,6 +310,7 @@ export class AlpacaService {
           quantity,
           bar.c,
         );
+        this.logger.debug(await this.getTickerName(ticker))
         return {
           ticker,
           ticker_name: await this.getTickerName(ticker),

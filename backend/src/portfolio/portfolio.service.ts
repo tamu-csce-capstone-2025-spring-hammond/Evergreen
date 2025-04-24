@@ -19,6 +19,7 @@ import { AlpacaService } from '../stock-apis/alpaca.service';
 import { Prisma } from '@prisma/client';
 import { PortfolioPreviewDto } from './dto/preview-portfolio.dto';
 import { PortfolioAllocation } from 'src/stock-apis/alpaca-types';
+import { differenceInDays } from 'date-fns'; // date-fns is great for this kind of manipulation
 
 @Injectable()
 export class PortfolioService {
@@ -455,25 +456,67 @@ export class PortfolioService {
       throw error;
     }
   }
-
   async getAllocations(
     portfolioReviewDto: PortfolioPreviewDto,
   ): Promise<investmentAllocation[]> {
+    const {
+      targetDate,
+      risk_aptitude,
+      bitcoin_focus,
+      smallcap_focus,
+      value_focus,
+      momentum_focus,
+    } = portfolioReviewDto;
+
+    const now = new Date();
+    const time_to_expiration = BigInt(differenceInDays(targetDate, now)); // time_to_expiration as BigInt
+
+    const matchingTemplate = await this.prisma.portfolioTemplate.findFirst({
+      orderBy: {
+        time_to_expiration: 'asc',
+      },
+      where: {
+        risk_aptitude,
+        bitcoin_focus,
+        smallcap_focus,
+        value_focus,
+        momentum_focus,
+      },
+    });
+
+    if (matchingTemplate) {
+      const allocations =
+        await this.prisma.portfolioTemplateAssetAllocation.findMany({
+          where: {
+            portfolio_template_id: matchingTemplate.portfolio_template_id,
+          },
+        });
+
+      return await Promise.all(
+        allocations.map(async (a) => ({
+          ticker: a.ticker,
+          name: await this.alpacaService.getTickerName(a.ticker),
+          percent_of_portfolio: a.percentage,
+        })),
+      );
+    }
+
+    // Fallback sample allocation
     return [
       {
         ticker: 'VTI',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: Decimal(34),
+        percent_of_portfolio: new Decimal(34),
       },
       {
         ticker: 'BND',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: Decimal(33),
+        percent_of_portfolio: new Decimal(33),
       },
       {
         ticker: 'VXUS',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: Decimal(33),
+        percent_of_portfolio: new Decimal(33),
       },
     ];
   }

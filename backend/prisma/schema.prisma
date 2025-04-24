@@ -95,7 +95,7 @@ model PortfolioTemplate {
 model PortfolioTemplateAssetAllocation {
   portfolio_template_id Int
   ticker                String            @db.VarChar(10)
-  percentage            Decimal           @db.Decimal(5, 4)
+  percentage            Decimal           @db.Decimal(10, 6)
   sample_portfolio      PortfolioTemplate @relation(fields: [portfolio_template_id], references: [portfolio_template_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([ticker, portfolio_template_id])
