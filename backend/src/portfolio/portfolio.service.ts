@@ -506,17 +506,17 @@ export class PortfolioService {
       {
         ticker: 'VTI',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: new Decimal(34),
+        percent_of_portfolio: Decimal(34),
       },
       {
         ticker: 'BND',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: new Decimal(33),
+        percent_of_portfolio: Decimal(33),
       },
       {
         ticker: 'VXUS',
         name: 'Vanguard Total US Market',
-        percent_of_portfolio: new Decimal(33),
+        percent_of_portfolio: Decimal(33),
       },
     ];
   }

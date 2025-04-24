@@ -1,22 +1,5 @@
 import PortfolioCard from "./portfolioCard";
-
-interface PortfolioCardProps {
-    portfolioId: number;
-    name: string;
-    color: string;
-    total: number;
-    percent: number;
-    startDate: string;
-    endDate: string;
-    deposited: number;
-}
-
-interface Portfolio {
-  home: boolean;
-  cards: PortfolioCardProps[];
-  selectedCardName: string | undefined;
-  onCardClick?: (card: PortfolioCardProps) => void;
-}
+import { Portfolio } from "@/components/api/portfolio";
 
   const PortfolioList: React.FC<Portfolio> = ({ home, cards, selectedCardName, onCardClick = () => {} }) => {
     return (

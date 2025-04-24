@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { StockWatchlistItemDto, TickerDTO } from './dto/watchlist.dto';
 import { ErrorCodes, ErrorMessages } from '../error-codes.enum';
-import { error } from 'console';
 
 @Controller('watchlist')
 export class WatchlistController {
@@ -72,12 +71,10 @@ export class WatchlistController {
   })
   async watchlist(@Request() request: { userid: number }) {
     const { userid: userID } = request;
-    console.log("Incoming request.userid:", request.userid);
     try {
       const watchlist = await this.watchlistService.getWatchlist(userID);
       return watchlist;
     } catch (error) {
-      console.log("Watchlist error:")
       if (error.message == ErrorCodes.EXTERNAL_API_FAILURE) {
         throw new HttpException(
           {

@@ -11,25 +11,10 @@ import {
   Plugin,
 } from "chart.js";
 import { useEffect, useState } from "react";
+import { PortfolioCardProps, InvestmentData } from "../api/portfolio";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-interface PortfolioCardProps {
-  portfolioId: number;
-  name: string;
-  color: string;
-  total: number;
-  percent: number;
-  startDate: string;
-  endDate: string;
-  deposited: number;
-}
-
-interface InvestmentData {
-  label: string;
-  value: number;
-  color?: string;
-}
 
 interface PieChartProps {
   portfolios?: PortfolioCardProps[];

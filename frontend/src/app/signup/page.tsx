@@ -56,7 +56,6 @@ export default function Signup() {
       }
 
       // here is the token
-      console.log("Signup successful:", data);
       setToken(data["access_token"]);
 
       router.push("/dashboard");

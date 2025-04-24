@@ -1,25 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface PortfolioCardProps {
-    portfolioId: number;
-    name: string;
-    color: string;
-    total: number;
-    percent: number;
-    startDate: string;
-    endDate: string;
-    deposited: number;
-}
-
-interface EditPortfolioModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (updatedPortfolio: { name?: string; color?: string; targetDate?: string }) => void;
-  onDelete: (portfolioId: number) => void;
-  card: PortfolioCardProps;
-}
+import { PortfolioCardProps, EditPortfolioModalProps } from "@/components/api/portfolio";
 
 const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose, onConfirm, onDelete, card }) => {
   const [name, setName] = useState("");
@@ -95,8 +77,8 @@ const EditPortfolioModal: React.FC<EditPortfolioModalProps> = ({ isOpen, onClose
         />
         
         <div className="flex justify-between mt-4">
-          <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Save</button>
           <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer">Delete</button>
+          <button onClick={handleConfirm} className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Save</button>
         </div>
       </div>
     </div>
