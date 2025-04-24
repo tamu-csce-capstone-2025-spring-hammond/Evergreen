@@ -206,7 +206,6 @@ const onNext = async () => {
             onChange={(e) => setColor(e.target.value)}
             className="w-full h-10 border rounded mb-3 cursor-pointer"
           />
-
           <label className="block mb-1 mt-1">Risk Aptitude
             <span className="font-mono">(1-5)</span>
             <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
