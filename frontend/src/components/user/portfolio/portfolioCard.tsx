@@ -87,7 +87,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className="flex whitespace-nowrap justify-between w-40/100">
                 <div className="ml-6 w-45/100">
-                    <h3 className="text-2xl pb-1 text-evergray-700 overflow-hidden text-ellipsis">{name}</h3>
+                    <h3 className="text-2xl pb-1 text-evergray-700 overflow-hidden text-ellipsis" title={name}>{name}</h3>
                     <p className="text-xl font-roboto text-evergray-500">${total}</p>
                 </div>
                 <div className={`font-roboto text-end ${feedbackColor}`}>
@@ -112,7 +112,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className={`flex whitespace-nowrap justify-between w-1/2`}>
                 <div className="ml-6 w-55/100">
-                    <h3 className="text-[1.65rem] text-evergray-700 overflow-hidden text-ellipsis">{name}</h3>
+                    <h3 className="text-[1.65rem] text-evergray-700 overflow-hidden text-ellipsis" title={name}>{name}</h3>
                     <p className="text-[1.45rem] font-roboto text-evergray-500 mb-3">${total}</p>
                     <p className="text-md text-evergray-500">Deposited:<span className="pl-2 font-roboto">${deposited}</span></p>
                     <p className="text-md text-evergray-500">{(percent > 0) ? "Gained" : "Lost"}<span className="pl-2 font-roboto">${gained}</span></p>

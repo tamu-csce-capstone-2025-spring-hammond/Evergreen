@@ -194,7 +194,7 @@ export default function Chart({ portfolios }: ChartProps) {
               onClick={() => setSelectedTimeframe(timeframe)}
               className={
                 timeframe === selectedTimeframe
-                  ? "text-evergreen-500 relative after:content-[''] after:rounded-[1.5rem_1.5rem_0_0] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-3/5 after:h-1/5 after:bg-evergreen-500 transition after:transition"
+                  ? "text-evergreen-500 dark:text-evergreen-400 relative after:content-[''] after:rounded-[1.5rem_1.5rem_0_0] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-3/5 after:h-1/5 after:bg-evergreen-500 transition after:transition"
                   : "hover:bg-evergray-200 transition"
               }
             >

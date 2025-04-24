@@ -123,7 +123,7 @@ export default function Portfolios() {
               >
                 <div className="translate-y-[2px]">
                     Create New
-                    <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[2px]">
+                    <span className="symbol ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[2px] !scale-[90%] !-translate-y-[7%]">
                       add
                     </span>
                 </div>

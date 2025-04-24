@@ -145,7 +145,7 @@ const onNext = async () => {
       onClick={onCancel}
     >
       <div
-        className={`relative max-h-[718px] h-[90vh] ${
+        className={`relative max-h-[720px] h-[91vh] ${
           step === "preview" ? "w-[40rem]" : "w-[28rem]"
         } bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
@@ -209,7 +209,7 @@ const onNext = async () => {
 
           <label className="block mb-1 mt-1">Risk Aptitude
             <span className="font-mono">(1-5)</span>
-            <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+            <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
           </label>
           <input
             type="range"
@@ -225,25 +225,25 @@ const onNext = async () => {
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={bitcoinFocus} onChange={(e) => setBitcoinFocus(e.target.checked)} />
               <span>Bitcoin Focus 
-                <span title="Generate portfolio with bitcoin" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with bitcoin" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={smallcapFocus} onChange={(e) => setSmallcapFocus(e.target.checked)} />
               <span>Small-Cap Focus 
-                <span title="Generate portfolio with emphasis on small companies" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on small companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={valueFocus} onChange={(e) => setValueFocus(e.target.checked)} />
               <span>Value Focus 
-                <span title="Generate portfolio with emphasis on value companies" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on value companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={momentumFocus} onChange={(e) => setMomentumFocus(e.target.checked)} />
               <span>Momentum Focus 
-                <span title="Generate portfolio with emphasis on companies with upward momentum" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on companies with upward momentum" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
               </span>
             </label>
           </div>
@@ -269,7 +269,7 @@ const onNext = async () => {
           <div className="flex justify-between">
             <div>
                 <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div className="grid grid-cols-[9fr_11fr] gap-x-4 gap-y-2 *:whitespace-nowrap">
                     <p className="font-semibold">Name:</p>
                     <p className="font-medium">{name}</p>
 
@@ -291,7 +291,7 @@ const onNext = async () => {
                     <p className="font-mono">{riskAptitude}</p>
 
                     <p className="font-semibold">Focuses:</p>
-                    <p className="font-medium">
+                    <p className="font-medium !whitespace-normal">
                     {
                         [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
                         .filter(Boolean)
