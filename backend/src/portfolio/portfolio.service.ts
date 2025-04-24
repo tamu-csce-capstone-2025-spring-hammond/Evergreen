@@ -373,7 +373,7 @@ export class PortfolioService {
         },
       },
     });
-    this.reallocate(portfolioId, userId, value.add(depositAmount));
+    await this.reallocate(portfolioId, userId, value.add(depositAmount));
     const portfolioData2 = await this.prisma.portfolio.findUnique({
       where: {
         portfolio_id: portfolioId,
