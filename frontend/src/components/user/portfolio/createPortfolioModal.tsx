@@ -207,7 +207,10 @@ const onNext = async () => {
             className="w-full h-10 border rounded mb-3 cursor-pointer"
           />
 
-          <label className="block mb-1 mt-1">Risk Aptitude <span className="font-mono">(1-5)</span> <span title="Set your risk aptitude with 1 as very safe and 5 as very risky"> 🛈</span></label>
+          <label className="block mb-1 mt-1">Risk Aptitude
+            <span className="font-mono">(1-5)</span>
+            <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+          </label>
           <input
             type="range"
             min="1"
@@ -221,19 +224,27 @@ const onNext = async () => {
           <div className="space-y-2 mb-6">
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={bitcoinFocus} onChange={(e) => setBitcoinFocus(e.target.checked)} />
-              <span>Bitcoin Focus <span title="Generate portfolio with bitcoin"> 🛈</span></span>
+              <span>Bitcoin Focus 
+                <span title="Generate portfolio with bitcoin" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+              </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={smallcapFocus} onChange={(e) => setSmallcapFocus(e.target.checked)} />
-              <span>Small-Cap Focus <span title="Generate portfolio with emphasis on small companies"> 🛈</span></span>
+              <span>Small-Cap Focus 
+                <span title="Generate portfolio with emphasis on small companies" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+              </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={valueFocus} onChange={(e) => setValueFocus(e.target.checked)} />
-              <span>Value Focus <span title="Generate portfolio with emphasis on value companies"> 🛈</span></span>
+              <span>Value Focus 
+                <span title="Generate portfolio with emphasis on value companies" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+              </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={momentumFocus} onChange={(e) => setMomentumFocus(e.target.checked)} />
-              <span>Momentum Focus <span title="Generate portfolio with emphasis on companies with upward momentum"> 🛈</span></span>
+              <span>Momentum Focus 
+                <span title="Generate portfolio with emphasis on companies with upward momentum" className="material-symbols-outlined scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+              </span>
             </label>
           </div>
 
