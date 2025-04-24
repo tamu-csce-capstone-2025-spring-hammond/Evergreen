@@ -60,10 +60,10 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
 
 const onNext = async () => {
   const newErrors: typeof errors = {};
-  if (!name.trim()) newErrors.name = "Portfolio name is required.";
+  if (!name.trim()) newErrors.name = "Portfolio name is required";
   if (depositedCash === null || depositedCash <= 0)
-    newErrors.depositedCash = "Initial deposit must be greater than 0.";
-  if (!targetDate) newErrors.targetDate = "Target date is required.";
+    newErrors.depositedCash = "Initial deposit must be greater than 0";
+  if (!targetDate) newErrors.targetDate = "Target date is required";
 
   if (Object.keys(newErrors).length > 0) {
     setErrors(newErrors);
@@ -145,8 +145,8 @@ const onNext = async () => {
       onClick={onCancel}
     >
       <div
-        className={`relative ${
-          step === "preview" ? "w-[60rem] h-[50rem]" : "w-[28rem] h-[50rem]"
+        className={`relative max-h-[718px] h-[90vh] ${
+          step === "preview" ? "w-[40rem]" : "w-[28rem]"
         } bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -159,37 +159,47 @@ const onNext = async () => {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border rounded mb-1"
+            onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
+            }}
+            className={`w-full font-medium p-2 border rounded mb-1 ${errors.name ? "border-red-500" : ""}`}
             placeholder="Enter Portfolio Name"
           />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+          {errors.name && <p className="absolute right-6 text-red-500 text-sm">{errors.name}</p>}
 
-          <label className="block mt-3 mb-1">Initial Deposit ($)</label>
+          <label className="block mt-4 mb-1">Initial Deposit ($)</label>
           <input
             type="number"
             value={depositedCash ?? ""}
-            onChange={(e) => setDepositedCash(parseFloat(e.target.value) || null)}
-            className="w-full p-2 border rounded mb-1"
+            onChange={(e) => {
+                const value = parseFloat(e.target.value) || null;
+                setDepositedCash(value);
+                if (errors.depositedCash) setErrors((prev) => ({ ...prev, depositedCash: undefined }));
+            }}
+            className={`w-full font-mono placeholder:font-raleway p-2 border rounded mb-1 ${errors.depositedCash ? "border-red-500" : ""}`}
             placeholder="Enter Initial Deposit"
           />
           {errors.depositedCash && (
-            <p className="text-red-500 text-sm">{errors.depositedCash}</p>
+            <p className="absolute right-6 text-red-500 text-sm">{errors.depositedCash}</p>
           )}
 
-          <label className="block mt-3 mb-1">Target Date</label>
+          <label className="block mt-4 mb-1">Target Date</label>
           <input
             type="date"
             value={targetDate}
-            onChange={(e) => setTargetDate(e.target.value)}
-            className="w-full p-2 border rounded mb-1"
+            onChange={(e) => {
+                setTargetDate(e.target.value);
+                if (errors.targetDate) setErrors((prev) => ({ ...prev, targetDate: undefined }));
+            }}
+            className={`w-full p-2 font-mono border rounded mb-1 ${errors.targetDate ? "border-red-500" : ""}`}
             min={getTomorrowDate()}
           />
           {errors.targetDate && (
-            <p className="text-red-500 text-sm">{errors.targetDate}</p>
+            <p className="absolute right-6 text-red-500 text-sm">{errors.targetDate}</p>
           )}
 
-          <label className="block mt-3 mb-1">Portfolio Color</label>
+          <label className="block mt-4 mb-1">Portfolio Color</label>
           <input
             type="color"
             value={color}
@@ -197,7 +207,7 @@ const onNext = async () => {
             className="w-full h-10 border rounded mb-3 cursor-pointer"
           />
 
-          <label className="block mb-1">Risk Aptitude (1-5)</label>
+          <label className="block mb-1 mt-1">Risk Aptitude <span className="font-mono">(1-5)</span> <span title="Set your risk aptitude with 1 as very safe and 5 as very risky"> 🛈</span></label>
           <input
             type="range"
             min="1"
@@ -206,32 +216,32 @@ const onNext = async () => {
             onChange={(e) => setRiskAptitude(parseInt(e.target.value))}
             className="w-full mb-2"
           />
-          <span className="block text-center mb-3">{riskAptitude}</span>
+          <span className="block text-center mb-3 font-mono">{riskAptitude}</span>
 
           <div className="space-y-2 mb-6">
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={bitcoinFocus} onChange={(e) => setBitcoinFocus(e.target.checked)} />
-              <span>Bitcoin Focus</span>
+              <span>Bitcoin Focus <span title="Generate portfolio with bitcoin"> 🛈</span></span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={smallcapFocus} onChange={(e) => setSmallcapFocus(e.target.checked)} />
-              <span>Small-Cap Focus</span>
+              <span>Small-Cap Focus <span title="Generate portfolio with emphasis on small companies"> 🛈</span></span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={valueFocus} onChange={(e) => setValueFocus(e.target.checked)} />
-              <span>Value Focus</span>
+              <span>Value Focus <span title="Generate portfolio with emphasis on value companies"> 🛈</span></span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={momentumFocus} onChange={(e) => setMomentumFocus(e.target.checked)} />
-              <span>Momentum Focus</span>
+              <span>Momentum Focus <span title="Generate portfolio with emphasis on companies with upward momentum"> 🛈</span></span>
             </label>
           </div>
 
           <div className="flex justify-end space-x-2 mt-4">
-            <button onClick={onCancel} className="bg-gray-300 px-4 py-2 rounded">
+            <button onClick={onCancel} className="bg-evergray-200 px-4 py-2 rounded cursor-pointer">
               Cancel
             </button>
-            <button onClick={onNext} className="bg-green-500 text-white px-4 py-2 rounded">
+            <button onClick={onNext} className="bg-evergreen-500 text-white px-4 py-2 rounded cursor-pointer">
               Next
             </button>
           </div>
@@ -243,53 +253,57 @@ const onNext = async () => {
           step === "preview" ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex h-full w-full gap-4">
+        <div className="flex h-full w-full justify-between gap-4 flex-col">
           {/* Left: Info and PieChart */}
-          <div className="w-2/10 flex flex-col overflow-y-auto pr-2">
-            <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
-            <div className="space-y-1 text-sm">
-              <p><strong>Name:</strong> {name}</p>
-              <p><strong>Deposit:</strong> ${depositedCash}</p>
-              <p><strong>Target Date:</strong> {targetDate}</p>
-              <p><strong>Color:</strong> <span className="inline-block w-6 h-6 rounded border" style={{ backgroundColor: color }} /></p>
-              <p><strong>Risk Level:</strong> {riskAptitude}</p>
-              <p><strong>Focuses:</strong> {
-                [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
-                  .filter(Boolean)
-                  .join(", ") || "None"
-              }</p>
-            </div>
+          <div className="flex justify-between">
+            <div>
+                <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <p className="font-semibold">Name:</p>
+                    <p className="font-medium">{name}</p>
 
+                    <p className="font-semibold">Color:</p>
+                    <div className="flex items-center space-x-2">
+                    <div
+                        className="size-4 rounded border"
+                        style={{ backgroundColor: color }}
+                    />
+                    </div>
+
+                    <p className="font-semibold">Deposit:</p>
+                    <p className="font-mono">${depositedCash}</p>
+
+                    <p className="font-semibold">Target Date:</p>
+                    <p className="font-mono">{targetDate}</p>
+
+                    <p className="font-semibold">Risk Level:</p>
+                    <p className="font-mono">{riskAptitude}</p>
+
+                    <p className="font-semibold">Focuses:</p>
+                    <p className="font-medium">
+                    {
+                        [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
+                        .filter(Boolean)
+                        .join(", ") || "None"
+                    }
+                    </p>
+                </div>
+            </div>
             {previewInvestments && (
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-2">Investment Allocation</h3>
-                <div className="h-64 w-full">
+              <div className="flex flex-col gap-4">
+                <h3 className="text-lg font-medium mb-2 text-center flex-3">Investment Allocation</h3>
+                <div className="flex-5">
                   <PieChart data={previewInvestments} showLegend={true} />
                 </div>
               </div>
             )}
-
-            <div className="mt-auto flex justify-end space-x-2 pt-4">
-              <button
-                onClick={() => setStep("form")}
-                className="bg-gray-300 px-4 py-2 rounded"
-              >
-                Back
-              </button>
-              <button
-                onClick={handleFinalConfirm}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Confirm
-              </button>
-            </div>
           </div>
 
           {/* Right: Chart */}
-          <div className="w-8/10 h-full flex flex-col">
+          <div className="w-full">
             <h3 className="text-lg font-medium mb-4">Portfolio Value Forecast</h3>
-            <div className="w-full h-full flex justify-center items-center">
-              <div className="w-full h-[20rem] px-4">
+            <div className="w-full">
+              <div className="w-full px-4">
                 {previewData && forecastSimulations && (
                   <ForecastTrendChart
                     historical={previewData.slice(-30)}
@@ -299,6 +313,20 @@ const onNext = async () => {
               </div>
             </div>
           </div>
+          <div className="flex justify-end space-x-2 pt-4">
+              <button
+                onClick={() => setStep("form")}
+                className="bg-evergray-200 px-4 py-2 rounded cursor-pointer"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleFinalConfirm}
+                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+              >
+                Confirm
+              </button>
+            </div>
         </div>
       </div>
 

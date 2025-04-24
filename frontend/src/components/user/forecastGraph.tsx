@@ -120,7 +120,7 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
   };
 
   return (
-    <div className="w-full h-[60rem]">
+    <div className="w-full [&_canvas]:!w-[100%] [&_canvas]:!h-[auto]">
       <Line data={chartData} options={options} />
     </div>
   );

@@ -45,7 +45,7 @@ export default function Dashboard() {
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
-        <div className="flex-1 grid grid-rows-[450px_1fr] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden min-h-">
+        <div className="flex-1 grid grid-rows-[57%_43%] grid-cols-[3fr_2fr] gap-4 p-4 overflow-hidden min-h-">
             <Chart portfolios={portfolios}/>
             <Watchlist />
             <div className="overflow-hidden flex flex-col">

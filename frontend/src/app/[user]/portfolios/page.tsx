@@ -113,18 +113,20 @@ export default function Portfolios() {
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
         <div className="flex h-full pb-12">
-          <div className="p-4 pb-0 space-y-4 flex-2">
-            <div className="px-4 mr-2 pt-4 flex justify-between items-end">
-              <h2 className="text-xl text-evergray-500">Your Portfolios</h2>
+          <div className="p-4 pb-0 space-y-2 flex-2">
+            <div className="px-4 mr-2 pt-2 flex justify-between items-end">
+              <h2 className="text-xl text-evergray-500 pb-2">Your Portfolios</h2>
               <button
                 type="button"
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-evergray-200/70 transition-colors py-2 pr-2 pl-3 rounded-lg"
                 onClick={() => setIsModalOpen(true)}
               >
-                Create New
-                <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[0.1rem]">
-                  add
-                </span>
+                <div className="translate-y-[2px]">
+                    Create New
+                    <span className="ml-2 material-symbols-outlined outline-2 -outline-offset-3 aspect-square rounded-md !py-[2px]">
+                      add
+                    </span>
+                </div>
               </button>
             </div>
             <PortfolioList

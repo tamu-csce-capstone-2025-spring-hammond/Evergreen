@@ -50,7 +50,7 @@ export default function Login() {
       // here is the token
       setToken(data["access_token"]);
 
-      router.push("/dashboard");
+      router.push("/user");
     } catch (error: any) {
       setError(error.message);
     }

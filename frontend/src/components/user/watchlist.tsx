@@ -25,10 +25,10 @@ const Watchlist = () => {
   }
 
   return (
-    <div className="h-full flex flex-col p-4 pb-2">
+    <div className="h-full flex flex-col p-4 pb-0">
         <h2 className="text-evergray-500 mb-4">Watchlist</h2>
 
-        <div className="flex-1 flex flex-col overflow-hidden rounded-lg">
+        <div className="flex-1 flex flex-col overflow-hidden">
             <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full text-sm text-left table-fixed">
                 <thead className="bg-evergray-200 text-evergray-700">
@@ -41,7 +41,7 @@ const Watchlist = () => {
             </table>
             </div>
 
-            <div className="overflow-y-auto overflow-x-auto flex-1">
+            <div className="overflow-y-auto overflow-x-auto flex-1 border-b-1 border-evergray-200">
             <table className="min-w-full text-sm text-left table-fixed">
                 <tbody>
                 {watchlist.map((item, index) => (
