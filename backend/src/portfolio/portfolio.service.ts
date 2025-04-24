@@ -232,12 +232,9 @@ export class PortfolioService {
     }
 
     // Calculate current portfolio value
-    const current_value =
-      graphData.length > 0
-        ? new Decimal(graphData[graphData.length - 1].snapshot_value).add(
-            portfolioData.uninvested_cash,
-          )
-        : new Decimal(portfolioData.uninvested_cash);
+    const current_value = await this.getPortfolioValue(
+      portfolioData.portfolio_id,
+    );
     const initial_value = portfolioData.total_deposited;
     const amount_change = current_value.minus(initial_value);
     const percent_change = initial_value.gt(0)
@@ -251,7 +248,7 @@ export class PortfolioService {
       created_at: portfolioData.created_at,
       target_date: portfolioData.target_date,
       uninvested_cash: portfolioData.uninvested_cash,
-      current_value,
+      current_value: current_value.toDecimalPlaces(2),
       percent_change,
       amount_change,
       bitcoin_focus: portfolioData.bitcoin_focus,
