@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -43,10 +44,9 @@ export class PortfolioService {
         percent: a.percent_of_portfolio,
       };
     });
-    const sim = await this.alpacaService.seedSim(
+    const sim = await this.alpacaService.tradeSim(
       portfolioAllocations,
       Decimal(portfolioDto.initial_deposit),
-      new Date(),
     );
     return this.prisma.portfolio.create({
       data: {
@@ -65,7 +65,6 @@ export class PortfolioService {
         holdings: {
           create: sim.investments,
         },
-        trades: { create: sim.trades },
       },
     });
   }
@@ -126,18 +125,17 @@ export class PortfolioService {
       };
     });
 
-    const sim = await this.alpacaService.seedSim(
+    const sim = await this.alpacaService.tradeSim(
       portfolioAllocations,
       portfolioValue,
-      new Date(),
     );
 
     const holdingsValues = sim.investments.map((i) => ({
       portfolio_id: portfolioData.portfolio_id,
       ticker: i.ticker,
       ticker_name: i.ticker_name,
-      quantity: i.quantity,
-      average_cost_basis: i.average_cost_basis,
+      quantity: i.quantity.toDecimalPlaces(5),
+      average_cost_basis: i.average_cost_basis.toDecimalPlaces(3),
       last_updated: i.last_updated,
     }));
 
@@ -145,6 +143,7 @@ export class PortfolioService {
       this.prisma.holdings.deleteMany({
         where: { portfolio_id: portfolioData.portfolio_id },
       }),
+      // console.log(JSON.stringify(holdingsValues, null, 2)),
       this.prisma.holdings.createMany({
         data: holdingsValues,
       }),
@@ -331,10 +330,13 @@ export class PortfolioService {
       quantity: holding.quantity.toNumber(),
     }));
 
+    console.log('Uninvested cash' + portfolioData.uninvested_cash);
+
     let portfolioValue: Decimal = Decimal(0);
     if (holdings.length > 0) {
       const portfolioInfo =
         await this.alpacaService.getCurrentPortfolioInfo(holdingsSnapshot);
+      console.log(portfolioInfo.total_portfolio_value);
       portfolioValue = Decimal(portfolioInfo.total_portfolio_value).add(
         portfolioData.uninvested_cash,
       );
@@ -345,6 +347,9 @@ export class PortfolioService {
   }
 
   async deposit(userId: number, portfolioId: number, depositAmount: number) {
+    Logger.debug(userId);
+    Logger.debug(portfolioId);
+    Logger.debug(depositAmount);
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: {
         portfolio_id: portfolioId,
@@ -360,6 +365,8 @@ export class PortfolioService {
         : new NotFoundException(`Portfolio with ID ${portfolioId} not found`);
     }
     const value = await this.getPortfolioValue(portfolioData.portfolio_id);
+    console.log(value);
+
     await this.prisma.portfolio.update({
       where: { portfolio_id: portfolioId },
       data: {
@@ -368,14 +375,17 @@ export class PortfolioService {
         },
       },
     });
-    this.reallocate(userId, portfolioId, value.add(depositAmount));
+    this.reallocate(portfolioId, userId, value.add(depositAmount));
     const portfolioData2 = await this.prisma.portfolio.findUnique({
       where: {
         portfolio_id: portfolioId,
         user_id: userId,
       },
     });
-    return portfolioData2;
+    return {
+      ...portfolioData2,
+      total_value: await this.getPortfolioValue(portfolioId),
+    };
   }
 
   async withdraw(userId: number, portfolioId: number, withdrawAmount: number) {
@@ -398,6 +408,22 @@ export class PortfolioService {
       },
     });
 
+    const total = this.prisma.portfolio.findFirst({
+      where: { portfolio_id: portfolioId },
+      select: {
+        total_deposited: true,
+      },
+    });
+
+    if ((await total).total_deposited.lessThan(0)) {
+      await this.prisma.portfolio.update({
+        where: { portfolio_id: portfolioId },
+        data: {
+          total_deposited: 0,
+        },
+      });
+    }
+
     this.reallocate(portfolioId, userId, value.minus(withdrawAmount));
     const portfolioData2 = await this.prisma.portfolio.findUnique({
       where: {
@@ -405,7 +431,10 @@ export class PortfolioService {
         user_id: userId,
       },
     });
-    return portfolioData2;
+    return {
+      ...portfolioData2,
+      total_value: await this.getPortfolioValue(portfolioId),
+    };
   }
 
   async remove(id: number, userID: number) {

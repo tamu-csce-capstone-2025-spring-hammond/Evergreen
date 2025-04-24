@@ -275,6 +275,56 @@ export class AlpacaService {
     };
   };
 
+  tradeSim = async (portfolio: PortfolioAllocation[], value: Decimal) => {
+    const baseUrl = 'https://data.alpaca.markets/v2/stocks/bars/latest';
+    const symbols = portfolio.map(({ ticker }) => ticker).join(',');
+
+    const params = new URLSearchParams({
+      symbols,
+    });
+
+    const url = `${baseUrl}?${params.toString()}`;
+    const response = await fetch(url, this.options);
+
+    if (!response.ok) {
+      this.logger.error(
+        `Failed to fetch portfolio history: ${response.statusText}`,
+      );
+      throw new Error(
+        `Alpaca API request failed with status ${response.status}`,
+      );
+    }
+
+    const history = await response.json();
+    this.logger.debug(value);
+
+    const investments = await Promise.all(
+      portfolio.map(async ({ ticker, percent }) => {
+        const bar = history.bars[ticker];
+        // this.logger.debug(percent, "FML");
+        const quantity = value.times(percent.div(100)).dividedBy(bar.c); // use the closing price directly
+        this.logger.debug(
+          ticker,
+          percent,
+          value.times(percent.div(100)),
+          quantity,
+          bar.c,
+        );
+        return {
+          ticker,
+          ticker_name: await this.getTickerName(ticker),
+          quantity: quantity.toDecimalPlaces(6),
+          average_cost_basis: Decimal(bar.c).toDecimalPlaces(4),
+          last_updated: bar.t,
+        };
+      }),
+    );
+    // this.logger.debug(investments);
+    return {
+      investments: investments,
+    };
+  };
+
   backtestSim = async (
     portfolio: investmentAllocation[],
     endingInvestment: Decimal,
@@ -446,11 +496,11 @@ export class AlpacaService {
 
     // Extract those simulations
     const representativeLines = [
-      futureSimulations[lowest],
-      futureSimulations[p25],
-      futureSimulations[p50],
-      futureSimulations[p75],
-      futureSimulations[highest],
+      { ...futureSimulations[lowest], id: 'Lowest return' },
+      { ...futureSimulations[p25], id: '25th percentile return' },
+      { ...futureSimulations[p50], id: 'Median return (50th percentile)' },
+      { ...futureSimulations[p75], id: '75th percentile return' },
+      { ...futureSimulations[highest], id: 'Highest return' },
     ];
 
     const sharpeRatio = meanLong.dividedBy(stdDevLong).times(Math.sqrt(252)); // daily returns assumed
