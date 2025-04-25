@@ -15,6 +15,7 @@ import {
 import 'chartjs-adapter-date-fns';
 import { Line } from "react-chartjs-2";
 import React from "react";
+import { useThemeFromLocalStorage } from "@/utils";
 
 ChartJS.register(
   LineElement,
@@ -38,6 +39,8 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
     const vals = forecast.map((sim) => sim[i]);
     return vals.reduce((sum, v) => sum + v, 0) / vals.length;
   });
+
+  const isDarkTheme = useThemeFromLocalStorage();
 
   const forecastMin = forecast[0].map((_, i) => Math.min(...forecast.map((sim) => sim[i])));
   const forecastMax = forecast[0].map((_, i) => Math.max(...forecast.map((sim) => sim[i])));
@@ -91,6 +94,12 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
         title: {
           display: false,
         },
+        ticks: {
+          color: isDarkTheme ? "#D5D5D4" : "#535352",
+        },
+        grid: {
+          color: isDarkTheme ? "#535352" : "#E6E6E5", 
+        },
       },
       y: {
         beginAtZero: false,
@@ -99,6 +108,13 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
         },
         ticks: {
           callback: (val: number) => `$${val}`,
+          color: isDarkTheme ? "#D5D5D4" : "#535352",
+        },
+        grid: {
+          color: isDarkTheme ? "#535352" : "#E6E6E5", 
+        },
+        border: {
+          color: isDarkTheme ? "#535352" : "#E6E6E5", 
         },
       },
     },
@@ -115,9 +131,13 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
             return `$${ctx.parsed.y.toFixed(2)}`;
           },
         },
+        backgroundColor: isDarkTheme ? "#535352" : "#E6E6E5",
+        titleColor: isDarkTheme ? "#E6E6E5" : "#272726",
+        bodyColor: isDarkTheme ? "#E6E6E5" : "#535352",
       },
     },
   };
+  
 
   return (
     <div className="w-full [&_canvas]:!w-[100%] [&_canvas]:!h-[auto]">

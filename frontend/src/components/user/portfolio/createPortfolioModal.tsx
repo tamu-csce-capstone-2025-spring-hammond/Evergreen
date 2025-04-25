@@ -147,12 +147,12 @@ const onNext = async () => {
       <div
         className={`relative max-h-[720px] h-[91vh] ${
           step === "preview" ? "w-[40rem]" : "w-[28rem]"
-        } bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
+        } bg-evergray-100 dark:bg-evergray-700 rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
 
         {/* Form Step - always visible */}
-        <div className="absolute top-0 left-0 w-full h-full p-6 z-0">
+        <div className="absolute top-0 left-0 w-full h-full p-6 z-0 dark:[&_input]:border-evergray-500">
           <h2 className="text-xl font-semibold mb-4">Create New Portfolio</h2>
 
           <label className="block mb-1">Portfolio Name</label>
@@ -192,7 +192,7 @@ const onNext = async () => {
                 setTargetDate(e.target.value);
                 if (errors.targetDate) setErrors((prev) => ({ ...prev, targetDate: undefined }));
             }}
-            className={`w-full p-2 font-mono border rounded mb-1 ${errors.targetDate ? "border-red-500" : ""}`}
+            className={`custom-date-picker w-full p-2 font-mono border rounded mb-1 ${errors.targetDate ? "border-red-500" : ""}`}
             min={getTomorrowDate()}
           />
           {errors.targetDate && (
@@ -208,7 +208,7 @@ const onNext = async () => {
           />
           <label className="block mb-1 mt-1">Risk Aptitude
             <span className="font-mono">(1-5)</span>
-            <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+            <span title="Set your risk aptitude with 1 as very safe and 5 as very risky" className="material-symbols-outlined symbol scale-75 text-evergray-600 dark:text-evergray-300 -translate-x-[2px]">info</span>
           </label>
           <input
             type="range"
@@ -224,31 +224,31 @@ const onNext = async () => {
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={bitcoinFocus} onChange={(e) => setBitcoinFocus(e.target.checked)} />
               <span>Bitcoin Focus 
-                <span title="Generate portfolio with bitcoin" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with bitcoin" className="material-symbols-outlined symbol scale-75 text-evergray-600 dark:text-evergray-300 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={smallcapFocus} onChange={(e) => setSmallcapFocus(e.target.checked)} />
               <span>Small-Cap Focus 
-                <span title="Generate portfolio with emphasis on small companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on small companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 dark:text-evergray-300 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={valueFocus} onChange={(e) => setValueFocus(e.target.checked)} />
               <span>Value Focus 
-                <span title="Generate portfolio with emphasis on value companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on value companies" className="material-symbols-outlined symbol scale-75 text-evergray-600 dark:text-evergray-300 -translate-x-[2px]">info</span>
               </span>
             </label>
             <label className="flex items-center space-x-2">
               <input type="checkbox" checked={momentumFocus} onChange={(e) => setMomentumFocus(e.target.checked)} />
               <span>Momentum Focus 
-                <span title="Generate portfolio with emphasis on companies with upward momentum" className="material-symbols-outlined symbol scale-75 text-evergray-600 -translate-x-[2px]">info</span>
+                <span title="Generate portfolio with emphasis on companies with upward momentum" className="material-symbols-outlined symbol scale-75 text-evergray-600 dark:text-evergray-300 -translate-x-[2px]">info</span>
               </span>
             </label>
           </div>
 
           <div className="flex justify-end space-x-2 mt-4">
-            <button onClick={onCancel} className="bg-evergray-200 px-4 py-2 rounded cursor-pointer">
+            <button onClick={onCancel} className="bg-evergray-200 dark:bg-evergray-600 px-4 py-2 rounded cursor-pointer">
               Cancel
             </button>
             <button onClick={onNext} className="bg-evergreen-500 text-white px-4 py-2 rounded cursor-pointer">
@@ -259,7 +259,7 @@ const onNext = async () => {
 
         {/* Preview Step - slides over the form */}
         <div
-        className={`absolute top-0 left-0 w-full h-full p-6 bg-white transition-transform duration-500 ease-in-out z-10 shadow-md ${
+        className={`absolute top-0 left-0 w-full h-full p-6 bg-evergray-100 dark:bg-evergray-700 transition-transform duration-500 ease-in-out z-10 shadow-md ${
           step === "preview" ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -269,10 +269,10 @@ const onNext = async () => {
             <div>
                 <h2 className="text-xl font-semibold mb-4">Confirm Your Portfolio</h2>
                 <div className="grid grid-cols-[9fr_11fr] gap-x-4 gap-y-2 *:whitespace-nowrap">
-                    <p className="font-semibold">Name:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Name:</p>
                     <p className="font-medium">{name}</p>
 
-                    <p className="font-semibold">Color:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Color:</p>
                     <div className="flex items-center space-x-2">
                     <div
                         className="size-4 rounded border"
@@ -280,16 +280,16 @@ const onNext = async () => {
                     />
                     </div>
 
-                    <p className="font-semibold">Deposit:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Deposit:</p>
                     <p className="font-mono">${depositedCash}</p>
 
-                    <p className="font-semibold">Target Date:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Target Date:</p>
                     <p className="font-mono">{targetDate}</p>
 
-                    <p className="font-semibold">Risk Level:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Risk Level:</p>
                     <p className="font-mono">{riskAptitude}</p>
 
-                    <p className="font-semibold">Focuses:</p>
+                    <p className="font-semibold dark:text-evergray-400 text-evergray-600">Focuses:</p>
                     <p className="font-medium !whitespace-normal">
                     {
                         [bitcoinFocus && "Bitcoin", smallcapFocus && "Small-Cap", valueFocus && "Value", momentumFocus && "Momentum"]
@@ -326,7 +326,7 @@ const onNext = async () => {
           <div className="flex justify-end space-x-2 pt-4">
               <button
                 onClick={() => setStep("form")}
-                className="bg-evergray-200 px-4 py-2 rounded cursor-pointer"
+                className="bg-evergray-200 dark:bg-evergray-600 px-4 py-2 rounded cursor-pointer"
               >
                 Back
               </button>

@@ -1,5 +1,3 @@
-"use client";
-
 import { Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -7,14 +5,13 @@ import {
   Legend,
   Tooltip,
   ChartOptions,
-  ChartData,
   Plugin,
 } from "chart.js";
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { PortfolioCardProps, InvestmentData } from "../api/portfolio";
+import { useThemeFromLocalStorage } from "@/utils";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 
 interface PieChartProps {
   portfolios?: PortfolioCardProps[];
@@ -23,48 +20,47 @@ interface PieChartProps {
 }
 
 export default function PieChart({ portfolios, data, showLegend }: PieChartProps) {
-  const [chartData, setChartData] = useState<ChartData<"doughnut"> | null>(null);
   const [total, setTotal] = useState<number>(0);
+  const isDarkTheme = useThemeFromLocalStorage();
 
   // Show center total only for portfolios
   const showCenterTotal = portfolios && portfolios.length > 0;
 
-  useEffect(() => {
+  const chartData = useMemo(() => {
     if (portfolios && portfolios.length > 0) {
       const totalValue = portfolios.reduce((sum, p) => sum + p.total, 0);
       setTotal(totalValue);
 
-      const portfolioChart = {
+      return {
         labels: portfolios.map((p) => p.name),
         datasets: [
           {
             data: portfolios.map((p) => p.total),
             backgroundColor: portfolios.map((p) => p.color),
-            borderColor: "#ffffff",
+            borderColor: isDarkTheme ? "#272726" : "#FBFBFA", // Dark theme or light theme border
             borderWidth: 2,
           },
         ],
       };
-      setChartData(portfolioChart);
     } else if (data && data.length > 0) {
       const defaultColors = ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"];
       const totalValue = data.reduce((sum, d) => sum + d.value, 0);
       setTotal(totalValue);
 
-      const dataset = {
+      return {
         labels: data.map((d) => d.label),
         datasets: [
           {
             data: data.map((d) => d.value),
             backgroundColor: data.map((d, i) => d.color || defaultColors[i % defaultColors.length]),
-            borderColor: "#ffffff",
+            borderColor: isDarkTheme ? "#272726" : "#FBFBFA", // Dark theme or light theme border
             borderWidth: 2,
           },
         ],
       };
-      setChartData(dataset);
     }
-  }, [portfolios, data]);
+    return null;
+  }, [portfolios, data, isDarkTheme]);
 
   const centerTextPlugin: Plugin<"doughnut"> = {
     id: "centerText",
@@ -77,7 +73,7 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
       ctx.font = `${fontSize}em Roboto Mono, sans-serif`;
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-      ctx.fillStyle = "#737373";
+      ctx.fillStyle = isDarkTheme ? "#E6E6E5" : "#737373";
 
       const text = `$${total.toFixed(2)}`;
       ctx.fillText(text, width / 2, height / 2);
@@ -98,7 +94,7 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
         labels: {
           padding: 16,
           boxWidth: 16,
-          color: "#4B5563", 
+          color: isDarkTheme ? "#D5D5D4" : "#535352",
           font: {
             size: 14,
           },

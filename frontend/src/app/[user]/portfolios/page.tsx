@@ -108,17 +108,17 @@ export default function Portfolios() {
   };
 
   return (
-    <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
+    <div className="font-raleway flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
         <div className="flex h-full pb-12">
           <div className="p-4 pb-0 space-y-2 flex-2">
             <div className="px-4 mr-2 pt-2 flex justify-between items-end">
-              <h2 className="text-xl text-evergray-500 pb-2">Your Portfolios</h2>
+              <h2 className="text-xl text-evergray-500 dark:text-evergray-300 pb-2">Your Portfolios</h2>
               <button
                 type="button"
-                className="cursor-pointer hover:bg-evergray-200/70 transition-colors py-2 pr-2 pl-3 rounded-lg"
+                className="cursor-pointer hover:bg-evergray-200/70 dark:hover:bg-evergray-600 transition-colors py-2 pr-2 pl-3 rounded-lg"
                 onClick={() => setIsModalOpen(true)}
               >
                 <div className="translate-y-[2px]">
@@ -137,7 +137,7 @@ export default function Portfolios() {
             />
           </div>
           <div className="flex-1 pt-8 pr-8 pb-8 h-full">
-            <div className="h-full border-1 border-evergray-300 rounded-3xl mb-4">
+            <div className={`h-full border-1 rounded-3xl mb-4 ${selectedCard ? "border-transparent" : "border-evergray-300 dark:border-evergray-500"}`}>
               {selectedCard ? (
                 <PortfolioSelection
                   card={selectedCard}
@@ -150,22 +150,22 @@ export default function Portfolios() {
                   <div className="max-w-3/4 flex-1 max-h-1/2">
                     <PieChart portfolios={portfolios} showLegend={false} />
                   </div>
-                  <div className="text-evergray-500 text-md space-y-6">
+                  <div className="text-evergray-500 dark:text-evergray-300 text-md space-y-6">
                     <p>
                       Total Deposited:<br />
-                      <span className="text-evergray-600 font-roboto text-3xl">
+                      <span className="text-evergray-600 dark:text-evergray-200 font-roboto text-3xl">
                         ${totalDeposited}
                       </span>
                     </p>
                     <p>
                       Total Gained:<br />
-                      <span className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}>
+                      <span className={`font-roboto text-3xl ${feedbackColor}`}>
                         ${totalGained}
                       </span>
                     </p>
                     <p>
                       Net Return:<br />
-                      <span className={`text-evergray-600 font-roboto text-3xl ${feedbackColor}`}>
+                      <span className={`font-roboto text-3xl ${feedbackColor}`}>
                         {netReturnSymbol + netReturn}%
                       </span>
                     </p>

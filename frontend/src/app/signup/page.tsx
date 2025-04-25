@@ -68,24 +68,24 @@ export default function Signup() {
     <div>
       <Navbar />
 
-      <div className="absolute top-0 w-full h-[115vh] -z-1">
-        <div className="absolute w-full h-[115vh] z-[-1] bg-[rgba(12,14,15,0.6)] [clip-path:url('#bg-clip')]" />
+      <div className="absolute top-0 w-full h-full -z-1">
+        <div className="absolute w-full h-full z-[-1] bg-[rgba(12,14,15,0.6)] [clip-path:url('#bg-clip')]" />
         <Image
           src="/treesMist.jpg"
           alt="Forest with mist"
           layout="fill"
           objectFit="cover"
-          className="absolute w-full h-[115vh] object-cover object-[50%_15%] -z-2 [clip-path:url('#bg-clip')]"
+          className="absolute w-full h-full object-cover object-[50%_15%] -z-2 [clip-path:url('#bg-clip')]"
           priority
         />
       </div>
 
-      <div className="flex items-center justify-center min-h-screen text-white">
+      <div className="absolute flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-46/100 text-white">
         <div className="relative opacity-30">
-          <div className="w-[693px] h-[724px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]" />
+          <div className="w-[560px] h-[640px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]" />
         </div>
 
-        <div className="absolute w-[693px] h-[724px] rounded-[70px] flex flex-col justify-center items-center z-10">
+        <div className="absolute w-[633px] h-[622px] rounded-[70px] flex flex-col justify-center items-center z-10">
           <div className="flex justify-center mb-4">
             <Image
               src="/decorWhite.svg"
@@ -96,18 +96,18 @@ export default function Signup() {
             />
           </div>
 
-          <h2 className="text-center text-[52px] font-bold mb-6 font-ntwagner">
-            Create Your Account
+          <h2 className="text-center text-[52px] font-bold mb-4 font-ntwagner">
+            Create Account
           </h2>
 
           <form
-            className="space-y-6 w-full flex flex-col items-center"
+            className="space-y-5 w-full flex flex-col items-center"
             onSubmit={handleSubmit}
           >
             {error && <p className="text-red-500">{error}</p>}
 
             <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
                   <Image
                     src="/loginSignup/nameIcon.svg"
@@ -130,7 +130,7 @@ export default function Signup() {
             </div>
 
             <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
                   <Image
                     src="/loginSignup/emailIcon.svg"
@@ -153,7 +153,7 @@ export default function Signup() {
             </div>
 
             <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
                   <Image
                     src="/loginSignup/passwordIcon.svg"
@@ -176,7 +176,7 @@ export default function Signup() {
             </div>
 
             <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-3 py-2">
+              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
                 <span className="pr-2">
                   <Image
                     src="/loginSignup/confirmPasswordIcon.svg"
@@ -200,7 +200,7 @@ export default function Signup() {
 
             <button
               type="submit"
-              className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black"
+              className="mt-4 w-[70%] max-w-[550px] bg-evergray-100 py-3 rounded-[75px] transition text-black hover:bg-evergray-300 cursor-pointer"
             >
               Sign Up
             </button>

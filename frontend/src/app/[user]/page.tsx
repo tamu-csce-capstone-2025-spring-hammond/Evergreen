@@ -41,7 +41,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
+    <div className="font-raleway flex dark:bg-evergray-700 dark:text-evergray-100 h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Header />
@@ -49,7 +49,7 @@ export default function Dashboard() {
             <Chart portfolios={portfolios}/>
             <Watchlist />
             <div className="overflow-hidden flex flex-col">
-                <h2 className="p-4 text-evergray-500">Portfolios</h2>
+                <h2 className="p-4 text-evergray-500 dark:text-evergray-400">Portfolios</h2>
                 <PortfolioList home={true} cards={portfolios} selectedCardName={undefined} onCardClick={onClick}/>
             </div>
             <News />

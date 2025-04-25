@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,13 +11,27 @@ const Sidebar = () => {
 
   const isActive = (path: string) => pathname === path;
 
+    useEffect(() => {
+        if(localStorage.theme === "dark") {
+            setTheme("dark");
+            document.documentElement.classList.add("dark");
+        }
+        else {
+            setTheme("light");
+            document.documentElement.classList.remove("dark");
+        }
+    }, []);
+
   function toggleDarkMode () {
     document.documentElement.classList.toggle("dark");
-    if(localStorage.theme === "dark") localStorage.theme = "light";
-    else localStorage.theme = "dark";
-
-    if(theme === "dark") setTheme("light");
-    else setTheme("dark");
+    if(localStorage.theme === "dark") {
+        localStorage.theme = "light";
+        setTheme("light");
+    }
+    else {
+        localStorage.theme = "dark";
+        setTheme("dark");
+    }
   }
 
   return (

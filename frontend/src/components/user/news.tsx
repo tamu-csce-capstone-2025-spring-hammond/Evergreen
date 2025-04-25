@@ -44,7 +44,7 @@ export default function News() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="p-4 text-evergray-500">
+      <div className="p-4 text-evergray-500 dark:text-evergray-400">
         <h2>Latest News</h2>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -61,7 +61,7 @@ export default function News() {
             {newsArticles.map((article, index) => (
               <div
                 key={article.id || index}
-                className="flex bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                className="flex bg-evergray-100 dark:bg-evergray-600/30 rounded-lg shadow-md overflow-hidden dark:shadow-evergray-800/30 hover:shadow-lg transition-shadow duration-300"
               >
                 {/* Image */}
                 <div className="flex-shrink-0 w-24 sm:w-32 relative">
@@ -77,7 +77,7 @@ export default function News() {
                       />
                     </div>
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-gray-200">
+                    <div className="h-full w-full flex items-center justify-center bg-evergray-200">
                       <span className="text-gray-400">No image</span>
                     </div>
                   )}
@@ -93,21 +93,21 @@ export default function News() {
                           href={article.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-blue-600 transition-colors duration-200 text-gray-600"
+                          className="hover:text-everblue-400 transition-colors duration-200 text-gray-600 dark:text-gray-200"
                         >
                           {article.headline}
                         </a>
                       </h3>
 
                       {article.summary && (
-                        <p className="text-xs text-gray-600 mb-1 line-clamp-2">
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mb-1 line-clamp-2">
                           {article.summary}
                         </p>
                       )}
                     </div>
 
                     {/* Footer */}
-                    <div className="mt-1 flex flex-wrap justify-between items-center text-xs text-gray-500">
+                    <div className="mt-1 flex flex-wrap justify-between items-center text-xs text-gray-500 dark:text-gray-400">
                       <div className="flex items-center">
                         <span className="mr-2 text-xs">
                           {article.author || article.source}
@@ -119,7 +119,7 @@ export default function News() {
 
                       {article.symbols && article.symbols.length > 0 && (
                         <div className="mt-1 sm:mt-0">
-                          <span className="text-xs bg-gray-100 px-1 py-0.5 rounded">
+                          <span className="text-xs bg-gray-100 dark:bg-evergray-800/40 px-1 py-0.5 rounded">
                             {article.symbols.join(", ")}
                           </span>
                         </div>

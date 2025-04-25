@@ -140,11 +140,11 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
   return (
     <div className="h-full border-1 rounded-3xl px-8 py-7 flex flex-col items-center" style={{ borderColor: card.color }}>
       <div className="w-full flex items-center justify-between relative">
-        <button className="text-xl cursor-pointer hover:bg-evergray-200/90 transition rounded-full px-[9px] pb-[2px]" onClick={onDeselectCard}>{'<'}</button>
+        <button className="text-xl cursor-pointer hover:bg-evergray-200/90 dark:hover:bg-evergray-600 transition rounded-full px-[9px] pb-[2px]" onClick={onDeselectCard}>{'<'}</button>
         <h1 className="text-2xl text-center flex-1 absolute left-1/2 -translate-x-1/2">{card.name}</h1>
-        <button className="flex items-center gap-1 cursor-pointer hover:bg-evergray-200/90 transition py-2 pl-3 pr-2 rounded-lg translate-x-2" onClick={handleOpenEditModal}>
+        <button className="dark:hover:bg-evergray-600 flex items-center gap-1 cursor-pointer hover:bg-evergray-200/90 transition py-2 pl-3 pr-2 rounded-lg translate-x-2" onClick={handleOpenEditModal}>
           <span>Edit</span>
-          <img src="/editIcon.svg" alt="Edit Icon" className="w-5 h-5" />
+          <span className="material-symbols-outlined symbol !scale-85">edit_square</span>
         </button>
       </div>
 
@@ -152,7 +152,7 @@ const PortfolioSelection: React.FC<Portfolio> = ({ card, onDeselectCard, refresh
         ${card.total.toLocaleString()}
       </div>
 
-      <div className="mt-4 flex gap-4 text-xl w-full button-container text-evergray-700">
+      <div className="mt-4 flex gap-4 text-xl w-full button-container text-evergray-700 dark:text-evergray-200">
         <button onClick={() => handleOpenDepositWithdrawModal("deposit")} className="rounded-lg flex-1 py-4 border border-evergray-500 text-center cursor-pointer transition-colors duration-300 ease-in-out">
           Deposit
         </button>

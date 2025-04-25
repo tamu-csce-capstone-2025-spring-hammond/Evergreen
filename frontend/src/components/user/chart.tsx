@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useJwtStore from "@/store/jwtStore";
 import 'chartjs-adapter-date-fns';
 import { Line } from "react-chartjs-2";
+import { useThemeFromLocalStorage } from "@/utils";
 import { PortfolioCardProps } from "../api/portfolio";
 import {
     Chart as ChartJS,
@@ -40,6 +41,8 @@ export default function Chart({ portfolios }: ChartProps) {
     const [dataPoints, setDataPoints] = useState<
       { label: string; data: { x: string; y: number }[]; borderColor: string }[]
     >([]);
+
+    const isDarkTheme = useThemeFromLocalStorage();
   
     useEffect(() => {
         if (!portfolios || portfolios.length === 0) return;
@@ -147,14 +150,20 @@ export default function Chart({ portfolios }: ChartProps) {
         }
     };  
 
-    const options: any = {
+    const options = useMemo(() => ({
         responsive: true,
         scales: {
           x: {
             type: "time",
             time: {
               unit: getTimeUnit(selectedTimeframe),
-              tooltipFormat: "PP", // optional: customize tooltip format
+              tooltipFormat: "PP",
+            },
+            ticks: {
+              color: isDarkTheme ? "#D5D5D4" : "#535352", // gray-300 / gray-700
+            },
+            grid: {
+              color: isDarkTheme ? "#535352" : "#E6E6E5",
             },
             title: {
               display: false,
@@ -164,7 +173,14 @@ export default function Chart({ portfolios }: ChartProps) {
           y: {
             beginAtZero: false,
             ticks: {
+              color: isDarkTheme ? "#D5D5D4" : "#535352",
               callback: (val: number) => `$${val}`,
+            },
+            grid: {
+              color: isDarkTheme ? "#535352" : "#E6E6E5",
+            },
+            border: {
+                color: isDarkTheme ? "#535352" : "#E6E6E5",
             },
             title: {
               display: false,
@@ -175,27 +191,33 @@ export default function Chart({ portfolios }: ChartProps) {
         plugins: {
           legend: {
             display: false,
+            labels: {
+              color: isDarkTheme ? "#535352" : "#374151",
+            },
           },
           tooltip: {
             callbacks: {
               label: (ctx: any) => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
             },
+            backgroundColor: isDarkTheme ? "#535352" : "#E6E6E5",
+            titleColor: isDarkTheme ? "#E6E6E5" : "#272726",
+            bodyColor: isDarkTheme ? "#E6E6E5" : "#535352",
           },
         },
-    };
+      }), [isDarkTheme, selectedTimeframe]);
       
   
     return (
       <div className="p-4 pb-2 w-full">
-        <header className="flex justify-between font-mono divide-x-2 whitespace-nowrap *:flex-1 *:px-4 *:py-[0.125rem] *:cursor-pointer *:border-evergray-400 text-evergray-700">
+        <header className="flex justify-between font-mono divide-x-2 whitespace-nowrap *:flex-1 *:px-4 *:py-[0.125rem] *:cursor-pointer *:border-evergray-400 dark:*:border-evergray-600 text-evergray-700 dark:text-evergray-300">
           {timeframes.map((timeframe) => (
             <button
               key={timeframe}
               onClick={() => setSelectedTimeframe(timeframe)}
               className={
                 timeframe === selectedTimeframe
-                  ? "text-evergreen-500 dark:text-evergreen-400 relative after:content-[''] after:rounded-[1.5rem_1.5rem_0_0] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-3/5 after:h-1/5 after:bg-evergreen-500 transition after:transition"
-                  : "hover:bg-evergray-200 transition"
+                  ? "text-evergreen-500 dark:text-evergreen-400 relative after:content-[''] after:rounded-[1.5rem_1.5rem_0_0] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-3/5 after:h-1/5 after:bg-evergreen-500 dark:after:bg-evergreen-400 transition after:transition"
+                  : "hover:bg-evergray-200 transition dark:hover:bg-evergray-600/50"
               }
             >
               {timeframe}
