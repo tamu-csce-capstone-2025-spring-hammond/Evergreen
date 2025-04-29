@@ -22,6 +22,9 @@ const alpaca = new AlpacaService(config);
 // Now you can use config.get('SOME_ENV_VAR') like in your main app
 
 async function main() {
+  await prisma.portfolioTemplate.deleteMany();
+  await prisma.portfolio.deleteMany();
+  await prisma.users.deleteMany();
   const riskyPortfolio = [
     { ticker: 'VTI', percent: Decimal(0.75) },
     { ticker: 'BND', percent: Decimal(0.25) },
@@ -121,6 +124,28 @@ async function main() {
       },
     },
   });
+  const fs = require('fs');
+  const rawData = fs.readFileSync('./prisma/computedWeights.json');
+  const portfolioTemplates = JSON.parse(rawData);
+  for (const template of portfolioTemplates) {
+    const createdTemplate = await prisma.portfolioTemplate.create({
+      data: {
+        years_to_expiration: template.years_to_expiration,
+        risk_aptitude: template.risk_aptitude,
+        bitcoin_focus: template.bitcoin_focus,
+        smallcap_focus: template.smallcap_focus,
+        value_focus: template.value_focus,
+        momentum_focus: template.momentum_focus,
+        sample_portfolio_name: null, // Or provide a string if needed
+        sample_portfolio_asset_allocation: {
+          create: template.holdings.map((h) => ({
+            ticker: h.ticker,
+            percentage: h.percentage,
+          })),
+        },
+      },
+    });
+  }
 }
 
 main()

@@ -81,7 +81,7 @@ model PortfolioTemplate {
   portfolio_template_id             Int                                @id @default(autoincrement())
   last_generated                    DateTime                           @default(now()) @db.Timestamp(6)
   sample_portfolio_name             String?                            @db.VarChar(255)
-  time_to_expiration                BigInt
+  years_to_expiration               Int
   risk_aptitude                     Int?                               @db.SmallInt
   bitcoin_focus                     Boolean                            @default(false)
   smallcap_focus                    Boolean                            @default(false)

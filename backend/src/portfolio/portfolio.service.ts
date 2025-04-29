@@ -466,13 +466,21 @@ export class PortfolioService {
     } = portfolioReviewDto;
 
     const now = new Date();
-    const time_to_expiration = BigInt(differenceInDays(targetDate, now)); // time_to_expiration as BigInt
-
+    let years_to_expiration = Math.ceil(
+      differenceInDays(targetDate, now) / 365,
+    );
+    years_to_expiration = Math.max(years_to_expiration, 34);
+    console.log({
+      years_to_expiration,
+      risk_aptitude,
+      bitcoin_focus,
+      smallcap_focus,
+      value_focus,
+      momentum_focus,
+    });
     const matchingTemplate = await this.prisma.portfolioTemplate.findFirst({
-      orderBy: {
-        time_to_expiration: 'asc',
-      },
       where: {
+        years_to_expiration,
         risk_aptitude,
         bitcoin_focus,
         smallcap_focus,
@@ -488,7 +496,7 @@ export class PortfolioService {
             portfolio_template_id: matchingTemplate.portfolio_template_id,
           },
         });
-
+        // console.log(allocations)
       return await Promise.all(
         allocations.map(async (a) => ({
           ticker: a.ticker,

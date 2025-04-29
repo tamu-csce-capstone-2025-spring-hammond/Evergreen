@@ -383,7 +383,11 @@ export class AlpacaService {
     for (let i = 0; i < barCount; i++) {
       let totalValue = Decimal(0);
       for (const { ticker, quantity } of investments) {
-        const price = history.bars[ticker][i]?.c;
+        let price = history.bars[ticker][i]?.c;
+        // this.logger.fatal(price)
+        if (price===undefined){
+          price = 0;
+        }
         totalValue = totalValue.add(quantity.times(price));
       }
       const timestamp = history.bars[referenceTicker][i]?.t;
