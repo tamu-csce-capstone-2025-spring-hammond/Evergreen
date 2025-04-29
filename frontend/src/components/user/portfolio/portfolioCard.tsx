@@ -62,7 +62,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
     const parsePercent = String(percent)[0] === "-" ? String(percent).slice(1) : percent;
     const difference = (total * Number(parsePercent) / 100).toFixed(2);
 
-    const feedbackColor = (percent > 0) ? "text-evergreen-500" : (percent < 0) ? "text-everred-500" : "text-evergray-500";
+    const feedbackColor = (percent > 0) ? "text-evergreen-500 dark:text-evergreen-400" : (percent < 0) ? "text-everred-500 dark:text-everred-400" : "text-evergray-500 dark:text-evergray-400";
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -83,12 +83,12 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
 
     if(home) {
         return (
-        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer hover:bg-evergray-200/45 transition-colors" onClick={onClick}>
+        <div className="p-4 flex justify-between items-center border-1 border-evergray-300 dark:border-evergray-500 rounded-3xl relative overflow-hidden gap-6 cursor-pointer hover:bg-evergray-200/45 dark:hover:bg-evergray-600/40 transition-colors" onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className="flex whitespace-nowrap justify-between w-40/100">
                 <div className="ml-6 w-45/100">
-                    <h3 className="text-2xl pb-1 text-evergray-700 overflow-hidden text-ellipsis">{name}</h3>
-                    <p className="text-xl font-roboto text-evergray-500">${total}</p>
+                    <h3 className="text-2xl pb-1 text-evergray-700 dark:text-evergray-200 overflow-hidden text-ellipsis" title={name}>{name}</h3>
+                    <p className="text-xl font-roboto text-evergray-500 dark:text-evergray-400 ">${total}</p>
                 </div>
                 <div className={`font-roboto text-end ${feedbackColor}`}>
                     <p className="text-2xl relative -top-1"><span className="text-3xl pr-2">{(percent > 0) ? "▲" : (percent < 0) ? "▼" : "-"}</span>{parsePercent}%</p>
@@ -96,7 +96,7 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
                 </div>
             </div>
             <Trendline home={home} color={feedbackColor} data={dataPoints} />
-            <div className="mr-4 whitespace-nowrap text-md text-evergray-600 [&_span]:tracking-wider [&_span]:pl-1 w-24/100">
+            <div className="mr-4 whitespace-nowrap text-md text-evergray-600 dark:text-evergray-300 [&_span]:tracking-wider [&_span]:pl-1 w-24/100">
                 <p>Start: <span className="font-roboto">{startDate}</span></p>
                 <p>End: <span className="font-roboto">{endDate}</span></p>
                 <p>Time Left: <span className="font-roboto">{timeLeft}</span></p>
@@ -107,28 +107,28 @@ const PortfolioCard: React.FC<PortfolioCard> = ({ portfolioId, name, color, tota
     }
 
     return (
-        <div className={`p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative overflow-hidden gap-6 cursor-pointer transition 
-        ${selectedCardName === name ? `shadow-md` : 'hover:bg-evergray-200/45' }`} style={selectedCardName === name ? { borderColor: `${color}`} : {}} onClick={onClick}>
+        <div className={`p-4 flex justify-between items-center border-1 border-evergray-300 rounded-3xl relative dark:border-evergray-500  overflow-hidden gap-6 cursor-pointer transition 
+        ${selectedCardName === name ? `shadow-md` : 'hover:bg-evergray-200/45 dark:hover:bg-evergray-600/40' }`} style={selectedCardName === name ? { borderColor: `${color}`} : {}} onClick={onClick}>
             <div style={{ backgroundColor: color }} className="w-1/30 h-full absolute left-0 top-0"></div>
             <div className={`flex whitespace-nowrap justify-between w-1/2`}>
                 <div className="ml-6 w-55/100">
-                    <h3 className="text-[1.65rem] text-evergray-700 overflow-hidden text-ellipsis">{name}</h3>
-                    <p className="text-[1.45rem] font-roboto text-evergray-500 mb-3">${total}</p>
-                    <p className="text-md text-evergray-500">Deposited:<span className="pl-2 font-roboto">${deposited}</span></p>
-                    <p className="text-md text-evergray-500">{(percent > 0) ? "Gained" : "Lost"}<span className="pl-2 font-roboto">${gained}</span></p>
+                    <h3 className="text-[1.65rem] text-evergray-700 dark:text-evergray-200  overflow-hidden text-ellipsis" title={name}>{name}</h3>
+                    <p className="text-[1.45rem] font-roboto text-evergray-500 dark:text-evergray-400 mb-3">${total}</p>
+                    <p className="text-md text-evergray-500 dark:text-evergray-400">Deposited:<span className="pl-2 font-roboto">${deposited}</span></p>
+                    <p className="text-md text-evergray-500 dark:text-evergray-400">{(percent > 0) ? "Gained" : "Lost"}<span className="pl-2 font-roboto">${gained}</span></p>
                 </div>
                 <div className={`font-roboto text-end ${feedbackColor}`}>
                     <p className="text-3xl relative"><span className="text-3xl pr-3">{(percent > 0) ? "▲" : (percent < 0) ? "▼" : "-"}</span>{parsePercent}%</p>
                     <p className="text-2xl relative top-1 mb-[18px]">{difference}</p>
-                    <div className="whitespace-nowrap text-md text-evergray-500 [&_span]:tracking-wider text-start">
+                    <div className="whitespace-nowrap text-md text-evergray-500 dark:text-evergray-400 [&_span]:tracking-wider text-start">
                         <p className="font-raleway">Start: <span className="font-roboto">{startDate}</span></p>
                         <p className="font-raleway">End: <span className="pl-[0.35rem] font-roboto">{endDate}</span></p> 
                     </div>    
                 </div>
             </div>
-            <div className="mr-4 whitespace-nowrap text-md text-evergray-500 w-1/2 relative">
+            <div className="mr-4 whitespace-nowrap text-md text-evergray-500 dark:text-evergray-400 w-1/2 relative">
                 <Trendline home={home} color={feedbackColor} data={dataPoints}/>
-                <div className="relative w-full h-[0.35rem] bg-evergray-300 my-1">
+                <div className="relative w-full h-[0.35rem] bg-evergray-300 dark:bg-evergray-500 my-1">
                     <div 
                         className="h-full" 
                         style={{ width: `${completionPercent}%`, backgroundColor: color }}

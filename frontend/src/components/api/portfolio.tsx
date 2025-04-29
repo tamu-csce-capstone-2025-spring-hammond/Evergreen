@@ -121,10 +121,10 @@ export interface PortfolioDto {
     const netReturnSymbol = netReturn > 0 ? " ▲ " : netReturn < 0 ? " ▼ " : "";
     const feedbackColor =
       netReturn > 0
-        ? "text-evergreen-500"
+        ? "text-evergreen-500 dark:text-evergreen-400"
         : netReturn < 0
-        ? "text-everred-500"
-        : "text-evergray-500";
+        ? "text-everred-500 dark:text-everred-400"
+        : "text-evergray-500  dark:text-evergray-400";
   
     return {
       totalDeposited,
