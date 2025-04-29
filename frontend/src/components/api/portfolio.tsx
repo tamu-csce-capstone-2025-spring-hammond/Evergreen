@@ -10,13 +10,13 @@ export interface PortfolioCardProps {
 }
 
 export interface PortfolioPreviewDto {
-  targetDate: Date;
-  value: number;
-  bitcoin_focus: boolean;
-  smallcap_focus: boolean;
-  value_focus: boolean;
-  momentum_focus: boolean;
-  risk_aptitude: number;
+targetDate: Date;
+initial_deposit: number;
+bitcoin_focus: boolean;
+smallcap_focus: boolean;
+value_focus: boolean;
+momentum_focus: boolean;
+risk_aptitude: number;
 }
 
 export interface PortfolioDto {
@@ -93,11 +93,7 @@ export interface DepositWithdrawModalProps {
 export interface EditPortfolioModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (updatedPortfolio: {
-    name?: string;
-    color?: string;
-    targetDate?: string;
-  }) => void;
+  onConfirm: (updatedPortfolio: { name?: string; color?: string; targetDate?: string }) => void;
   onDelete: (portfolioId: number) => void;
   card: PortfolioCardProps;
 }
@@ -111,13 +107,11 @@ export interface Portfolio {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+
 export const calculatePortfolioStats = (
   portfolios: PortfolioCardProps[]
 ): PortfolioStats => {
-  const totalDeposited = portfolios.reduce(
-    (sum, card) => sum + card.deposited,
-    0
-  );
+  const totalDeposited = portfolios.reduce((sum, card) => sum + card.deposited, 0);
   const totalValue = portfolios.reduce((sum, card) => sum + card.total, 0);
   const totalGained = Number((totalValue - totalDeposited).toFixed(2));
   const netReturn =
@@ -127,10 +121,10 @@ export const calculatePortfolioStats = (
   const netReturnSymbol = netReturn > 0 ? " ▲ " : netReturn < 0 ? " ▼ " : "";
   const feedbackColor =
     netReturn > 0
-      ? "text-evergreen-500"
+      ? "text-evergreen-500 dark:text-evergreen-400"
       : netReturn < 0
-      ? "text-everred-500"
-      : "text-evergray-500";
+      ? "text-everred-500 dark:text-everred-400"
+      : "text-evergray-500  dark:text-evergray-400";
 
   return {
     totalDeposited,
@@ -166,9 +160,7 @@ export const getPortfolio = async (token: string, id: number) => {
   return res.json();
 };
 
-export const getAllPortfolios = async (
-  token: string
-): Promise<PortfolioCardProps[]> => {
+export const getAllPortfolios = async (token: string): Promise<PortfolioCardProps[]> => {
   const res = await fetch(`${BACKEND_URL}/portfolio`, {
     method: "GET",
     headers: getAuthHeaders(token),
@@ -181,8 +173,7 @@ export const getAllPortfolios = async (
     const deposited = Number(item.total_deposited ?? 0);
     const total = Number(item.current_value ?? 0);
     const amountChange = Number(item.amount_change ?? 0);
-    const percent =
-      deposited > 0 ? Number(((amountChange / deposited) * 100).toFixed(2)) : 0;
+    const percent = deposited > 0 ? Number(((amountChange / deposited) * 100).toFixed(2)) : 0;
 
     return {
       portfolioId: item.portfolio_id,
@@ -247,10 +238,8 @@ export const withdrawFromPortfolio = async (
   return res.json();
 };
 
-export const previewPortfolio = async (
-  token: string,
-  portfolio: PortfolioPreviewDto
-) => {
+
+export const previewPortfolio = async (token: string, portfolio: PortfolioPreviewDto) => {
   const res = await fetch(`${BACKEND_URL}/portfolio/preview`, {
     method: "POST",
     headers: getAuthHeaders(token),

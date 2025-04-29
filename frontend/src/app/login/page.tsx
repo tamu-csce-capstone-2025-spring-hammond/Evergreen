@@ -11,6 +11,7 @@ export default function Login() {
   const router = useRouter();
   const { setToken } = useJwtStore();
   const [error, setError] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
 
   const [loginData, setLoginData] = useState({
@@ -25,6 +26,7 @@ export default function Login() {
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,23 +64,23 @@ export default function Login() {
       <Navbar />
 
       {/* Background Image */}
-      <div className="absolute top-0 w-full h-[115vh] -z-1">
-        <div className="absolute w-full h-[115vh] z-[-1] bg-[rgba(12,14,15,0.6)] [clip-path:url('#bg-clip')]"></div>
+      <div className="absolute top-0 w-full h-full -z-1">
+        <div className="absolute w-full h-full z-[-1] bg-[rgba(12,14,15,0.6)] [clip-path:url('#bg-clip')]"></div>
         <Image
           src="/treesMist.jpg"
           alt="Forest with mist"
           layout="fill"
           objectFit="cover"
-          className="absolute w-full h-[115vh] object-cover object-[50%_15%] -z-2 [clip-path:url('#bg-clip')]"
+          className="absolute w-full h-full object-cover object-[50%_15%] -z-2 [clip-path:url('#bg-clip')]"
           priority
         />
       </div>
 
       {/* Login Box */}
-      <div className="flex items-center justify-center min-h-screen text-white">
+      <div className="absolute flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-44/100 text-white">
         {/* Actual Box */}
         <div className="relative opacity-30">
-          <div className="w-[633px] h-[622px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
+          <div className="w-[560px] h-[600px] rounded-[70px] bg-gradient-to-b from-[#D4D4D4] to-[#737373]"></div>
         </div>
 
         {/* Content inside the box */}
@@ -127,8 +129,9 @@ export default function Login() {
             </div>
 
             {/* Password Input */}
-            <div className="w-[70%] max-w-[550px]">
-              <div className="flex items-center border-2 border-white rounded-[75px] px-5 py-3">
+            <div className="w-[70%] max-w-[550px] relative">
+                {error && <span className={`absolute top-1/1 translate-y-1 left-[2px] text-red-400`}>Invalid password</span>}
+              <div className={`flex items-center border-2 border-white rounded-[75px] px-5 py-3 ${error ? "!border-red-400" : ""}`}>
                 <span className="pr-2">
                   <Image
                     src={"/loginSignup/passwordIcon.svg"}
@@ -138,7 +141,7 @@ export default function Login() {
                   />
                 </span>
                 <input
-                  type="password"
+                  type={passwordVisible ? "text" : "password"}
                   name="password"
                   placeholder="Password"
                   className="bg-transparent w-full focus:outline-none placeholder-white text-white"
@@ -146,32 +149,19 @@ export default function Login() {
                   onChange={handleChange}
                   required
                 />
+                {passwordVisible ? (
+                    <span className="material-symbols-outlined cursor-pointer" onClick={() => setPasswordVisible(false)}>visibility_off</span>
+                ) : (
+                    <span className="material-symbols-outlined cursor-pointer" onClick={() => setPasswordVisible(true)}>visibility</span>
+                )}
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex justify-between text-sm w-[70%]">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="rememberMe"
-                  className="accent-transparent border-2 border-white rounded-4 w-3 h-3 cursor-pointer"
-                  checked={loginData.rememberMe}
-                  onChange={handleChange}
-                />
-                <span>Remember me</span>
-              </label>
-
-              {/* Links to nowhere */}
-              <Link href="/login" className="text-white">
-                Forgot Password?
-              </Link>
-            </div>
 
             {/* Login Button */}
             <button
               type="submit"
-              className="w-[70%] max-w-[550px] bg-white py-3 rounded-[75px] transition text-black hover:bg-gray-300"
+              className="w-[70%] max-w-[550px] bg-evergray-100 py-3 mt-8 rounded-[75px] transition text-black hover:bg-evergray-300 cursor-pointer"
             >
               Login
             </button>
