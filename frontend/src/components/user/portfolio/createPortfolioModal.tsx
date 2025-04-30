@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import {
-  PortfolioPreviewDto,
-  previewPortfolio,
-  InvestmentData,
-  CreatePortfolioModalProps,
-} from "@/components/api/portfolio";
+import { PortfolioPreviewDto, previewPortfolio, InvestmentData, CreatePortfolioModalProps } from "@/components/api/portfolio";
 import useJwtStore from "@/store/jwtStore";
 import PieChart from "../pieChart";
 import ForecastTrendChart from "../forecastGraph";
+
+
+
 
 const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   isOpen,
@@ -28,15 +26,11 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   const [smallcapFocus, setSmallcapFocus] = useState(false);
   const [valueFocus, setValueFocus] = useState(false);
   const [momentumFocus, setMomentumFocus] = useState(false);
-  const [previewData, setPreviewData] = useState<
-    { date: string; value: number }[] | null
-  >(null);
-  const [previewInvestments, setPreviewInvestments] = useState<
-    InvestmentData[] | null
-  >(null);
-  const [forecastSimulations, setForecastSimulations] = useState<
-    number[][] | null
-  >(null);
+  const [previewData, setPreviewData] = useState<{ date: string; value: number }[] | null>(null);
+  const [previewInvestments, setPreviewInvestments] = useState<InvestmentData[] | null>(null);
+  const [forecastSimulations, setForecastSimulations] = useState<number[][] | null>(null);
+
+
 
   const [errors, setErrors] = useState<{
     name?: string;
@@ -61,66 +55,67 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
   const onCancel = () => {
     onClose();
     clearModal();
-  };
+  }
 
-  const onNext = async () => {
-    const newErrors: typeof errors = {};
-    if (!name.trim()) newErrors.name = "Portfolio name is required";
-    if (depositedCash === null || depositedCash <= 0)
-      newErrors.depositedCash = "Initial deposit must be greater than 0";
-    if (!targetDate) newErrors.targetDate = "Target date is required";
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+const onNext = async () => {
+  const newErrors: typeof errors = {};
+  if (!name.trim()) newErrors.name = "Portfolio name is required";
+  if (depositedCash === null || depositedCash <= 0)
+    newErrors.depositedCash = "Initial deposit must be greater than 0";
+  if (!targetDate) newErrors.targetDate = "Target date is required";
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  try {
+    const token = useJwtStore.getState().getToken();
+    if (!token) {
+      console.error("No auth token found.");
       return;
     }
 
-    try {
-      const token = useJwtStore.getState().getToken();
-      if (!token) {
-        console.error("No auth token found.");
-        return;
-      }
+    const previewDto: PortfolioPreviewDto = {
+      targetDate: new Date(targetDate),
+      initial_deposit: depositedCash!,
+      bitcoin_focus: bitcoinFocus,
+      smallcap_focus: smallcapFocus,
+      value_focus: valueFocus,
+      momentum_focus: momentumFocus,
+      risk_aptitude: riskAptitude,
+    };
 
-      const previewDto: PortfolioPreviewDto = {
-        targetDate: new Date(targetDate),
-        value: depositedCash!,
-        bitcoin_focus: bitcoinFocus,
-        smallcap_focus: smallcapFocus,
-        value_focus: valueFocus,
-        momentum_focus: momentumFocus,
-        risk_aptitude: riskAptitude,
-      };
+    const result = await previewPortfolio(token, previewDto);
 
-      const result = await previewPortfolio(token, previewDto);
+    const investmentBreakdown: InvestmentData[] = result.investments.map((inv: any, i: number) => ({
+      label: inv.ticker,
+      value: parseFloat(inv.percent_of_portfolio),
+      color: ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"][i % 5],
+    }));
 
-      const investmentBreakdown: InvestmentData[] = result.investments.map(
-        (inv: any, i: number) => ({
-          label: inv.ticker,
-          value: parseFloat(inv.percent_of_portfolio),
-          color: ["#2563eb", "#f97316", "#10b981", "#e11d48", "#a855f7"][i % 5],
-        })
-      );
+    const historicalFormatted = result.historical_graph.map((point: any) => ({
+      date: new Date(point.snapshot_time).toISOString().split("T")[0],
+      value: parseFloat(point.snapshot_value),
+    }));
 
-      const historicalFormatted = result.historical_graph.map((point: any) => ({
-        date: new Date(point.snapshot_time).toISOString().split("T")[0],
-        value: parseFloat(point.snapshot_value),
-      }));
+    const forecastSimulations: number[][] = result.future_projections.simulations.map(
+      (sim: any) => sim.values.map((v: any) => parseFloat(v))
+    );
 
-      const forecastSimulations: number[][] =
-        result.future_projections.simulations.map((sim: any) =>
-          sim.values.map((v: any) => parseFloat(v))
-        );
+    setPreviewData(historicalFormatted);
+    setForecastSimulations(forecastSimulations);
+    setPreviewInvestments(investmentBreakdown);
+    setStep("preview");
 
-      setPreviewData(historicalFormatted);
-      setForecastSimulations(forecastSimulations);
-      setPreviewInvestments(investmentBreakdown);
-      setStep("preview");
-    } catch (err) {
-      console.error("Preview request failed:", err);
-      alert("Failed to generate portfolio preview.");
-    }
-  };
+  } catch (err) {
+    console.error("Preview request failed:", err);
+    alert("Failed to generate portfolio preview.");
+  }
+};
+  
+
 
   const handleFinalConfirm = () => {
     onConfirm(name, depositedCash!, targetDate, color, riskAptitude, {
@@ -155,6 +150,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
         } bg-evergray-100 dark:bg-evergray-700 rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
+
         {/* Form Step - always visible */}
         <div className="absolute top-0 left-0 w-full h-full p-6 z-0 dark:[&_input]:border-evergray-500">
           <h2 className="text-xl font-semibold mb-4">Create New Portfolio</h2>
@@ -164,40 +160,28 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             type="text"
             value={name}
             onChange={(e) => {
-              setName(e.target.value);
-              if (errors.name)
-                setErrors((prev) => ({ ...prev, name: undefined }));
+                setName(e.target.value);
+                if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
             }}
-            className={`w-full font-medium p-2 border rounded mb-1 ${
-              errors.name ? "border-red-500" : ""
-            }`}
+            className={`w-full font-medium p-2 border rounded mb-1 ${errors.name ? "border-red-500" : ""}`}
             placeholder="Enter Portfolio Name"
           />
-          {errors.name && (
-            <p className="absolute right-6 text-red-500 text-sm">
-              {errors.name}
-            </p>
-          )}
+          {errors.name && <p className="absolute right-6 text-red-500 text-sm">{errors.name}</p>}
 
           <label className="block mt-4 mb-1">Initial Deposit ($)</label>
           <input
             type="number"
             value={depositedCash ?? ""}
             onChange={(e) => {
-              const value = parseFloat(e.target.value) || null;
-              setDepositedCash(value);
-              if (errors.depositedCash)
-                setErrors((prev) => ({ ...prev, depositedCash: undefined }));
+                const value = parseFloat(e.target.value) || null;
+                setDepositedCash(value);
+                if (errors.depositedCash) setErrors((prev) => ({ ...prev, depositedCash: undefined }));
             }}
-            className={`w-full font-mono placeholder:font-raleway p-2 border rounded mb-1 ${
-              errors.depositedCash ? "border-red-500" : ""
-            }`}
+            className={`w-full font-mono placeholder:font-raleway p-2 border rounded mb-1 ${errors.depositedCash ? "border-red-500" : ""}`}
             placeholder="Enter Initial Deposit"
           />
           {errors.depositedCash && (
-            <p className="absolute right-6 text-red-500 text-sm">
-              {errors.depositedCash}
-            </p>
+            <p className="absolute right-6 text-red-500 text-sm">{errors.depositedCash}</p>
           )}
 
           <label className="block mt-4 mb-1">Target Date</label>
@@ -205,17 +189,14 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             type="date"
             value={targetDate}
             onChange={(e) => {
-              setTargetDate(e.target.value);
-              if (errors.targetDate)
-                setErrors((prev) => ({ ...prev, targetDate: undefined }));
+                setTargetDate(e.target.value);
+                if (errors.targetDate) setErrors((prev) => ({ ...prev, targetDate: undefined }));
             }}
             className={`custom-date-picker w-full p-2 font-mono border rounded mb-1 ${errors.targetDate ? "border-red-500" : ""}`}
             min={getTomorrowDate()}
           />
           {errors.targetDate && (
-            <p className="absolute right-6 text-red-500 text-sm">
-              {errors.targetDate}
-            </p>
+            <p className="absolute right-6 text-red-500 text-sm">{errors.targetDate}</p>
           )}
 
           <label className="block mt-4 mb-1">Portfolio Color</label>
@@ -237,9 +218,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             onChange={(e) => setRiskAptitude(parseInt(e.target.value))}
             className="w-full mb-2"
           />
-          <span className="block text-center mb-3 font-mono">
-            {riskAptitude}
-          </span>
+          <span className="block text-center mb-3 font-mono">{riskAptitude}</span>
 
           <div className="space-y-2 mb-6">
             <label className="flex items-center space-x-2">
@@ -272,10 +251,7 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
             <button onClick={onCancel} className="bg-evergray-200 dark:bg-evergray-600 px-4 py-2 rounded cursor-pointer">
               Cancel
             </button>
-            <button
-              onClick={onNext}
-              className="bg-evergreen-500 text-white px-4 py-2 rounded cursor-pointer"
-            >
+            <button onClick={onNext} className="bg-evergreen-500 text-white px-4 py-2 rounded cursor-pointer">
               Next
             </button>
           </div>
@@ -299,10 +275,10 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
                     <p className="font-semibold dark:text-evergray-400 text-evergray-600">Color:</p>
                     <div className="flex items-center space-x-2">
                     <div
-                      className="size-4 rounded border"
-                      style={{ backgroundColor: color }}
+                        className="size-4 rounded border"
+                        style={{ backgroundColor: color }}
                     />
-                  </div>
+                    </div>
 
                     <p className="font-semibold dark:text-evergray-400 text-evergray-600">Deposit:</p>
                     <p className="font-mono">${depositedCash}</p>
@@ -330,35 +306,24 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
                   <PieChart data={previewInvestments} showLegend={true} />
                 </div>
               </div>
-              {previewInvestments && (
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-lg font-medium mb-2 text-center flex-3">
-                    Investment Allocation
-                  </h3>
-                  <div className="flex-5">
-                    <PieChart data={previewInvestments} showLegend={true} />
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Right: Chart */}
+          {/* Right: Chart */}
+          <div className="w-full">
+            <h3 className="text-lg font-medium mb-4">Portfolio Value Forecast</h3>
             <div className="w-full">
-              <h3 className="text-lg font-medium mb-4">
-                Portfolio Value Forecast
-              </h3>
-              <div className="w-full">
-                <div className="w-full px-4">
-                  {previewData && forecastSimulations && (
-                    <ForecastTrendChart
-                      historical={previewData.slice(-30)}
-                      forecast={forecastSimulations}
-                    />
-                  )}
-                </div>
+              <div className="w-full px-4">
+                {previewData && forecastSimulations && (
+                  <ForecastTrendChart
+                    historical={previewData.slice(-30)}
+                    forecast={forecastSimulations}
+                  />
+                )}
               </div>
             </div>
-            <div className="flex justify-end space-x-2 pt-4">
+          </div>
+          <div className="flex justify-end space-x-2 pt-4">
               <button
                 onClick={() => setStep("form")}
                 className="bg-evergray-200 dark:bg-evergray-600 px-4 py-2 rounded cursor-pointer"
@@ -372,8 +337,9 @@ const CreatePortfolioModal: React.FC<CreatePortfolioModalProps> = ({
                 Confirm
               </button>
             </div>
-          </div>
         </div>
+      </div>
+
       </div>
     </div>
   );
