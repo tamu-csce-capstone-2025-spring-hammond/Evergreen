@@ -104,6 +104,11 @@ const onNext = async () => {
       (sim: any) => sim.values.map((v: any) => parseFloat(v))
     );
 
+    const createdDate: Date = result.createdDate;
+
+    const targetDate2: Date = result.targetDate;
+
+
     setPreviewData(historicalFormatted);
     setForecastSimulations(forecastSimulations);
     setPreviewInvestments(investmentBreakdown);
@@ -316,7 +321,7 @@ const onNext = async () => {
               <div className="w-full px-4">
                 {previewData && forecastSimulations && (
                   <ForecastTrendChart
-                    historical={previewData.slice(-30)}
+                    historical={previewData.slice(-100)}
                     forecast={forecastSimulations}
                   />
                 )}

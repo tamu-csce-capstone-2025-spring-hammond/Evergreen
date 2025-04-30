@@ -12,7 +12,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import 'chartjs-adapter-date-fns';
+import "chartjs-adapter-date-fns";
 import { Line } from "react-chartjs-2";
 import React from "react";
 import { useThemeFromLocalStorage } from "@/utils";
@@ -34,16 +34,17 @@ interface ForecastChartProps {
   forecast: number[][];
 }
 
-export default function ForecastTrendChart({ historical, forecast }: ForecastChartProps) {
-  const forecastAvg = forecast[0].map((_, i) => {
-    const vals = forecast.map((sim) => sim[i]);
-    return vals.reduce((sum, v) => sum + v, 0) / vals.length;
-  });
+export default function ForecastTrendChart({
+  historical,
+  forecast,
+}: ForecastChartProps) {
+  console.log(forecast);
+  const forecastAvg = forecast[2];
 
   const isDarkTheme = useThemeFromLocalStorage();
 
-  const forecastMin = forecast[0].map((_, i) => Math.min(...forecast.map((sim) => sim[i])));
-  const forecastMax = forecast[0].map((_, i) => Math.max(...forecast.map((sim) => sim[i])));
+  const forecastMin = forecast[0];
+  const forecastMax = forecast[4];
 
   const lastHistDate = new Date(historical[historical.length - 1].date);
 
@@ -63,13 +64,16 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
         backgroundColor: "rgba(37, 99, 235, 0.2)",
         tension: 0.3,
         fill: false,
+        borderWidth: 1, // Add this line to make the trendline thinner
+        pointRadius: 1, // Makes the dots smaller (default is 3)
+        pointHoverRadius: 3, // Optional: Slightly larger on hover for better UX
       },
       {
         label: "Forecast Range",
         data: [...new Array(historical.length).fill(null), ...forecastMax],
         borderColor: "transparent",
         backgroundColor: "rgba(147, 197, 253, 0.3)",
-        fill: '-1',
+        fill: "-1",
         pointRadius: 0,
       },
       {
@@ -77,7 +81,7 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
         data: [...new Array(historical.length).fill(null), ...forecastMin],
         borderColor: "transparent",
         backgroundColor: "rgba(147, 197, 253, 0.3)",
-        fill: false,
+        fill: 1,
         pointRadius: 0,
       },
     ],
@@ -89,7 +93,10 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
       x: {
         type: "time",
         time: {
-          unit: "day",
+          unit: "month", // shows one tick per month
+          displayFormats: {
+            month: "MMM yyyy", // e.g., "Apr 2025"
+          },
         },
         title: {
           display: false,
@@ -98,7 +105,7 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
           color: isDarkTheme ? "#D5D5D4" : "#535352",
         },
         grid: {
-          color: isDarkTheme ? "#535352" : "#E6E6E5", 
+          color: isDarkTheme ? "#535352" : "#E6E6E5",
         },
       },
       y: {
@@ -111,10 +118,10 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
           color: isDarkTheme ? "#D5D5D4" : "#535352",
         },
         grid: {
-          color: isDarkTheme ? "#535352" : "#E6E6E5", 
+          color: isDarkTheme ? "#535352" : "#E6E6E5",
         },
         border: {
-          color: isDarkTheme ? "#535352" : "#E6E6E5", 
+          color: isDarkTheme ? "#535352" : "#E6E6E5",
         },
       },
     },
@@ -125,7 +132,10 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
       tooltip: {
         callbacks: {
           label: (ctx: any) => {
-            if (ctx.dataset.label === "Forecast Range" || ctx.dataset.label === "Forecast Range Min") {
+            if (
+              ctx.dataset.label === "Forecast Range" ||
+              ctx.dataset.label === "Forecast Range Min"
+            ) {
               return null;
             }
             return `$${ctx.parsed.y.toFixed(2)}`;
@@ -137,7 +147,6 @@ export default function ForecastTrendChart({ historical, forecast }: ForecastCha
       },
     },
   };
-  
 
   return (
     <div className="w-full [&_canvas]:!w-[100%] [&_canvas]:!h-[auto]">
