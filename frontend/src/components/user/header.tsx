@@ -38,18 +38,20 @@ const Header = () => {
     fetchPortfolios();
   }, []);
 
-  const {
-    netReturn,
-    netReturnSymbol,
-    feedbackColor,
-    totalValue,
-  } = calculatePortfolioStats(portfolios);
+  const { netReturn, netReturnSymbol, feedbackColor, totalValue } =
+    calculatePortfolioStats(portfolios);
 
   return (
     <div className="flex items-center justify-between border-b-2 p-6 pb-5 border-evergray-200 dark:border-evergray-500">
       <h2 className="text-2xl align-middle">
         Total Investments:&nbsp;
-        <span className="font-mono text-3xl">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <span className="font-mono text-3xl">
+          $
+          {totalValue.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
         <span className={`font-mono ${feedbackColor}`}>
           {netReturnSymbol}
           {Math.abs(netReturn).toFixed(2)}%

@@ -319,6 +319,7 @@ export class PortfolioService {
   }
 
   private async getPortfolioValue(portfolioId: number) {
+    console.log("Hello lol")
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: portfolioId },
     });

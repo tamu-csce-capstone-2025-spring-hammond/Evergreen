@@ -95,12 +95,13 @@ export class AlpacaService {
   };
 
   calculateLatestQuote = (tickerData: TickerSnapshot) => {
-    const { latestQuote, latestTrade } = tickerData;
-    if (!latestQuote || !latestQuote.ap || !latestQuote.bp) {
-      if (!latestTrade) return null;
-      return latestTrade.p; // Or fallback to last traded price if available
-    }
-    return (latestQuote.ap + latestQuote.bp) / 2;
+    const { latestQuote, latestTrade, dailyBar } = tickerData;
+    // if (!latestQuote || !latestQuote.ap || !latestQuote.bp) {
+    //   if (!latestTrade) return null;
+    //   return latestTrade.p; // Or fallback to last traded price if available
+    // }
+    console.log("Hello My old Friend")
+    return dailyBar.c;
   };
 
   isTradingOpen = async (): Promise<boolean> => {

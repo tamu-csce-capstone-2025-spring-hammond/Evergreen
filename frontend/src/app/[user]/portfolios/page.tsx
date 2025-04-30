@@ -68,6 +68,10 @@ export default function Portfolios() {
     await fetchPortfolios();
   };
 
+  const refreshTotal = async () => {
+    
+  }
+
   const handleCreatePortfolio = async (
     name: string,
     depositedCash: number,
@@ -102,6 +106,7 @@ export default function Portfolios() {
       await createPortfolio(token, payload);
       setIsModalOpen(false);
       refreshPortfolios();
+      refreshTotal();
     } catch (error: any) {
       setError(error.message);
     }
