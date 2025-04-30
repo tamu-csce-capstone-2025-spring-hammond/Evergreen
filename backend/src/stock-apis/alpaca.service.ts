@@ -100,7 +100,6 @@ export class AlpacaService {
     //   if (!latestTrade) return null;
     //   return latestTrade.p; // Or fallback to last traded price if available
     // }
-    console.log("Hello My old Friend")
     return dailyBar.c;
   };
 

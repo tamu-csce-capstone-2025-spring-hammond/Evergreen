@@ -319,7 +319,6 @@ export class PortfolioService {
   }
 
   private async getPortfolioValue(portfolioId: number) {
-    console.log("Hello lol")
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: portfolioId },
     });
@@ -497,7 +496,7 @@ export class PortfolioService {
             portfolio_template_id: matchingTemplate.portfolio_template_id,
           },
         });
-        // console.log(allocations)
+      // console.log(allocations)
       return await Promise.all(
         allocations.map(async (a) => ({
           ticker: a.ticker,
