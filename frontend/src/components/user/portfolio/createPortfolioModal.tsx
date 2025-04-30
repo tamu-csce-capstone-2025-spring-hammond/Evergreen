@@ -79,7 +79,7 @@ const onNext = async () => {
 
     const previewDto: PortfolioPreviewDto = {
       targetDate: new Date(targetDate),
-      initial_deposit: depositedCash!,
+      value: depositedCash!,
       bitcoin_focus: bitcoinFocus,
       smallcap_focus: smallcapFocus,
       value_focus: valueFocus,
