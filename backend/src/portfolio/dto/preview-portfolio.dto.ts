@@ -65,7 +65,7 @@ export class PortfolioPreviewDto {
 
   @ApiProperty({
     example: 3,
-    description: 'Risk aptitude of the user (1–5). Required.',
+    description: 'Risk aptitude of the user (1-5). Required.',
   })
   @IsNumber()
   risk_aptitude: number;
