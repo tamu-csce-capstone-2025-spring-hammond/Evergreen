@@ -534,7 +534,7 @@ export class PortfolioService {
     const backtestSim = await this.alpacaService.backtestSim(
       allocations,
       Decimal(portfolioReviewDto.value),
-      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+      new Date(new Date().setFullYear(new Date().getFullYear() - 2)),
       portfolioReviewDto.targetDate,
     );
     return {

@@ -388,6 +388,7 @@ export class AlpacaService {
         // this.logger.fatal(price)
         if (price===undefined){
           price = 0;
+          this.logger.fatal("Bad looks")
         }
         totalValue = totalValue.add(quantity.times(price));
       }
@@ -429,8 +430,8 @@ export class AlpacaService {
         .dividedBy(recentReturns.length),
     );
 
-    const drift = meanLong.times(0.4).plus(meanRecent.times(0.6));
-    const volatility = stdDevLong.times(0.4).plus(stdDevRecent.times(0.6));
+    const drift = meanLong.times(0.8).plus(meanRecent.times(0.2));
+    const volatility = stdDevLong.times(0.8).plus(stdDevRecent.times(0.2));
 
     const lastValue = portfolioGraph[portfolioGraph.length - 1].snapshot_value;
 
