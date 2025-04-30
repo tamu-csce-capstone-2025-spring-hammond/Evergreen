@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AlpacaService } from '../stock-apis/alpaca.service';
 import { AlpacaSnapshotResponse } from '../stock-apis/alpaca-types';
-import { ErrorCodes } from '../error-codes.enum';
-import { error } from 'console';
+import { watchlistElementType, RawWatchlistItem } from './watchlist.type'; // Ensure you import the correct types
 
 @Injectable()
 export class WatchlistService {
@@ -12,29 +11,35 @@ export class WatchlistService {
     private alpacaService: AlpacaService,
   ) {}
 
-  async getWatchlist(userid: number) {
-    // Fetch user's watchlist from database
-    const watchlistItems = await this.prismaService.watchlist.findMany({
+  async getWatchlist(userid: number): Promise<watchlistElementType[]> {
+    // Fetch user's watchlist from the database. Use ticker_name correctly.
+    const watchlistItems: RawWatchlistItem[] = await this.prismaService.watchlist.findMany({
       where: { user_id: userid },
+      select: {
+        user_id: true,
+        ticker: true,
+        ticker_name: true, // Correct field is ticker_name
+      },
     });
 
-    // If no watchlist items, return empty array
+
+    // If no watchlist items, return an empty array
     if (watchlistItems.length === 0) {
       return [];
     }
+
     const tickers = watchlistItems.map((item) => item.ticker);
 
-    // Fetch stock data for all tickers
+    // Fetch stock data for all tickers from Alpaca
     let stockData: AlpacaSnapshotResponse;
     try {
       stockData = await this.alpacaService.getTickerValues(tickers);
-      console.log(stockData);
     } catch (error) {
-      console.log(error);
-      throw new Error(ErrorCodes.EXTERNAL_API_FAILURE);
+      throw new Error("Error fetching stock data from Alpaca.");
     }
-    // Transform watchlist with stock data
-    const enrichedWatchlist = watchlistItems.map((item) => {
+
+    // Transform the watchlist items to include the dynamic data (last_price, day_percent_change)
+    const enrichedWatchlist: watchlistElementType[] = watchlistItems.map<watchlistElementType>((item) => {
       const tickerData = stockData[item.ticker];
 
       // Handle case where ticker data might be missing
@@ -43,16 +48,15 @@ export class WatchlistService {
           ticker: item.ticker,
           last_price: null,
           day_percent_change: null,
-          name: item.name,
+          ticker_name: item.ticker_name, // Correct field usage
         };
       }
 
       return {
         ticker: item.ticker,
         last_price: this.alpacaService.calculateLatestQuote(tickerData),
-        day_percent_change:
-          this.alpacaService.calculatePercentChange(tickerData),
-        name: item.name,
+        day_percent_change: this.alpacaService.calculatePercentChange(tickerData),
+        ticker_name: item.ticker_name, // Correct field usage
       };
     });
 

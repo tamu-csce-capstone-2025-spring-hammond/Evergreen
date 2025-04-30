@@ -1,18 +1,42 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'
 import Link from 'next/link';
 import Image from 'next/image';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [theme, setTheme] = useState("");
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
 
+    useEffect(() => {
+        if(localStorage.theme === "dark") {
+            setTheme("dark");
+            document.documentElement.classList.add("dark");
+        }
+        else {
+            setTheme("light");
+            document.documentElement.classList.remove("dark");
+        }
+    }, []);
+
+  function toggleDarkMode () {
+    document.documentElement.classList.toggle("dark");
+    if(localStorage.theme === "dark") {
+        localStorage.theme = "light";
+        setTheme("light");
+    }
+    else {
+        localStorage.theme = "dark";
+        setTheme("dark");
+    }
+  }
+
   return (
     <div
-      className={`p-6 flex flex-col justify-between h-screen border-r-2 border-evergray-200 dark:border-evergray-500 transition-all duration-300 [interpolate-size:allow-keywords] ${
+      className={`sidebar p-6 flex flex-col justify-between h-screen border-r-2 border-evergray-200 dark:border-evergray-500 transition-all duration-300 [interpolate-size:allow-keywords] ${
         isCollapsed ? "w-23" : "w-fit"}`}
     >
       <div>
@@ -47,20 +71,21 @@ const Sidebar = () => {
           </h3>
           <ul className="space-y-2">
             {[
-              { href: "/user", icon: "search", text: "Dashboard" },
-              { href: "/user/portfolios", icon: "savings", text: "Portfolios" },
-              { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting" },
-              { href: "/user/explore", icon: "explore", text: "Explore" },
-            ].map(({ href, icon, text }) => (
-              <li key={text}>
+              { href: "/user", icon: "search", text: "Dashboard", cursor: "pointer" },
+              { href: "/user/portfolios", icon: "savings", text: "Portfolios", cursor: "pointer" },
+              // { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting", cursor: "not-allowed" },
+              // { href: "/user/explore", icon: "explore", text: "Explore", cursor: "not-allowed" },
+            ].map(({ href, icon, text, cursor }) => (
+                <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "dark:hover:bg-evergreen-600/35 hover:bg-evergreen-200 transition"}`}>
                 <Link
                   href={href}
                   className={`flex items-center gap-2 p-2 rounded-xl ${
                     isActive(href)
-                      ? "bg-evergreen-500 text-evergray-100" // Active link styles
+                      ? "bg-evergreen-500 dark:bg-evergreen-600 text-evergray-100"
                       : "text-evergray-700 dark:text-evergray-100"
-                  }`}
-                >
+                  } ${
+                    cursor==="not-allowed" ? "pointer-events-none" : "cursor-pointer"
+                  }`}>
                   <span className="material-symbols-outlined">{icon}</span>
                   <span
                     className={`transition-all whitespace-nowrap text-lg duration-300 ${
@@ -88,15 +113,15 @@ const Sidebar = () => {
           </h3>
           <ul className="space-y-2">
             {[
-              { href: "/user", icon: "account_circle", text: "Profile" },
-              { href: "/user", icon: "settings", text: "Settings" },
-              { href: "/", icon: "logout", text: "Logout" },
-            ].map(({ href, icon, text }) => (
-              <li key={text}>
-                <Link href={href} className="flex items-center gap-2 p-2 rounded-xl">
+              // { href: "/user", icon: "account_circle", text: "Profile", cursor: "not-allowed" },
+              // { href: "/user", icon: "settings", text: "Settings", cursor: "not-allowed" },
+              { href: "/", icon: "logout", text: "Logout", cursor: "pointer" },
+            ].map(({ href, icon, text, cursor }) => (
+              <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "dark:hover:bg-evergreen-600/35 hover:bg-evergreen-200 transition"}`}>
+                <Link href={href} className={`flex items-center gap-2 p-2 rounded-xl ${cursor==="not-allowed" ? "pointer-events-none" : "cursor-pointer"}`}>
                   <span className="material-symbols-outlined">{icon}</span>
                   <span
-                    className={`transition-all whitespace-nowrap text-lg duration-300 ${
+                    className={`transition-[opacity,_width] whitespace-nowrap text-lg duration-300 ${
                       isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
                     }`}
                   >
@@ -112,27 +137,33 @@ const Sidebar = () => {
       {/* Footer Buttons */}
       <div>
         <ul className="space-y-2">
-          <li>
-            <button type="button" className="flex text-lg items-center gap-3 p-2 w-full cursor-pointer">
-              <span className="material-symbols-outlined">dark_mode</span>
+          <li className='hover:bg-evergreen-200 dark:hover:bg-evergreen-600/35 transition rounded-xl'>
+            <button type="button" className="flex text-lg items-center gap-3 p-2 w-full cursor-pointer" onClick={toggleDarkMode}>
+                {theme === "dark" ? (
+                    <span className="material-symbols-outlined">light_mode</span>
+                ) : (
+                    <span className="material-symbols-outlined">dark_mode</span>
+                )}
               <span
                 className={`transition-all whitespace-nowrap duration-300 ${
                   isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
                 }`}
               >
-                Dark Mode
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </span>
             </button>
           </li>
-          <li>
+          <li className='hover:bg-evergreen-200 dark:hover:bg-evergreen-600/35 transition rounded-xl'>
             <button
               type="button"
               className="flex items-center gap-3 p-2 w-full cursor-pointer"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
-              <span className="material-symbols-outlined">
-                keyboard_tab{isCollapsed ? '' : '_rtl'}
-              </span>
+            {isCollapsed ? (
+                <span className="material-symbols-outlined">keyboard_tab</span>
+            ) : (
+                <span className="material-symbols-outlined">keyboard_tab_rtl</span>
+            )}
               <span
                 className={`transition-all whitespace-nowrap text-lg duration-300 ${
                   isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"

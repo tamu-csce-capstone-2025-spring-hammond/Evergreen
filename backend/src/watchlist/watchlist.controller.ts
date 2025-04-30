@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { StockWatchlistItemDto, TickerDTO } from './dto/watchlist.dto';
 import { ErrorCodes, ErrorMessages } from '../error-codes.enum';
-import { error } from 'console';
 
 @Controller('watchlist')
 export class WatchlistController {
@@ -40,13 +39,13 @@ export class WatchlistController {
           ticker: 'SPY',
           last_price: 30.33,
           day_percent_change: 3,
-          name: 'SPDR S&P 500 ETF Trust',
+          ticker_name: 'SPDR S&P 500 ETF Trust',
         },
         {
           ticker: 'APPL',
           last_price: 300.33,
           day_percent_change: -0.5,
-          name: 'Apple Inc',
+          ticker_name: 'Apple Inc',
         },
       ],
     },

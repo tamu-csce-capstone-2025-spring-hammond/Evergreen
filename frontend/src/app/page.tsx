@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import Navbar from '../components/navbar'
 import Footer from '../components/footer'
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -27,6 +28,17 @@ export default function Home() {
 
         return () => cancelAnimationFrame(animationFrameId);
     }, [scrollY]);
+
+    useEffect(() => {
+        const theme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    
+        if (theme === "dark" || (!theme && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      }, []);
     
   return (
     <div>
@@ -41,9 +53,9 @@ export default function Home() {
                     Money really does grow on trees.
                 </p>
                 <button id="hero-cta" type="button" className='text-evergray-700 cursor-pointer gap-1 flex items-center bg-evergreen-200 py-2 px-4 rounded-lg mt-4 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100'>
-                    <span className='font-medium text-xl whitespace-nowrap'>
+                    <Link href="/signup" className='font-medium text-xl whitespace-nowrap'>
                         Try Now
-                    </span>
+                    </Link>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className='size-5'>
                         <path d="M 15 50 L 95 50 M 65 20 L 95 50 L 65 80" fill="transparent" stroke="black" strokeWidth="8"/>
                     </svg>
@@ -108,7 +120,7 @@ export default function Home() {
                 <h2 className='text-everblue-400 font-ntwagner text-5xl max-xl:text-4xl whitespace-nowrap leading-[110%]'>Manage All of Your <br /> Assets in One Place</h2>
                 <p className="text-evergray-700 text-2xl max-xl:text-xl mt-6 leading-[175%]">Track, invest, and grow your assets anytime, anywhere. Take control of your financial future with an all-in-one platform. </p>
                 <button id="footer-cta" type="button" className='text-evergray-700 text-xl cursor-pointer gap-1 flex items-center bg-everblue-100 py-3 px-5 rounded-lg mt-6 transition hover:-translate-y-0.5 hover:scale-102 hover:brightness-105 will-change-contents active:brightness-95 active:translate-y-0 active:scale-100 shadow-sm'>
-                    Get Started
+                    <Link href="/signup" >Get Started</Link>
                 </button>
             </div>
           </article>
