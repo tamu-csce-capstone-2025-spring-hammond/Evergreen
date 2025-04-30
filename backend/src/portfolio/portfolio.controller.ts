@@ -514,6 +514,7 @@ export class PortfolioController {
         portfolioName: result.portfolio_name,
         currentBalance: result.uninvested_cash,
         totalDeposited: result.total_deposited,
+        totalValue: result.total_value,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -606,6 +607,7 @@ export class PortfolioController {
         portfolioId: result.portfolio_id,
         portfolioName: result.portfolio_name,
         currentBalance: result.uninvested_cash,
+        totalValue: result.total_value,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {

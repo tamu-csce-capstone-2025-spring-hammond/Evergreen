@@ -79,7 +79,7 @@ const onNext = async () => {
 
     const previewDto: PortfolioPreviewDto = {
       targetDate: new Date(targetDate),
-      initial_deposit: depositedCash!,
+      value: depositedCash!,
       bitcoin_focus: bitcoinFocus,
       smallcap_focus: smallcapFocus,
       value_focus: valueFocus,
@@ -103,6 +103,11 @@ const onNext = async () => {
     const forecastSimulations: number[][] = result.future_projections.simulations.map(
       (sim: any) => sim.values.map((v: any) => parseFloat(v))
     );
+
+    const createdDate: Date = result.createdDate;
+
+    const targetDate2: Date = result.targetDate;
+
 
     setPreviewData(historicalFormatted);
     setForecastSimulations(forecastSimulations);
@@ -316,7 +321,7 @@ const onNext = async () => {
               <div className="w-full px-4">
                 {previewData && forecastSimulations && (
                   <ForecastTrendChart
-                    historical={previewData.slice(-30)}
+                    historical={previewData.slice(-100)}
                     forecast={forecastSimulations}
                   />
                 )}

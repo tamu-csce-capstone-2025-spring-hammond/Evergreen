@@ -26,8 +26,8 @@ model Portfolio {
   created_at         DateTime            @default(now()) @db.Timestamp(6)
   target_date        DateTime            @db.Date
   color              String              @db.VarChar(7)
-  uninvested_cash    Decimal             @default(0) @db.Decimal(12, 2)
-  total_deposited    Decimal             @default(0) @db.Decimal(12, 2)
+  uninvested_cash    Decimal             @default(0) @db.Decimal(16, 6)
+  total_deposited    Decimal             @default(0) @db.Decimal(16, 6)
   risk_aptitude      Int?                @db.SmallInt
   bitcoin_focus      Boolean             @default(false)
   smallcap_focus     Boolean             @default(false)
@@ -48,7 +48,7 @@ model ExecutedTrades {
   trade_time           DateTime  @default(now()) @db.Timestamp(6)
   trade_is_buy         Boolean
   amount_shares_traded Decimal   @db.Decimal(10, 4)
-  av_price_paid        Decimal   @db.Decimal(10, 2)
+  av_price_paid        Decimal   @db.Decimal(15, 6)
   portfolio            Portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("executed_trades")
@@ -58,8 +58,8 @@ model Holdings {
   portfolio_id       Int
   ticker             String    @db.VarChar(10)
   ticker_name        String    @db.VarChar(255)
-  quantity           Decimal   @db.Decimal(10, 4)
-  average_cost_basis Decimal   @db.Decimal(10, 2)
+  quantity           Decimal   @db.Decimal(15, 6)
+  average_cost_basis Decimal   @db.Decimal(15, 6)
   last_updated       DateTime  @db.Timestamp(6)
   portfolio          Portfolio @relation(fields: [portfolio_id], references: [portfolio_id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -81,7 +81,7 @@ model PortfolioTemplate {
   portfolio_template_id             Int                                @id @default(autoincrement())
   last_generated                    DateTime                           @default(now()) @db.Timestamp(6)
   sample_portfolio_name             String?                            @db.VarChar(255)
-  time_to_expiration                BigInt
+  years_to_expiration               Int
   risk_aptitude                     Int?                               @db.SmallInt
   bitcoin_focus                     Boolean                            @default(false)
   smallcap_focus                    Boolean                            @default(false)
@@ -95,8 +95,7 @@ model PortfolioTemplate {
 model PortfolioTemplateAssetAllocation {
   portfolio_template_id Int
   ticker                String            @db.VarChar(10)
-  ticker_name           String            @db.VarChar(255)
-  percentage            Decimal           @db.Decimal(5, 4)
+  percentage            Decimal           @db.Decimal(10, 6)
   sample_portfolio      PortfolioTemplate @relation(fields: [portfolio_template_id], references: [portfolio_template_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([ticker, portfolio_template_id])

@@ -73,8 +73,8 @@ const Sidebar = () => {
             {[
               { href: "/user", icon: "search", text: "Dashboard", cursor: "pointer" },
               { href: "/user/portfolios", icon: "savings", text: "Portfolios", cursor: "pointer" },
-              { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting", cursor: "not-allowed" },
-              { href: "/user/explore", icon: "explore", text: "Explore", cursor: "not-allowed" },
+              // { href: "/user/backtesting", icon: "bar_chart", text: "Backtesting", cursor: "not-allowed" },
+              // { href: "/user/explore", icon: "explore", text: "Explore", cursor: "not-allowed" },
             ].map(({ href, icon, text, cursor }) => (
                 <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "dark:hover:bg-evergreen-600/35 hover:bg-evergreen-200 transition"}`}>
                 <Link
@@ -113,8 +113,8 @@ const Sidebar = () => {
           </h3>
           <ul className="space-y-2">
             {[
-              { href: "/user", icon: "account_circle", text: "Profile", cursor: "not-allowed" },
-              { href: "/user", icon: "settings", text: "Settings", cursor: "not-allowed" },
+              // { href: "/user", icon: "account_circle", text: "Profile", cursor: "not-allowed" },
+              // { href: "/user", icon: "settings", text: "Settings", cursor: "not-allowed" },
               { href: "/", icon: "logout", text: "Logout", cursor: "pointer" },
             ].map(({ href, icon, text, cursor }) => (
               <li key={text} className={`rounded-xl ${cursor==="not-allowed" ? "cursor-not-allowed" : "dark:hover:bg-evergreen-600/35 hover:bg-evergreen-200 transition"}`}>

@@ -22,17 +22,23 @@ const alpaca = new AlpacaService(config);
 // Now you can use config.get('SOME_ENV_VAR') like in your main app
 
 async function main() {
+  await prisma.portfolioTemplate.deleteMany();
+  await prisma.portfolio.deleteMany();
+  await prisma.users.deleteMany();
   const riskyPortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.75) },
-    { ticker: 'BND', percent: Decimal(0.25) },
+    { ticker: 'VTI', percent: Decimal(0.6) },
+    { ticker: 'BND', percent: Decimal(0.18) },
+    { ticker: 'QQQM', percent: Decimal(0.22) },
   ];
   const safePortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.25) },
-    { ticker: 'BND', percent: Decimal(0.75) },
+    { ticker: 'VTI', percent: Decimal(0.4) },
+    { ticker: 'BND', percent: Decimal(0.38) },
+    { ticker: 'QQQM', percent: Decimal(0.22) },
   ];
   const superSafePortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.1) },
-    { ticker: 'BND', percent: Decimal(0.9) },
+    { ticker: 'VTI', percent: Decimal(0.2) },
+    { ticker: 'BNDX', percent: Decimal(0.29) },
+    { ticker: 'BND', percent: Decimal(0.51) },
   ];
   const riskySim = await alpaca.seedSim(
     riskyPortfolio,
@@ -87,22 +93,22 @@ async function main() {
               create: safeSim.trades,
             },
           },
-          {
-            target_date: new Date('2028-06-15'),
-            created_at: new Date('2024-03-31'),
-            portfolio_name: 'masters degree',
-            uninvested_cash: 0,
-            color: '#3366ff',
-            total_deposited: 12000,
-            momentum_focus: false,
-            holdings: {
-              create: superSafeSim.investments,
-            },
-            portfolio_snapshot: { create: superSafeSim.backtestResult.graph },
-            trades: {
-              create: superSafeSim.trades,
-            },
-          },
+          // {
+          //   target_date: new Date('2028-06-15'),
+          //   created_at: new Date('2024-03-31'),
+          //   portfolio_name: 'masters degree',
+          //   uninvested_cash: 0,
+          //   color: '#3366ff',
+          //   total_deposited: 12000,
+          //   momentum_focus: false,
+          //   holdings: {
+          //     create: superSafeSim.investments,
+          //   },
+          //   portfolio_snapshot: { create: superSafeSim.backtestResult.graph },
+          //   trades: {
+          //     create: superSafeSim.trades,
+          //   },
+          // },
         ],
       },
       watchlist: {
@@ -121,6 +127,28 @@ async function main() {
       },
     },
   });
+  const fs = require('fs');
+  const rawData = fs.readFileSync('./prisma/computedWeights.json');
+  const portfolioTemplates = JSON.parse(rawData);
+  for (const template of portfolioTemplates) {
+    const createdTemplate = await prisma.portfolioTemplate.create({
+      data: {
+        years_to_expiration: template.years_to_expiration,
+        risk_aptitude: template.risk_aptitude,
+        bitcoin_focus: template.bitcoin_focus,
+        smallcap_focus: template.smallcap_focus,
+        value_focus: template.value_focus,
+        momentum_focus: template.momentum_focus,
+        sample_portfolio_name: null, // Or provide a string if needed
+        sample_portfolio_asset_allocation: {
+          create: template.holdings.map((h) => ({
+            ticker: h.ticker,
+            percentage: h.percentage,
+          })),
+        },
+      },
+    });
+  }
 }
 
 main()
