@@ -6,6 +6,7 @@ import { useThemeFromLocalStorage } from "@/utils";
 import { PortfolioCardProps } from "../api/portfolio";
 import {
     Chart as ChartJS,
+    ChartOptions,
     LineElement,
     PointElement,
     LinearScale,
@@ -150,62 +151,63 @@ export default function Chart({ portfolios }: ChartProps) {
         }
     };  
 
-    const options = useMemo(() => ({
-        responsive: true,
-        scales: {
-          x: {
-            type: "time",
-            time: {
-              unit: getTimeUnit(selectedTimeframe),
-              tooltipFormat: "PP",
-            },
-            ticks: {
-              color: isDarkTheme ? "#D5D5D4" : "#535352", // gray-300 / gray-700
-            },
-            grid: {
-              color: isDarkTheme ? "#535352" : "#E6E6E5",
-            },
-            title: {
-              display: false,
-              text: "Date",
-            },
-          },
-          y: {
-            beginAtZero: false,
-            ticks: {
-              color: isDarkTheme ? "#D5D5D4" : "#535352",
-              callback: (val: number) => `$${val}`,
-            },
-            grid: {
-              color: isDarkTheme ? "#535352" : "#E6E6E5",
-            },
-            border: {
+    const options = useMemo(() => {
+        return {
+          responsive: true,
+          scales: {
+            x: {
+              type: "time" as const,
+              time: {
+                unit: getTimeUnit(selectedTimeframe),
+                tooltipFormat: "PP",
+              },
+              ticks: {
+                color: isDarkTheme ? "#D5D5D4" : "#535352",
+              },
+              grid: {
                 color: isDarkTheme ? "#535352" : "#E6E6E5",
+              },
+              title: {
+                display: false,
+                text: "Date",
+              },
             },
-            title: {
+            y: {
+              beginAtZero: false,
+              ticks: {
+                color: isDarkTheme ? "#D5D5D4" : "#535352",
+                callback: (val: number) => `$${val}`,
+              },
+              grid: {
+                color: isDarkTheme ? "#535352" : "#E6E6E5",
+              },
+              border: {
+                color: isDarkTheme ? "#535352" : "#E6E6E5",
+              },
+              title: {
+                display: false,
+                text: "Portfolio Value",
+              },
+            },
+          },
+          plugins: {
+            legend: {
               display: false,
-              text: "Portfolio Value",
+              labels: {
+                color: isDarkTheme ? "#535352" : "#374151",
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx: any) => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
+              },
+              backgroundColor: isDarkTheme ? "#535352" : "#E6E6E5",
+              titleColor: isDarkTheme ? "#E6E6E5" : "#272726",
+              bodyColor: isDarkTheme ? "#E6E6E5" : "#535352",
             },
           },
-        },
-        plugins: {
-          legend: {
-            display: false,
-            labels: {
-              color: isDarkTheme ? "#535352" : "#374151",
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx: any) => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
-            },
-            backgroundColor: isDarkTheme ? "#535352" : "#E6E6E5",
-            titleColor: isDarkTheme ? "#E6E6E5" : "#272726",
-            bodyColor: isDarkTheme ? "#E6E6E5" : "#535352",
-          },
-        },
-      }), [isDarkTheme, selectedTimeframe]);
-      
+        } as ChartOptions<'line'>;
+      }, [isDarkTheme, selectedTimeframe]);      
   
     return (
       <div className="p-4 pb-2 w-full">

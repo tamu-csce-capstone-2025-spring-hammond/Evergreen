@@ -62,24 +62,24 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
     return null;
   }, [portfolios, data, isDarkTheme]);
 
-  const centerTextPlugin: Plugin<"doughnut"> = {
+  const centerTextPlugin = useMemo<Plugin<"doughnut">>(() => ({
     id: "centerText",
     beforeDraw: (chart) => {
       const { width, height } = chart;
       const ctx = chart.ctx;
       ctx.save();
-
+  
       const fontSize = (height / 170).toFixed(2);
       ctx.font = `${fontSize}em Roboto Mono, sans-serif`;
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
       ctx.fillStyle = isDarkTheme ? "#E6E6E5" : "#737373";
-
+  
       const text = `$${total.toFixed(2)}`;
       ctx.fillText(text, width / 2, height / 2);
       ctx.restore();
     },
-  };
+  }), [isDarkTheme, total]);  
 
   if (!chartData) {
     return <p className="text-center text-evergray-400">No data to display</p>;
@@ -117,6 +117,7 @@ export default function PieChart({ portfolios, data, showLegend }: PieChartProps
   return (
     <div className={`w-full h-full relative`}>
       <Doughnut
+        key={isDarkTheme ? "dark" : "light"}
         data={chartData}
         options={options}
         plugins={showCenterTotal ? [centerTextPlugin] : []}
