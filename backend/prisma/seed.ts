@@ -26,16 +26,19 @@ async function main() {
   await prisma.portfolio.deleteMany();
   await prisma.users.deleteMany();
   const riskyPortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.75) },
-    { ticker: 'BND', percent: Decimal(0.25) },
+    { ticker: 'VTI', percent: Decimal(0.6) },
+    { ticker: 'BND', percent: Decimal(0.18) },
+    { ticker: 'QQQM', percent: Decimal(0.22) },
   ];
   const safePortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.25) },
-    { ticker: 'BND', percent: Decimal(0.75) },
+    { ticker: 'VTI', percent: Decimal(0.4) },
+    { ticker: 'BND', percent: Decimal(0.38) },
+    { ticker: 'QQQM', percent: Decimal(0.22) },
   ];
   const superSafePortfolio = [
-    { ticker: 'VTI', percent: Decimal(0.1) },
-    { ticker: 'BND', percent: Decimal(0.9) },
+    { ticker: 'VTI', percent: Decimal(0.2) },
+    { ticker: 'BNDX', percent: Decimal(0.29) },
+    { ticker: 'BND', percent: Decimal(0.51) },
   ];
   const riskySim = await alpaca.seedSim(
     riskyPortfolio,
@@ -90,22 +93,22 @@ async function main() {
               create: safeSim.trades,
             },
           },
-          {
-            target_date: new Date('2028-06-15'),
-            created_at: new Date('2024-03-31'),
-            portfolio_name: 'masters degree',
-            uninvested_cash: 0,
-            color: '#3366ff',
-            total_deposited: 12000,
-            momentum_focus: false,
-            holdings: {
-              create: superSafeSim.investments,
-            },
-            portfolio_snapshot: { create: superSafeSim.backtestResult.graph },
-            trades: {
-              create: superSafeSim.trades,
-            },
-          },
+          // {
+          //   target_date: new Date('2028-06-15'),
+          //   created_at: new Date('2024-03-31'),
+          //   portfolio_name: 'masters degree',
+          //   uninvested_cash: 0,
+          //   color: '#3366ff',
+          //   total_deposited: 12000,
+          //   momentum_focus: false,
+          //   holdings: {
+          //     create: superSafeSim.investments,
+          //   },
+          //   portfolio_snapshot: { create: superSafeSim.backtestResult.graph },
+          //   trades: {
+          //     create: superSafeSim.trades,
+          //   },
+          // },
         ],
       },
       watchlist: {
