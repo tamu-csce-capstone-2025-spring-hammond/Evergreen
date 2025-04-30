@@ -147,7 +147,7 @@ const onNext = async () => {
       <div
         className={`relative max-h-[720px] h-[91vh] ${
           step === "preview" ? "w-[40rem]" : "w-[28rem]"
-        } bg-evergray-100 dark:bg-evergray-700 rounded-lg shadow-xl overflow-hidden transition-all duration-500`}
+        } bg-evergray-100 dark:bg-evergray-700 rounded-lg shadow-xl dark:shadow-[#171716] overflow-hidden transition-all duration-500`}
         onClick={(e) => e.stopPropagation()}
       >
 

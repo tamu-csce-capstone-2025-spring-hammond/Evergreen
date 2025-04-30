@@ -81,7 +81,7 @@ const Sidebar = () => {
                   href={href}
                   className={`flex items-center gap-2 p-2 rounded-xl ${
                     isActive(href)
-                      ? "bg-evergreen-500 dark:bg-evergreen-500 text-evergray-100"
+                      ? "bg-evergreen-500 dark:bg-evergreen-600 text-evergray-100"
                       : "text-evergray-700 dark:text-evergray-100"
                   } ${
                     cursor==="not-allowed" ? "pointer-events-none" : "cursor-pointer"
