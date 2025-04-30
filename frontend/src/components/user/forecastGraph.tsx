@@ -16,6 +16,7 @@ import "chartjs-adapter-date-fns";
 import { Line } from "react-chartjs-2";
 import React from "react";
 import { useThemeFromLocalStorage } from "@/utils";
+import annotationPlugin from "chartjs-plugin-annotation";
 
 ChartJS.register(
   LineElement,
@@ -26,7 +27,8 @@ ChartJS.register(
   LineController,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  annotationPlugin
 );
 
 interface ForecastChartProps {
@@ -45,6 +47,8 @@ export default function ForecastTrendChart({
 
   const forecastMin = forecast[0];
   const forecastMax = forecast[4];
+
+  const today = new Date().toISOString().split('T')[0];
 
   const lastHistDate = new Date(historical[historical.length - 1].date);
 
@@ -144,6 +148,25 @@ export default function ForecastTrendChart({
         backgroundColor: isDarkTheme ? "#535352" : "#E6E6E5",
         titleColor: isDarkTheme ? "#E6E6E5" : "#272726",
         bodyColor: isDarkTheme ? "#E6E6E5" : "#535352",
+      },
+      annotation: {
+        annotations: {
+          todayLine: {
+            type: "line",
+            scaleID: "x",
+            value: today,
+            borderColor: "red",
+            borderWidth: 2,
+            borderDash: [6, 6],
+            label: {
+              content: "Today",
+              enabled: true,
+              position: "start",
+              backgroundColor: "rgba(255, 99, 132, 0.25)",
+              color: "red",
+            },
+          },
+        },
       },
     },
   };
