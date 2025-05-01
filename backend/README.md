@@ -27,11 +27,35 @@ backend/
 └── test/                  # E2E Test files
 ```
 
-## Project Setup
+## Backend Setup
 
-```bash
-$ npm install
+### **1. Set up .Env File**
+
+Fill in all fields in .env file as found in .env.example. For the JWT_SECRET, you can generate it using:
+
+```JS
+import { randomBytes } from "crypto";
+
+const jwtSecretKey = randomBytes(64).toString("hex");
+console.log("Generated JWT Secret Key:", jwtSecretKey);
 ```
+  
+
+---
+
+  
+
+### **2. npm install**
+
+Run the following terminal command:
+```Bash
+npm install
+```
+
+
+---
+
+  
 
 ## Running the Application
 
