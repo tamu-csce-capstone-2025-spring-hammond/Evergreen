@@ -368,7 +368,6 @@ export class AlpacaService {
     }
 
     const history: AlpacaHistoricalBarsApiResponse = await response.json();
-    this.logger.error(portfolio[0].percent_of_portfolio);
     const investments = portfolio.map(({ ticker, percent_of_portfolio }) => {
       const quantity = endingInvestment
         .times(percent_of_portfolio.div(100))

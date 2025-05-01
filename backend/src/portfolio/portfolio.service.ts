@@ -318,7 +318,7 @@ export class PortfolioService {
     }
   }
 
-  private async getPortfolioValue(portfolioId: number) {
+  async getPortfolioValue(portfolioId: number) {
     const portfolioData = await this.prisma.portfolio.findUnique({
       where: { portfolio_id: portfolioId },
     });
@@ -406,7 +406,7 @@ export class PortfolioService {
       },
     });
 
-    const total = this.prisma.portfolio.findFirst({
+    const total = this.prisma.portfolio.findUnique({
       where: { portfolio_id: portfolioId },
       select: {
         total_deposited: true,
