@@ -1,6 +1,5 @@
 describe('Login Page', () => {
     beforeEach(() => {
-      // Ignore hydration + 418 React errors
       Cypress.on('uncaught:exception', (err) => {
         if (
           err.message.includes('Hydration failed') ||
@@ -22,7 +21,7 @@ describe('Login Page', () => {
         cy.get('input[name="password"]').type('Password12!');
         cy.get('button[type="submit"]').click();
 
-        cy.url().should('include', '/dashboard');
+        cy.url().should('include', '/user');
     });
 
     it('fails to login with wrong password', () => {
